@@ -1,2 +1,2 @@
 # pyrope
-Pyrope, a modern HDL with a Live flow
+Pyrope, a modern HDL with a live flow
