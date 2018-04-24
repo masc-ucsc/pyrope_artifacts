@@ -1,4 +1,7 @@
 
+#######
+# Instruction to clone subdirectories
+
 # Must clone submodules like yosys too
 git submodule update --init --recursive
 
