@@ -1,0 +1,249 @@
+[
+   {
+      "start_pos": 0,
+      "end_pos": 3,
+      "type": "function_call",
+      "function": {
+         "type": "identifier",
+         "value": "foo"
+      },
+      "arguments": [
+         null
+      ],
+      "body": null
+   },
+   {
+      "start_pos": 4,
+      "end_pos": 9,
+      "type": "function_call",
+      "function": {
+         "type": "identifier",
+         "value": "bar"
+      },
+      "arguments": [
+         {
+            "type": "identifier",
+            "value": "a"
+         }
+      ],
+      "body": null
+   },
+   {
+      "start_pos": 10,
+      "end_pos": 23,
+      "type": "function_call",
+      "function": {
+         "type": "identifier",
+         "value": "cox"
+      },
+      "arguments": [
+         {
+            "type": "identifier",
+            "value": "x"
+         },
+         {
+            "type": "binary_expression",
+            "operator": {
+               "type": "arithmetic_operator",
+               "operation": "+"
+            },
+            "left": {
+               "type": "number",
+               "value": "1"
+            },
+            "right": {
+               "type": "number",
+               "value": "2"
+            }
+         },
+         {
+            "type": "identifier",
+            "value": "y"
+         }
+      ],
+      "body": null
+   },
+   {
+      "start_pos": 24,
+      "end_pos": 36,
+      "type": "function_call",
+      "function": {
+         "type": "identifier",
+         "value": "des"
+      },
+      "arguments": [
+         {
+            "start_pos": 29,
+            "end_pos": 35,
+            "type": "function_call",
+            "function": {
+               "type": "identifier",
+               "value": "ant"
+            },
+            "arguments": null,
+            "body": null
+         }
+      ],
+      "body": null
+   },
+   {
+      "start_pos": 0,
+      "end_pos": 43,
+      "type": "function_call",
+      "function": {
+         "type": "identifier",
+         "value": "foo"
+      },
+      "arguments": [
+         {
+            "type": "tuple_array",
+            "arr_obj": {
+               "type": "identifier",
+               "value": "a"
+            },
+            "arr_idx": {
+               "type": "number",
+               "value": "1"
+            }
+         },
+         {
+            "type": "bit_select",
+            "bit_obj": {
+               "type": "identifier",
+               "value": "b"
+            },
+            "bit_sel": {
+               "type": "number",
+               "value": "2"
+            }
+         },
+         {
+            "type": "range",
+            "u_bound": {
+               "type": "identifier",
+               "value": "c"
+            },
+            "l_bound": {
+               "type": "identifier",
+               "value": "d"
+            }
+         },
+         {
+            "type": "binary_expression",
+            "operator": {
+               "type": "arithmetic_operator",
+               "operation": "+"
+            },
+            "left": {
+               "type": "binary_expression",
+               "operator": {
+                  "type": "arithmetic_operator",
+                  "operation": "*"
+               },
+               "left": {
+                  "type": "number",
+                  "value": "1"
+               },
+               "right": {
+                  "type": "number",
+                  "value": "2"
+               }
+            },
+            "right": {
+               "type": "number",
+               "value": "3"
+            }
+         },
+         {
+            "type": "tuple_list",
+            "elements": [
+               {
+                  "type": "identifier",
+                  "value": "x"
+               },
+               {
+                  "type": "identifier",
+                  "value": "y"
+               },
+               {
+                  "type": "tuple_dot",
+                  "dot_obj": {
+                     "type": "identifier",
+                     "value": "a"
+                  },
+                  "dot_prop": {
+                     "type": "identifier",
+                     "value": "b"
+                  }
+               }
+            ]
+         },
+         {
+            "type": "tuple_dot",
+            "dot_obj": {
+               "type": "identifier",
+               "value": "z"
+            },
+            "dot_prop": {
+               "type": "number",
+               "value": "2"
+            }
+         }
+      ],
+      "body": null
+   },
+   {
+      "start_pos": 0,
+      "end_pos": 11,
+      "type": "function_call",
+      "function": {
+         "type": "identifier",
+         "value": "foo"
+      },
+      "arguments": [
+         {
+            "type": "identifier",
+            "value": "x"
+         },
+         {
+            "type": "tuple_dot",
+            "dot_obj": {
+               "type": "identifier",
+               "value": "a"
+            },
+            "dot_prop": {
+               "type": "identifier",
+               "value": "b"
+            }
+         },
+         {
+            "type": "identifier",
+            "value": "c"
+         }
+      ],
+      "body": null
+   },
+   {
+      "start_pos": 12,
+      "end_pos": 19,
+      "type": "function_call",
+      "function": {
+         "type": "identifier",
+         "value": "bar"
+      },
+      "arguments": [
+         {
+            "type": "tuple_dot",
+            "dot_obj": {
+               "type": "identifier",
+               "value": "a"
+            },
+            "dot_prop": {
+               "type": "identifier",
+               "value": "b"
+            }
+         }
+      ],
+      "body": null
+   }
+]

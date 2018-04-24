@@ -1,0 +1,180 @@
+
+tst1 as stage
+tst1 = ::
+  %sum = $a + $b
+
+tst as stage
+tst = :: 
+
+  error stage is a reserved keyword:
+    stage = 3   #done
+
+  error def is a reserved keyword:
+    def = 4     #done
+
+  a = 0     #done
+  if a==0: # new unamed scope             #done
+    a = 1                   #done
+
+  f  as def: # new named scope (f1)                 #done 
+    return $val + 1                 #done
+
+  b = f(val:3)        #done
+  I b == 4      #done
+
+  :: # new anonymous scope
+    c = 3
+    %e = 4
+
+  I c == 3    # error: c is not in current scope        #done
+  I e == 4    #done
+
+  f1 as ::
+    %out = $in + 1      
+  
+  # %out still not declared there
+  in = 1      #done
+  = f1
+  I out == 2  #done
+
+  b = f1(in:3)        #done
+  I b.out == 4          #done
+  
+  if cond1:               #done
+    x = 2   # like javascript, uses current named scope
+    _y = 3  # assigned to current unnamed scope
+    if cond2:           #done
+      I  x == 2
+      I _y == 3
+
+  I  x == 2             #done
+  I  _y == 1  # error: _y undefined variable:               #done
+
+
+f as stage
+f = ::
+
+  I $inout == %inout         # start with same value
+
+  $inout = $inout + 1        # input can change
+  I $inout != %inout 
+
+  $inout = 3                 
+  %inout = $inout            # output can change too
+  tmp2   = $inout
+  I %inout != $inout
+  I %inout == tmp2
+  %inout = 4
+  I $inout == 3 and %inout == 4
+
+
+f as stage
+f = ::
+  y as stage:       # error: no stage nesting declaration     #done
+    $out = $in + 1 
+
+  f1 as ::
+     f2 as ::
+       %out = $in + 1
+     = f2(in:$in2)
+     %out2 = out
+
+  a = f1(in2:3)               #done
+  I a.out2 == 4               #done
+
+add2 as stage
+add2 = ::
+  %out = $src1 + $src2
+
+dec as stage
+dec = ::
+  %out = $src - $decby
+
+pipe1 as pipe
+pipe1 = ::
+
+  a as add2
+  d as dec
+ 
+  a.src1 <- $src1
+  a.src2 <- $src2
+
+  d.decby <- 3  
+  d.src   <- a.out
+  $out    <- d.out
+
+mesh as pipe
+mesh = ::
+
+  # Instantiate network
+  for i:(0..$mesh_max):       #done
+    for j:(0..$mesh_max):       #done
+      r as router
+      c as core
+
+      id = i*$mesh_max + j    #done
+      # the receiving side should be a variable                 #done
+      c.id <- (id+0)
+      r.id <- id
+
+      error the receiving side should be a variable:            #done
+        (c.id + 4) <- id
+
+      r.in_core  <- c.out_net     #done
+      r.out_core -> c.in_net    #done
+
+      r[i][j] = r     #done
+      c[i][j] = c     #done
+
+  # Connect the network 
+  for i:(0..$mesh_max):                   #done
+    for j:0..$mesh_max):                #done
+      if i>0:
+        r[i-1][j].in_right  <- r[i][j].out_left
+      if j>0:
+        r[i][j-1].in_bottom <- r[i][j].out_top
+      if i<$mesh_max:
+        r[i+1][j].in_left   <- r[i][j].out_right
+      if j<$mesh_max:
+        r[i][j+1].in_top    <- r[i][j].out_bottom
+
+
+# UNIX-like directory to access out of named scope (in scope)
+
+stage1 as stage
+stage1 = ::
+
+  SYNC_STAT as __bits:10  # Configuration register
+
+  if ASYNC_STAT == 0:
+    ASYNC_STAT = ASYNC_STAT + 1
+    I ASYNC_STAT == 0 or ASYNC_STAT == 1  # It takes time to update
+
+  if SYNC_STAT == 0:
+    SYNC_STAT = SYNC_STAT + 1
+    I SYNC_STAT == 1 # Sync to stage1 because it is local, async to rest
+
+stage2 as stage
+stage2 = ::
+
+  if ASYNC_STAT == 1:
+    ASYNC_STAT = 0
+    I ASYNC_STAT == 0 or ASYNC_STAT == 1  # It takes time to update
+
+  if __parent/a.SYNC_STAT == 1:
+    __parent/a.SYNC_STAT = 0
+    # async to stage2 because it is not local
+    I __parent/a.SYNC_STAT == 0 or ../a.SYNC_STAT == 1
+  
+p as pipe
+p as ::
+  ASYNC_STAT as __bits:10 # Global Scope for stage1 and stage2
+
+  a as stage1
+  b a
+###
+conta = 1               #done
+for (1 2 3)::           #done
+  I $ == conta              
+  conta = conta + 1
+

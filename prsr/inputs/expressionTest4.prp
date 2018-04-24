@@ -1,0 +1,8 @@
+1*2 + 3
+error not symmetric spacing (operator precedence violated):
+ 1+2*3
+1+(2+3)
+
+1 - 2
++ 2*3+4
++ 2 + 3

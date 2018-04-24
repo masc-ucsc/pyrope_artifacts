@@ -1,0 +1,5 @@
+# bug4
+s2 = (a __stage:true)
+s1 = (a:sinc.($a), b:sinc.($b))
+%  = (sadd.(s1),__stage:true)
+s1 = (a:sinc.($a), b:sinc.($b), __stage:true)

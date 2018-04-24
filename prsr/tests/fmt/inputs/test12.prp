@@ -1,0 +1,11 @@
+#formatted pyrope file is
+
+a    = (1..2 by 4)
+b = (    1.. by 3
+)
+c = (
+..2 by 2)
+d = (.. by 1)
+
+
+I    a==1

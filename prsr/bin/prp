@@ -1,0 +1,11 @@
+#!/bin/bash
+
+SCRIPT=`realpath $0`
+export PRP_PATH=`dirname $SCRIPT`"/.."
+if [ -f "$1" -o "--stdin" ]; then
+  node $PRP_PATH/src/if_prp_parser.js $1
+else
+  echo "ERROR: prp needs a valid input file as command line argument"
+  exit 0
+fi
+

@@ -1,0 +1,12 @@
+#DONE
+a = 0xFFFF
+a = 0b101_001
+
+a = 0xFFs10
+
+#error not enough bits to encode the value:
+a = 0xFFs1
+
+
+
+

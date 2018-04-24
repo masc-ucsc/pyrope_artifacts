@@ -1,0 +1,9 @@
+#DONE
+
+if   a == 0b1_????; pos = 5
+elif a == 0b0_1???; pos = 4
+elif a == 0b0_01??; pos = 3
+elif a == 0b0_001?; pos = 2
+elif a == 0b0_0001; pos = 1
+else             ; pos = 0; end
+

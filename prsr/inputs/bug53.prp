@@ -1,0 +1,29 @@
+
+
+a = ::
+  if b
+    puts x
+  end
+end
+
+
+
+a = :: if b :: puts x end end
+a = :: if b :: puts x ; ; ; ; ;end  ; ; ; ;end ;; ; ; 
+
+a = :: if b :: puts x end end
+
+a = :: if b :: puts x end
+
+a = :: if b :: puts x
+
+a = ::
+  asd asd
+  asdasd
+end
+a = :: ; asd asd
+  asdasd
+end
+
+a = ::  asd asd asdasd
+

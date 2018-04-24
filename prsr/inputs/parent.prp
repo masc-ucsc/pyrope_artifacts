@@ -1,0 +1,50 @@
+
+a.data =1
+a._b.data = 2
+a._b._c.data = 3
+a._b._d.data = 4
+
+a.test = ::
+  I @data  == 0 # local to test, init to zero
+  I @@data == 1
+
+a._b.test = ::
+  I @data  == 0 # local to test, init to zero
+  I @@data == 2
+  I @@@data == 1
+
+  I __parent.data == 2
+  I __parent.__parent.data == 2
+
+a._b._c.test = ::
+  I @data  == 0 # local to test, init to zero
+  I @@data == 3
+  I @@@data == 2
+  I @@@@data == 1
+
+  I __parent.data == 3
+  I __parent.__parent.data == 2
+  I __parent.__parent.__parent.data == 1
+
+a._b._d.test = ::
+  I @data  == 0 # local to test, init to zero
+  I @@data == 4
+  I @@@data == 2
+  I @@@@data == 1
+
+  error can not mix @ with parent:
+    I @.__parent == 4
+
+  error can not mix @ with parent:
+    I __parent.@ == 4
+
+  I __parent.data == 4
+  I __parent.__parent.data == 2
+  I __parent.__parent.__parent.data == 1
+
+
+a.test
+a._b.test
+a._b._c.test
+a._b._d.test
+

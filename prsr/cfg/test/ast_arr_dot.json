@@ -1,0 +1,131 @@
+[
+   {
+      "start_pos": 0,
+      "end_pos": 6,
+      "type": "function_call",
+      "function": {
+         "type": "tuple_dot",
+         "dot_obj": {
+            "type": "tuple_array",
+            "arr_obj": {
+               "type": "identifier",
+               "value": "a"
+            },
+            "arr_idx": {
+               "type": "identifier",
+               "value": "b"
+            }
+         },
+         "dot_prop": {
+            "type": "identifier",
+            "value": "c"
+         }
+      },
+      "arguments": [
+         null
+      ],
+      "body": null
+   },
+   {
+      "start_pos": 7,
+      "end_pos": 13,
+      "type": "function_call",
+      "function": {
+         "type": "tuple_dot",
+         "dot_obj": {
+            "type": "identifier",
+            "value": "a"
+         },
+         "dot_prop": {
+            "type": "tuple_array",
+            "arr_obj": {
+               "type": "identifier",
+               "value": "b"
+            },
+            "arr_idx": {
+               "type": "identifier",
+               "value": "c"
+            }
+         }
+      },
+      "arguments": [
+         null
+      ],
+      "body": null
+   },
+   {
+      "start_pos": 14,
+      "end_pos": 20,
+      "type": "function_call",
+      "function": {
+         "type": "tuple_array",
+         "arr_obj": {
+            "type": "identifier",
+            "value": "x"
+         },
+         "arr_idx": {
+            "type": "tuple_dot",
+            "dot_obj": {
+               "type": "identifier",
+               "value": "y"
+            },
+            "dot_prop": {
+               "type": "identifier",
+               "value": "z"
+            }
+         }
+      },
+      "arguments": [
+         null
+      ],
+      "body": null
+   },
+   {
+      "start_pos": 0,
+      "end_pos": 14,
+      "type": "function_call",
+      "function": {
+         "type": "tuple_dot",
+         "dot_obj": {
+            "type": "tuple_dot",
+            "dot_obj": {
+               "type": "tuple_array",
+               "arr_obj": {
+                  "type": "identifier",
+                  "value": "a"
+               },
+               "arr_idx": {
+                  "type": "tuple_array",
+                  "arr_obj": {
+                     "type": "tuple_array",
+                     "arr_obj": {
+                        "type": "identifier",
+                        "value": "b"
+                     },
+                     "arr_idx": {
+                        "type": "identifier",
+                        "value": "c"
+                     }
+                  },
+                  "arr_idx": {
+                     "type": "identifier",
+                     "value": "d"
+                  }
+               }
+            },
+            "dot_prop": {
+               "type": "identifier",
+               "value": "x"
+            }
+         },
+         "dot_prop": {
+            "type": "number",
+            "value": "1"
+         }
+      },
+      "arguments": [
+         null
+      ],
+      "body": null
+   }
+]

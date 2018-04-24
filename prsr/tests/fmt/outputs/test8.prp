@@ -1,0 +1,11 @@
+#inputs to check while operation
+#while loop with only one statement in body
+while true {  tmp2 = ()}
+#while statement in a while statement
+while a > 1 {
+  I team == 11
+  while true {
+    j = 1
+    sum = t + 1
+  }
+}

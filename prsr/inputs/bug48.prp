@@ -1,0 +1,8 @@
+#DONE
+
+for (a:(0..15),b:(0..15),c:(0..3),::
+  puts(a,b,c)
+  puts a
+end)
+
+

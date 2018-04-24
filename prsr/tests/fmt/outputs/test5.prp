@@ -1,0 +1,4 @@
+#inputs to check assertion statements
+I f == 3
+I a == (1 2 3 4)
+I a == 5

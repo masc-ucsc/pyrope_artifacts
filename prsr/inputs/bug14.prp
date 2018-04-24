@@ -1,0 +1,22 @@
+#DONE
+
+
+a = 1
+b = 1
+#WORKS WITH PROPER "(", ")"(needs precedence brackets)  I a == b == 1
+
+#(works with proper precedence bracket) a = a <= b <= c
+a = a == b
+
+a._hid1 = 4
+#I a == b == 1
+I (a._hid1 == 4)
+b.__att1 = true
+I (a == b)  # compile time error, no matching attribute fields (att1)
+a.__att1 = false
+I (a == b)  # OK, same fields no check on values in fields
+
+c.field = 1
+c.field2 = 3
+I (a != c and a == c.field)
+

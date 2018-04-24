@@ -1,0 +1,214 @@
+[
+   {
+      "start_pos": 0,
+      "end_pos": 8,
+      "type": "assignment_expression",
+      "operator": "=",
+      "left": {
+         "type": "identifier",
+         "value": "x"
+      },
+      "right": {
+         "type": "bit_select",
+         "bit_obj": {
+            "type": "identifier",
+            "value": "a"
+         },
+         "bit_sel": {
+            "type": "number",
+            "value": "1"
+         }
+      }
+   },
+   {
+      "start_pos": 9,
+      "end_pos": 24,
+      "type": "assignment_expression",
+      "operator": "=",
+      "left": {
+         "type": "identifier",
+         "value": "y"
+      },
+      "right": {
+         "type": "bit_select",
+         "bit_obj": {
+            "type": "bit_select",
+            "bit_obj": {
+               "type": "identifier",
+               "value": "b"
+            },
+            "bit_sel": {
+               "type": "number",
+               "value": "1"
+            }
+         },
+         "bit_sel": {
+            "type": "identifier",
+            "value": "c"
+         }
+      }
+   },
+   {
+      "start_pos": 25,
+      "end_pos": 43,
+      "type": "assignment_expression",
+      "operator": "=",
+      "left": {
+         "type": "identifier",
+         "value": "z"
+      },
+      "right": {
+         "type": "bit_select",
+         "bit_obj": {
+            "type": "identifier",
+            "value": "a"
+         },
+         "bit_sel": {
+            "type": "bit_select",
+            "bit_obj": {
+               "type": "tuple_array",
+               "arr_obj": {
+                  "type": "identifier",
+                  "value": "x"
+               },
+               "arr_idx": {
+                  "type": "number",
+                  "value": "1"
+               }
+            },
+            "bit_sel": {
+               "type": "number",
+               "value": "2"
+            }
+         }
+      }
+   },
+   {
+      "start_pos": 44,
+      "end_pos": 59,
+      "type": "assignment_expression",
+      "operator": "=",
+      "left": {
+         "type": "identifier",
+         "value": "foo"
+      },
+      "right": {
+         "type": "bit_select",
+         "bit_obj": {
+            "type": "tuple_array",
+            "arr_obj": {
+               "type": "identifier",
+               "value": "x"
+            },
+            "arr_idx": {
+               "type": "number",
+               "value": "1"
+            }
+         },
+         "bit_sel": {
+            "type": "identifier",
+            "value": "y"
+         }
+      }
+   },
+   {
+      "start_pos": 0,
+      "end_pos": 9,
+      "type": "assignment_expression",
+      "operator": "=",
+      "left": {
+         "type": "identifier",
+         "value": "a"
+      },
+      "right": {
+         "type": "bit_select",
+         "bit_obj": {
+            "type": "identifier",
+            "value": "b"
+         },
+         "bit_sel": null
+      }
+   },
+   {
+      "start_pos": 10,
+      "end_pos": 24,
+      "type": "assignment_expression",
+      "operator": "=",
+      "left": {
+         "type": "identifier",
+         "value": "x"
+      },
+      "right": {
+         "type": "bit_select",
+         "bit_obj": {
+            "type": "bit_select",
+            "bit_obj": {
+               "type": "identifier",
+               "value": "y"
+            },
+            "bit_sel": null
+         },
+         "bit_sel": {
+            "type": "number",
+            "value": "1"
+         }
+      }
+   },
+   {
+      "start_pos": 0,
+      "end_pos": 14,
+      "type": "assignment_expression",
+      "operator": "=",
+      "left": {
+         "type": "identifier",
+         "value": "abc"
+      },
+      "right": {
+         "type": "bit_select",
+         "bit_obj": {
+            "type": "range",
+            "u_bound": {
+               "type": "identifier",
+               "value": "x"
+            },
+            "l_bound": {
+               "type": "identifier",
+               "value": "y"
+            }
+         },
+         "bit_sel": null
+      }
+   },
+   {
+      "start_pos": 0,
+      "end_pos": 14,
+      "type": "assignment_expression",
+      "operator": "=",
+      "left": {
+         "type": "identifier",
+         "value": "a"
+      },
+      "right": {
+         "type": "bit_select",
+         "bit_obj": {
+            "type": "binary_expression",
+            "operator": {
+               "type": "arithmetic_operator",
+               "operation": "+"
+            },
+            "left": {
+               "type": "number",
+               "value": "1"
+            },
+            "right": {
+               "type": "number",
+               "value": "2"
+            }
+         },
+         "bit_sel": {
+            "type": "identifier",
+            "value": "x"
+         }
+      }
+   }
+]

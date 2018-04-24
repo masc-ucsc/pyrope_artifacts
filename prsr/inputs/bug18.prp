@@ -1,0 +1,47 @@
+#DONE
+#
+puts = 3   # puts is not reserved keyword
+C if true:
+C    puts "a"
+  end
+end
+  end
+
+C if true:
+  end
+    puts "a"
+  end
+
+if true:
+  puts "a"
+end
+
+I (a == 3)
+C a = b; end
+a.__final = true
+b.__final = true
+
+
+funcall :: 
+  a = 3
+end
+
+funcall :: a = 3; end
+
+ C      a = 3
+  end
+
+I (a == 3)
+
+funcall (a==3)
+
+I a
+
+myputs ("a" ++ a)
+
+myputs = :((a:, b:, c:1)) when a>3:
+  puts $a
+  puts $b
+end
+
+  

@@ -1,0 +1,21 @@
+#DONE fully
+
+yield as ::
+  _parent._read = ::
+    _parent._read  # Previous code
+    if _parent.yield_block != ():
+      goto _parent.yield_block
+
+  if not _parent.yield_set:         #not -> ! (doubt)
+    _parent._write = ::
+      _parent._write
+      _parent.yield_lock = () # Ended fine
+      _parent.yield_exit::
+        # Nothing, just a label
+
+  _parent.yield_block = self
+  goto _parent.yield_exit
+
+################################
+
+

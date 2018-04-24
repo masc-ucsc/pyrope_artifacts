@@ -1,0 +1,9 @@
+#DONE
+if a
+  if b
+    c = 1
+end
+else # allow blank and comments anytime
+  c = 2
+end
+

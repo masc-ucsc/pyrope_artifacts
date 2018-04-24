@@ -1,0 +1,31 @@
+a= (a:3, b:2)
+I (a.a == 3 and a.b == 2)
+
+b= (4,true)
+I (b.0 == 4 and b.1 == true)
+
+c = (true,2)
+I (c.b == true and (b.c._attr.bits == 3 and b.c == 2))
+
+d = (1,2)
+d[1]= 3
+I (d == (1,3))
+
+e.field1 as bits:2
+e = 3
+I (e.field1 == 3 and e == 3)
+e.f2 = 4
+I ((e == (3,4) and e.field1 == 3) and e.field2 == 4)
+
+
+
+
+#c as (b:Bool, c.bits:3)   #DOUBT - <property>:<value> -- property can only be a plain identifier - no constants
+#no dot notation or array notation or ranges or any other notation allowed
+
+
+a.b = 1
+a.b as 1
+a = (b:1)
+a as (b:1)
+

@@ -1,0 +1,18 @@
+#DONE
+a{4..} = 3
+
+for( a:(1..),::
+  puts a
+  end)
+
+b = a{1..} # Drop the lower bit from a
+
+b = a{1..(a.__bits-1)} # Same but long
+
+
+a = (1,2)
+I (a[..] == a)
+
+b = 123
+I (b{..} == 123)
+

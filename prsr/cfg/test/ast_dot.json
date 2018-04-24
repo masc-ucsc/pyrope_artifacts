@@ -1,0 +1,138 @@
+[
+   {
+      "start_pos": 0,
+      "end_pos": 3,
+      "type": "function_call",
+      "function": {
+         "type": "tuple_dot",
+         "dot_obj": {
+            "type": "identifier",
+            "value": "a"
+         },
+         "dot_prop": {
+            "type": "identifier",
+            "value": "b"
+         }
+      },
+      "arguments": [
+         null
+      ],
+      "body": null
+   },
+   {
+      "start_pos": 4,
+      "end_pos": 9,
+      "type": "function_call",
+      "function": {
+         "type": "tuple_dot",
+         "dot_obj": {
+            "type": "tuple_dot",
+            "dot_obj": {
+               "type": "identifier",
+               "value": "x"
+            },
+            "dot_prop": {
+               "type": "identifier",
+               "value": "y"
+            }
+         },
+         "dot_prop": {
+            "type": "identifier",
+            "value": "z"
+         }
+      },
+      "arguments": [
+         null
+      ],
+      "body": null
+   },
+   {
+      "start_pos": 10,
+      "end_pos": 22,
+      "type": "assignment_expression",
+      "operator": "=",
+      "left": {
+         "type": "identifier",
+         "value": "a"
+      },
+      "right": {
+         "type": "binary_expression",
+         "operator": {
+            "type": "arithmetic_operator",
+            "operation": "+"
+         },
+         "left": {
+            "type": "tuple_dot",
+            "dot_obj": {
+               "type": "tuple_dot",
+               "dot_obj": {
+                  "type": "identifier",
+                  "value": "b"
+               },
+               "dot_prop": {
+                  "type": "identifier",
+                  "value": "c"
+               }
+            },
+            "dot_prop": {
+               "type": "identifier",
+               "value": "d"
+            }
+         },
+         "right": {
+            "type": "number",
+            "value": "1"
+         }
+      }
+   },
+   {
+      "start_pos": 0,
+      "end_pos": 17,
+      "type": "assignment_expression",
+      "operator": "=",
+      "left": {
+         "type": "identifier",
+         "value": "x"
+      },
+      "right": {
+         "type": "binary_expression",
+         "operator": {
+            "type": "arithmetic_operator",
+            "operation": "+"
+         },
+         "left": {
+            "type": "tuple_dot",
+            "dot_obj": {
+               "type": "identifier",
+               "value": "a"
+            },
+            "dot_prop": {
+               "type": "identifier",
+               "value": "b"
+            }
+         },
+         "right": {
+            "type": "binary_expression",
+            "operator": {
+               "type": "arithmetic_operator",
+               "operation": "*"
+            },
+            "left": {
+               "type": "identifier",
+               "value": "c"
+            },
+            "right": {
+               "type": "tuple_dot",
+               "dot_obj": {
+                  "type": "identifier",
+                  "value": "d"
+               },
+               "dot_prop": {
+                  "type": "number",
+                  "value": "3"
+               }
+            }
+         }
+      }
+   }
+]

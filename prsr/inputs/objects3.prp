@@ -1,0 +1,89 @@
+
+cstage = stage
+
+
+a = (b:1 c:2 d:3) #done
+
+b = __bits:1    #done
+a as b      #done
+I a is __bits:1   #done
+
+#done
+
+# Same as doing nothing. redefine and call the old method == nothing new
+foo.bar = ::
+  bar(.&*)
+
+#done
+cstage.__init = ::
+  __init $  # parent/older init     #Done
+
+  __parent.each::
+    if $.__input:
+      $.__read = :: # Overload read
+        I __parent.__id == __id
+        __parent.__parent.cread[__id] = true
+        return __read($)  # Still not overwritten read
+    else:
+      $.__write = :: # Overload write
+        __parent.__parent.cwrite[__id] = true
+        __write $ # Call older method
+
+
+#done
+cstage.__read = ::
+  puts "Beginning cycle"
+
+  $.each::
+    __parent.cread[$.__id] = false
+
+  %.each::
+    __parent.cwrite[$.__id] = false
+
+
+#done
+cstage.__write = ::
+  puts "End of cycle"
+
+  # Put retry code here
+
+# Another better way
+cstage.__write = cstage.__write ++ ::     #DOUBT
+  puts "End of cycle"
+
+  # Put retry code here
+
+
+#done
+# Even cleaner, but the same
+cstage.__write ++= ::     
+  puts "End of cycle"
+
+#done
+potato.__init = ::
+  I true
+
+error redundant C in __init statements:
+  potato.__init = ::
+    I true
+    C I true
+    I 1!=2
+
+#done
+a = ::
+  puts "a"
+
+#done
+b = ::
+  put "b"
+
+#done
+c = a ++ b
+
+c # prubts a amd b
+
+#done
+a = (1 2)
+#done
+a ++= (3 4)
+

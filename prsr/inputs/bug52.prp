@@ -1,0 +1,85 @@
+
+a = 3 + x
+
+a = 3 + d
+
+if true
+end
+
+
+# Nicer if we can
+
+a = (b,c   ,d   ,  d)
+
+foo (a:(1..3), b:4) ::
+  puts a # aasda
+# asdas
+  # asd
+###
+  potato
+asd asd asd 
+###
+end
+
+
+a =
+::
+  puts a
+end
+
+s1 = a
+ or b
+ or c and c
+
+s2 = a
+ or (b)
+ or (c and c)
+
+foo 3+5
+
+foo a b
+
+I s1 == s2
+
+a = a 
+  or a and f
+
+a = a
+   or b
+   and b
+
+a = 3*3+2
+
+a = 3 + (
+3
+)
+
+a = 3 + a{
+3
+}
+
+a = 3 + a[ 
+3 
+]
+
+
+# OK
+a = 3
+  + v
+  + 23
+  + (3
+     * 3
+     * 3
+  )
+
+# NOK
+a = 3
+  + v
+  + 23
+  * (3
+* 3
++ 3
+)
+
+
+

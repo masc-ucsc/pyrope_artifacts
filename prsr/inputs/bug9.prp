@@ -1,0 +1,8 @@
+#DONE
+
+a = b.3
+a = b._foo
+a = b.__foo
+
+a = b.__def  # No reserved keyword
+

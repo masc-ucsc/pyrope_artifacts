@@ -1,0 +1,5 @@
+#DONE
+# stage is just a variable, not a reserved keyword
+f1 as stage
+
+f2 as pipe

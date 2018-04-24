@@ -1,0 +1,5 @@
+#!/bin/bash
+
+dir="$(pwd)"
+#rm $dir/data/prplearn.json
+node $dir/src/ifPrpLearn.js

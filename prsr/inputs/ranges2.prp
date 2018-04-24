@@ -1,0 +1,18 @@
+
+  numbers = (1...10)      #done
+
+  start  = numbers[0..2]  #done
+  middle = numbers[3...-2]  #done
+  end    = numbers[-2..]  #done
+  copy   = numbers[..]  #done
+
+  I start  == (1 2 3)   #done
+  I middle == (4 5 6 7)   #done
+  I end    == (8 9)           #done
+  I copy   == (1 2 3 4 5 6 7 8 9) #done
+
+
+  numbers[3..6] = (-3 -4 -5 -6) #done
+
+  I numbers == (1 2 -3 -4 -5 -6 7 8 9)  #done
+

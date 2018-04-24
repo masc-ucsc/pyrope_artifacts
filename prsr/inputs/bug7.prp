@@ -1,0 +1,22 @@
+#DONE
+puts "Hello"
+
+
+
+a = 1 ++ 2
+I (a == (1, 2))
+
+
+puts(1, 2)
+puts (1, 2)
+puts (   1,     2     )
+puts (   1  ,  2     )
+
+puts (a ++ "foo" ++ 3 ++ "")
+
+puts ("There too" ++ "More text")
+
+puts (1 ++ 2)
+
+puts (a + 3)
+

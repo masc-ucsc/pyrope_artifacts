@@ -1,0 +1,6 @@
+#DONE
+# @ means local register in Pyrope
+@varia += 3
+
+a = b + @rola
+

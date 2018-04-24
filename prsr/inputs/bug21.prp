@@ -1,0 +1,17 @@
+#DONE
+
+if a; b = c; end
+
+if a; b = c ; c = 1
+  end
+
+if a==1; b = c; c = 1; end
+
+if a; b = c  ;c = 1
+  end
+
+if a      ; b = c;c = 1
+;  end
+
+
+

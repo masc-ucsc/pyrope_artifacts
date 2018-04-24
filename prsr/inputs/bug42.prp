@@ -1,0 +1,13 @@
+#DONE
+
+add2 as ::
+  return $[0]
+end
+
+add2 as ::
+  return $[0] 
+end
+
+add2 as ::
+  return (a+b)
+  end

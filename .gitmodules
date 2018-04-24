@@ -1,0 +1,3 @@
+[submodule "subs/inotify-cpp"]
+	path = subs/inotify-cpp
+	url = https://github.com/erikzenker/inotify-cpp.git

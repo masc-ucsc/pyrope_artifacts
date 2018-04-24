@@ -1,0 +1,21 @@
+
+#a = 3 + + x
+
+#a = 3x + d
+
+if
+end
+
+3 = a
+
+
+# Nicer if we can
+
+a = (b,c   ,d   ,  d)
+
+foo (a:(1..3), b:4) ::
+  puts a
+end
+
+
+

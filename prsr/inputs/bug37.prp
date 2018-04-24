@@ -1,0 +1,6 @@
+#DONE
+a as potato
+
+a = ::
+  @conta += 1
+end

@@ -1,0 +1,15 @@
+#DONE
+
+#passing a block to "for" function
+
+#old syntax
+#for (i:(1,2,3),j:(1,7,5),k:(0,1,2,3,-4))::
+#  c[i][j] += a[i][k] * b[k][j]
+#end
+
+#new_syntax
+for (i:(1,2,3),j:(1,7,5),k:(0,1,2,3,-4) , ::
+  c[i][j] += a[i][k] * b[k][j]
+end)
+
+

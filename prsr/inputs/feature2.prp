@@ -1,0 +1,22 @@
+
+var = ::
+  return a
+
+var ++= ::
+  return a
+
+var as ::
+  return a
+
+error Unclear operation with a variable and a tuple. You may be wanting to use ++= instead:
+  var --= ::
+    return a
+
+error Unclear operation with a variable and a tuple. You may be wanting to use ++= instead:
+  var *= ::
+    return a
+
+error Unclear operation with a variable and a tuple. You may be wanting to use ++= instead:
+  var -= ::
+    return a
+

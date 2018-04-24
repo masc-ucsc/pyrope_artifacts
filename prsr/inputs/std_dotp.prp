@@ -1,0 +1,12 @@
+
+dotp as :(op a b):{
+  CI op is def
+  CI a.__size == b.__size
+  tmp = ()
+  for p:a {
+   tmp[p.__index] = p * b[p.__index]
+  }
+  return tmp
+}
+
+

@@ -1,0 +1,72 @@
+
+
+a = true  #done
+
+if a:     #done
+  b = 1
+
+val = 1   #done
+sum = 1   #done
+if b==1::
+  %sum = 1+2
+  val = 3
+
+I sum == 3    #done
+I val == 1    #done
+
+
+if true:when false:
+  puts "never executed"
+else:
+  puts "never executed either"
+
+
+#DOUBT#
+if b==1:(val:):  # Restrict input scope variables
+  %out = $
+
+I out == 1
+
+f1 as :(a:, b:):    #done
+  I $ is (.a .b)
+  %sum = 2000 + $a + $b
+
+f1 as :(a:,b:,c:):  #done
+  I $ is (.a .b .c)
+  %sum = 3000 + $a + $b + $c
+
+f1 as :(a:):    #done
+  %sum = 1000 + $a 
+
+f1 as :.a when $.a > 100: #done
+  %sum = 11000 + $a 
+
+f1 as ::            #done
+  %sum = 4000 + $a + $b + $c
+
+#done
+a = 1
+b = 2
+c = 3
+
+s = f1(a:100)   #done
+I s.sum == 1100
+
+s = f1(a:100)   #done
+I s.sum == 1100
+
+:(a:,b:):                   #done
+  s = f1
+  I s.sum == 2003
+
+:(a:):            #done
+  s = f1
+  I s.sum == 1001
+
+s = f1    #done
+I s.sum == 4006  # s is also an input
+
+s = f(a:200)      #done
+I s.sum == 11200
+
+

@@ -1,0 +1,12 @@
+
+a = 3 + + x
+
+a = 3x + d
+
+if
+end
+
+for a:(1..3) ::
+  puts a
+end
+

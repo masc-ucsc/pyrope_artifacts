@@ -1,0 +1,69 @@
+1+2*3
+error not symmetric spacing:
+ 1 + 2*3
+1 + 2 * 3 + (1+(2 * 3)+2*(2/3))
+error missing paranthesis ')' or incomplete arithemetic expression:
+ 1 + 2 * 3 + (1+(2 * 3+2*(2/3))
+1 ++ 3
+a ++ (b -- 3)
+error tuple operations requires space between operator and operands:
+ 1++ 3
+0b1001
+error invalid binary:
+ 0b0100120
+0b0101_001
+error invalid binary:
+ 0b3100101
+0b0
+error invalid number:
+ 02b01001
+0x100
+error invalid hexadecimal:
+ 0x1K
+a = a:"abcd"
+a = 123
+a.1 = (b:1, c:2, d:(a:1, b:"xyz", c:(a:1, x:2+3+c)))
+xyz as (a as __bits:1, _ as bool)
+ab = (123
+     456
+     false
+     1 + 2 * 3)
+1+2*3
+a[1] = a:12
+a = (1, 2, 3)
+b = (4 5 666)
+a = "tha"
+b.1 = (a:123)
+"abc" ++ "xyz"
+a = (abcd a:123 b:123 3 4 1112233 -11 abc)
+a = a:1 b c d:123
+1 + 2 + 0x11
+1+0b01
+a[1] = 123
+ass.x as __bits:2
+1
+++ 3 ** 4
+++ 33
+++ (1 2)
+++ (1 ++ 2)
+123
+x as set:true
+foo["bar"] = "brick"
+a+b+2
+((a + b) + c * 2)
+x = a:1*2
+a + b + 1
+aa = (1 3) ** x ++ (1 3 2)
+a+b+1
+xyz = ((1 + 2) * 3)
+x = a + 1 + 2 + c
+x = (x -- (2 ++ "go"))
+xyz = (1 2)
+++ 3 ** 4
+++ (2 3)
+++ 111
+123
+x = a+b
+x[(_, 2, "Abc")] = (21, 1)
+if true:
+    a = 1

@@ -1,0 +1,12 @@
+#DONE
+|+| as ::
+  tmp = 0
+  $.each::
+    tmp += $0
+  return tmp
+end
+end
+
+#error do you mean .+. which is needed to overload single element operator:
+#  + as ::
+#    return a

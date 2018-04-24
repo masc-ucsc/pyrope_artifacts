@@ -1,0 +1,514 @@
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=1
+b=2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=1
+b=2
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=1
+b=2
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=1
+b=2
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=1
+b=2
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=1
+b=2
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=1
+b=2
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=1
+b=2
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=1
+b=2
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=1
+b=2
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=1
+b=2
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=1
+b=2
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=1
+b=2
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=1
+b=2
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=1
+b=2
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=1
+b=2
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=1
+b=2
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=1
+b=2
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=1
+b=2
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=1
+b=2
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=2*(3 + 4)
+I (..4) == (0..4)                                   #done
+I (3..) intersect (1..5) == (3..5)              #done
+I (..) intersect (1..2) == (1..2)               #done
+I (..4) union (2..3) == (..4)                   #done
+a = 1..                     #done
+b = (c:1 d:3)               #done
+c = a ++ b                  #done
+I c == (1,2,3,4,5,c:1,d:3)  #done
+a=1
+b=2
+
+
+
+
+
+
+

@@ -1,0 +1,26 @@
+
+error Did you mean ++=?:
+  a ++ = 3
+
+error Did you mean ++=?:
+  a +== 3+4
+
+error ++ operator is not supported, did you mean +=1?:
+  a++
+
+error -- operator is not supported, did you mean -=1?:
+  a--
+
+error && is not supported, did you mean 'and'?:
+  a && b
+
+error || is not supported, did you mean 'or'?:
+  a || b
+
+
+error semicolon is not valid in Pyrope:
+  a = 1;
+
+error semicolon is not valid in Pyrope:
+  a = 1+b ;
+

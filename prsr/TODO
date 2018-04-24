@@ -1,0 +1,40 @@
+
+prpfmt:
+
+-Change to body: (elem.body) to true_case/false_case
+
+ rename to tbody fbody
+
+-move data/prplearn.json to cfg/prplearn.json, remove data directory afterwards
+
+-Add comments directive
+
+# prpfmt ignore
+ do not format, following statement
+
+# prpfmt ignore {
+do not format this statements
+# prpfmt }
+
+------------------
+
+
+-remove to/until from ranges
+
+-Clean directory (old pegjs) rename tupleParser to pyrope_parser.pegjs
+
+  (try not to have camelcase, use _)
+
+-Do not repeat error twice line in " error: error indentati..."
+
+-prp stages.prp
+
+-add option to prp (--error) to skip error statements. Effectively calling:
+
+  ../bin/prpreg0 --stdout file.prp | ../bin/prp
+
+-Have something (package.json) to support "bundle install" (bundler.io)
+
+-"as" does not support foo as a=3
+
+-"as" does not have bool/const/... as reserved keyworkd

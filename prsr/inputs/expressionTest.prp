@@ -1,0 +1,6 @@
+2 + (3*4)
+error missing open paranthesis
+ 2+3*4)
+9 * 9
+error missing closing paranthesis or incomplete expression
+ 1+(2*3

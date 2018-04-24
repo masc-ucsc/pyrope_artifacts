@@ -1,0 +1,50 @@
+
+
+foo + bar + exp
+
+foo
++ bar*3
++ oo
+
+error multiple line expressions need operator at the beginning of the line
+  foo +
+  bar +
+  oo
+
+  foo
++ bar
++ too
+
+foo
+ + bar
+ + too
+
+33 + 444
++ 52
+
+33 + 444
+   + 52
+
+33 + 444
+  + 52
+
+error multiple line expression should have same operator
+  a + 3
+* 2 + 4
++ 3 + 4
+
+# OK to have space (no priority) if the *,/... leads the expression in a multiple line expression
+  a + 3
+* 2 + 4
+* 3 + 4
+
+error multiple line expression need space after first operator because of the implicit parenthesis
+  a + 3
+ *2 + 4
+ *3
+
+error multiple line expression should have same operator
+  a 
+* 2 
+/ 3 
+

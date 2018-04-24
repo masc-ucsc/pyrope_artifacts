@@ -1,0 +1,181 @@
+[
+   {
+      "start_pos": 0,
+      "end_pos": 7,
+      "type": "assignment_expression",
+      "operator": "=",
+      "left": {
+         "type": "identifier",
+         "value": "x"
+      },
+      "right": {
+         "type": "binary_expression",
+         "operator": {
+            "type": "arithmetic_operator",
+            "value": "*"
+         },
+         "left": {
+            "type": "number",
+            "value": "1"
+         },
+         "right": {
+            "type": "number",
+            "value": "2"
+         }
+      }
+   },
+   {
+      "start_pos": 8,
+      "end_pos": 13,
+      "type": "assignment_expression",
+      "operator": "=",
+      "left": {
+         "type": "identifier",
+         "value": "y"
+      },
+      "right": {
+         "type": "number",
+         "value": "1"
+      }
+   },
+   {
+      "start_pos": 0,
+      "end_pos": 9,
+      "type": "assignment_expression",
+      "operator": "=",
+      "left": {
+         "type": "identifier",
+         "value": "z"
+      },
+      "right": {
+         "type": "binary_expression",
+         "operator": {
+            "type": "arithmetic_operator",
+            "value": "+"
+         },
+         "left": {
+            "type": "number",
+            "value": "1"
+         },
+         "right": {
+            "type": "binary_expression",
+            "operator": {
+               "type": "arithmetic_operator",
+               "value": "*"
+            },
+            "left": {
+               "type": "number",
+               "value": "2"
+            },
+            "right": {
+               "type": "number",
+               "value": "3"
+            }
+         }
+      }
+   },
+   {
+      "start_pos": 0,
+      "end_pos": 9,
+      "type": "assignment_expression",
+      "operator": "=",
+      "left": {
+         "type": "identifier",
+         "value": "p"
+      },
+      "right": {
+         "type": "binary_expression",
+         "operator": {
+            "type": "arithmetic_operator",
+            "value": "+"
+         },
+         "left": {
+            "type": "binary_expression",
+            "operator": {
+               "type": "arithmetic_operator",
+               "value": "*"
+            },
+            "left": {
+               "type": "number",
+               "value": "1"
+            },
+            "right": {
+               "type": "number",
+               "value": "2"
+            }
+         },
+         "right": {
+            "type": "number",
+            "value": "3"
+         }
+      }
+   },
+   {
+      "start_pos": 10,
+      "end_pos": 19,
+      "type": "assignment_expression",
+      "operator": "=",
+      "left": {
+         "type": "identifier",
+         "value": "q"
+      },
+      "right": {
+         "type": "binary_expression",
+         "operator": {
+            "type": "arithmetic_operator",
+            "value": "+"
+         },
+         "left": {
+            "type": "binary_expression",
+            "operator": {
+               "type": "arithmetic_operator",
+               "value": "+"
+            },
+            "left": {
+               "type": "number",
+               "value": "1"
+            },
+            "right": {
+               "type": "number",
+               "value": "2"
+            }
+         },
+         "right": {
+            "type": "number",
+            "value": "3"
+         }
+      }
+   },
+   {
+      "start_pos": 0,
+      "end_pos": 11,
+      "type": "assignment_expression",
+      "operator": "=",
+      "left": {
+         "type": "identifier",
+         "value": "a"
+      },
+      "right": {
+         "type": "binary_expression",
+         "operator": {
+            "type": "arithmetic_operator",
+            "value": "+"
+         },
+         "left": {
+            "type": "tuple_array",
+            "arr_obj": {
+               "type": "identifier",
+               "value": "/b"
+            },
+            "arr_idx": {
+               "type": "number",
+               "value": "0d1"
+            }
+         },
+         "right": {
+            "type": "number",
+            "value": "0d2"
+         }
+      }
+   }
+]

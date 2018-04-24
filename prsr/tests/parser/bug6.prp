@@ -1,0 +1,2 @@
+#This should parse right too
+x = 3 ; ++ 4 -- 3   # OK, 3 ++ (4 -- 3)

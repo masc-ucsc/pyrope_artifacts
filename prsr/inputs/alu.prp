@@ -1,0 +1,46 @@
+alu as ::
+#  ($a $b %result) as bits:4
+#  $fn             as bits:2
+
+  if $fn == 0:
+    %result := $a + $b  # := explicit drop bits if overflow
+  elif $fn == 1:
+    %result := $a - $b
+  elif $fn == 2:
+    %result = $a | $b
+  elif $fn == 3:
+    %result = $a & $b
+  else:
+    %result = 0
+
+scenario.alu.setup as ::
+  self.tst1 as alu
+  puts "Testing the ALU"
+
+scenario.alu.test ++= ::
+  for a:(0..15) b:(0..15) c:(0..3):
+
+    if op == 0:
+      res := a + b
+    elif op == 1:
+      res := a - b
+    elif op == 2:
+      res = a | b
+    elif op == 3:
+      res = a & b
+    else:
+      res = 0
+
+    self.tst1.a = a
+    self.tst1.b = b
+    self.tst1.fn = op
+
+    clock()
+
+    I self.tst1.result == res
+
+# scenario calls
+# alu method
+# for each alu.test
+#   alu.setup method if exists
+#   alu.test method

@@ -1,0 +1,15 @@
+
+foo + bar
+
+error undefined operator
+  a*+3
+
+error undefined operator
+  a***3
+
+error missing value or incorrect operator
+  a + + 3
+
+error missing value or incorrect operator
+  a * * 3
+

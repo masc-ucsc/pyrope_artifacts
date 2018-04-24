@@ -1,0 +1,45 @@
+#done fully excepts DOUBT(S):wq
+
+
+t = ()
+for a:(1..10)::       #DOUBT "::" or ":" for for loops
+  if a < 3:
+    next        #DOUBT
+  t ++= a
+I t == (1 2)
+
+a = 1
+t = ()
+for a:(1..10)::
+  if a == 3:
+    last            #DOUBT
+  t ++= a
+I t == (1 2 3)
+I a == 1
+
+t = ()
+for (1..10)::
+  if $ == 3:
+    last
+  t ++= $0
+I t == (1 2 3)
+
+t = ()
+for 1..10::
+  if $ == 3:
+    last
+  t ++= $0
+I t == (1 2 3)
+
+t = ()
+for 1 to 5::
+  t ++= $0
+I t == (1 2 3 4 5)
+
+a = 1
+t = ()
+for a:1 to 5:
+  t ++= a
+I t == (1 2 3 4 5)
+I a == 1
+

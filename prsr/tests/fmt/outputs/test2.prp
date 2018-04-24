@@ -1,0 +1,7 @@
+#inputs to check binary operation
+a = 1 + 2
+b = 3 - 8
+c = d * (2 + 3 + 4)
+z = x or y
+p = a >> 2
+k = 1 + 2 + 4 + 5 + 6 + ((7 - 8) * 6)

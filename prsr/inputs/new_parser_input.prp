@@ -1,0 +1,2536 @@
+return x.(1 2)
+x = y
+foo a b
+foo a
+foo.(a) |> foo a
+a=1
+foo bar ::{
+ 3
+}
+if a{  a=1
+
+
+  }
+a = foo a |> f 2 4 |> f 1
+bar.(a,::{
+a=1
+if a{} })
+a =foo.(2 3) |> bar.(3,::{$0+1}) |> lala.(3,5,::{
+if a{
+ return a+$b
+}
+bar 1 2
+  })
+a = foo 3 3 |> f 2 3 |> f 1
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+foo.(a) |> foo a
+a=1
+foo bar ::{
+ 3
+}
+if a{  a=1
+
+
+  }
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+
+
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = a[ a b ]
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2
+x = foo a
+x = ::{a=1
+a=2}
+else{a=1}
+a= x[[1]]
+for x:1::{
+a=1
+};a=2
+a=1
+if x::{a=1;a=2
+x=1
+y=2
+}  
+  elif x::{
+}else{ 
+  a=1; 
+  b=2
+};
+
+  a=1
+foo x y
+a=2
+a = 1
+
+   ; a=2;;
+
+
+ a=3; b=2

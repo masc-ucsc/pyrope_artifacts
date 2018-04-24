@@ -1,0 +1,69 @@
+
+if true:
+  a = 1 + 3
+
+error missing indentation after if statement:
+  if 3:
+  a = 3
+
+
+if 3:
+  a = 3
+else:
+  a = 4
+
+error missing statement in if condition:
+  if 3:
+  else:
+    a = 4
+  
+error missing indentation after else statement:
+  if 3:
+    a = 4
+  else:
+  a = 4
+
+if 3:
+  a = 4
+elif 3:
+  a = 4
+
+error missing indentation after elif statement:
+  if 3:
+    a = 4
+  elif 3:
+  a = 4
+
+error illegal double colon:
+  if 3::
+    a = 3
+
+error Illegal spaces after :
+  if 3:     
+    a = 3
+
+if true: a = 3 ; b = 3 ; else: c = 3 ; d = 2
+if true: a = 3    ;          b = 3 ; else: c = 3 ; d = 2
+
+error: missing space between semicolons in single line statement:
+  if true: a = 3;b = 3 ; else: c = 3 ; d = 2
+
+error can not have multiple and single line statements simultaneously:
+  if true: a = 3 ;
+    b = 2
+
+if true: a = 3 ; b = 2 
+elif 3: a = 5
+else: v = 3 ; d = 2
+
+error can not have multiple and single line statements simultaneously:
+  if true: a = 3 ; b = 2 
+  else: v = 3 ; 
+    d = 2
+
+error can not have multiple and single line statements simultaneously:
+  if true: a = 3 ; b = 2 
+  else:
+    v = 3 
+    d = 2
+

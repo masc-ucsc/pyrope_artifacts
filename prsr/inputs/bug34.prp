@@ -1,0 +1,27 @@
+#DONE
+
+fun ++= ::
+  return 3
+end
+
+fun ++= 3
+
+#fun --= 3  #error "--" is not tuple operator
+
+a = ()
+a ++= 1
+I (a == 1)
+a ++= 2
+I (a == (1, 2))
+a ++= 2
+I (a == (1, 2))
+
+#error not allowed to remove code blocks, -- not supported for code blocks:
+#  fun --= ::
+#    return 3
+#end
+
+#error not allowed to remove code blocks, ** not supported for code blocks:
+#  fun **= ::
+#    return 3
+

@@ -1,0 +1,14 @@
+#DONE
+
+a = 1
+
+b = 2
+# if error
+if a
+  # Nothing here
+else
+  # NMother there
+end
+c = 1
+
+

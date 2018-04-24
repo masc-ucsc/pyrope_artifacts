@@ -1,0 +1,8 @@
+  #DONE
+b.a as bits:3                   # tuple is !final, unordered, named
+b.b as bits:2
+
+a = (a:1,b:1)
+b = (a:1,b:1)
+I (a == b)
+a.a = 0b101

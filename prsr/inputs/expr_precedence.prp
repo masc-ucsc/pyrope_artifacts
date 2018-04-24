@@ -1,0 +1,100 @@
+
+1 + 3           #done
+
+1+3             #done
+
+2 * 3           #done
+
+2*3             #done
+
+# When two different precendence levels are used, spaces re-inforce the precendence information
+
+error add spaces to clarify operator precedence:
+  1+2*3           #done
+
+1 + 2*3           #done
+
+error multiplication has higher precedence than addition, must have less spaces:
+  1+2 * 3             #done
+
+error not symmetric spacing:
+  1+ 3*3            #done
+
+error not symmetric spacing:
+  1 +2            #done
+
+error not symmetric spacing:
+  1 + 2* 3        #done
+
+# binary operators
+
+1 + 2           #done
+1 + 2  # addition but different bit sign calculation
+
+1 - 3               #done
+1-3
+
+1<<3        #done
+1>>3        #done
+
+error not symmetric spacing:
+  1<< 3       #done
+
+# FIXME: 1 sra 3
+
+1 <<< 3 # rotate        #done
+2>>>4                     #done
+
+# Two operations with the same level precendence can not be used unless parenthesis is used
+error not boolean:
+  3 or 4
+error not boolean:
+  4 and 5
+
+4 to 3
+
+true or false and potato
+
+error ambiguous operation, use parenthesis:
+  2<<4>>2                                                 #done
+  
+2<<(4>>2)     #done
+(2<<4)>>2     #done
+
+error add spaces to clarify operator precedence:
+  2<<4+5      #done
+
+2<<4 + 5      #done
+
+
+# Tupple operators need space
+
+1 ++ 3        #done
+
+error tuple operators need spaces:
+  1++3        #done
+
+1 -- 3    #done
+
+2 ** 3    #done
+
+2 in 4    #done
+
+6 by 4    #done
+
+
+
+# Words can be
+#
+# Variables
+#
+# Binary operators: and or to upto in by 
+#
+# Unary operators called with parenthesis: foo(3) bar(a 4)
+#
+# All variable expressions have same 4 level precendence, new binary operators can be defined at runtime
+
+
+
+
+

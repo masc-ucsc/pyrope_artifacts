@@ -1,0 +1,95 @@
+[
+   {
+      "start_pos": 0,
+      "end_pos": 8,
+      "type": "assignment_expression",
+      "operator": "=",
+      "left": {
+         "type": "identifier",
+         "value": "a"
+      },
+      "right": {
+         "type": "range",
+         "u_bound": {
+            "type": "identifier",
+            "value": "b"
+         },
+         "l_bound": {
+            "type": "identifier",
+            "value": "c"
+         }
+      }
+   },
+   {
+      "start_pos": 0,
+      "end_pos": 8,
+      "type": "assignment_expression",
+      "operator": "=",
+      "left": {
+         "type": "identifier",
+         "value": "x"
+      },
+      "right": {
+         "type": "range",
+         "u_bound": {
+            "type": "number",
+            "value": "1"
+         },
+         "l_bound": {
+            "type": "number",
+            "value": "2"
+         }
+      }
+   },
+   {
+      "start_pos": 9,
+      "end_pos": 15,
+      "type": "assignment_expression",
+      "operator": "=",
+      "left": {
+         "type": "identifier",
+         "value": "y"
+      },
+      "right": {
+         "type": "range",
+         "u_bound": null,
+         "l_bound": null
+      }
+   },
+   {
+      "start_pos": 16,
+      "end_pos": 23,
+      "type": "assignment_expression",
+      "operator": "=",
+      "left": {
+         "type": "identifier",
+         "value": "z"
+      },
+      "right": {
+         "type": "range",
+         "u_bound": {
+            "type": "number",
+            "value": "1"
+         },
+         "l_bound": null
+      }
+   },
+   {
+      "start_pos": 24,
+      "end_pos": 31,
+      "type": "assignment_expression",
+      "operator": "=",
+      "left": {
+         "type": "identifier",
+         "value": "a"
+      },
+      "right": {
+         "type": "range",
+         "u_bound": null,
+         "l_bound": {
+            "type": "identifier",
+            "value": "x"
+         }
+      }
+   }
+]

@@ -1,0 +1,12 @@
+#DONE
+
+a = 0xFFs10
+
+a = 3 - 2
+a = 3 - -2
+
+#error invalid space between sign and constant:
+#a = 3 - - 2
+a= 3+2
+
+

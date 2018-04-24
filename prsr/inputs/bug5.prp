@@ -1,0 +1,12 @@
+#DONE
+var ++= ::
+  asd()
+end
+a()
+a ()  # Legal function call
+a()
+a()
+  # Also legal
+a(v:1)
+
+

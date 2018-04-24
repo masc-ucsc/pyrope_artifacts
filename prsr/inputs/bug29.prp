@@ -1,0 +1,4 @@
+#DONE
+a=123
+#123  # No direct call without a = or a := or fcall
+

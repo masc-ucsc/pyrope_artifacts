@@ -1,0 +1,10 @@
+opt3_2stages = ::{
+  s1.a = sinc.($a)
+  s1.b = sinc.($b)
+  % = sadd.(a:s1.a b:s1.b)
+  (s1 %) as __stage:true
+}
+opt4_2stages = ::{
+  s1 = (a:sinc.($a), b:sinc.($b)) __stage:true
+  %  = sadd.(s1) __stage:true
+}

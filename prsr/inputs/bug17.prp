@@ -1,0 +1,10 @@
+#DONE
+
+a = 10
+C N (a < 3); end  # N (xxx) is the same as I !(xxx)
+c = 3
+C I (a>=3)
+  end
+I (a>=3)
+N (a<3)
+

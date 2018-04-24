@@ -1,0 +1,61 @@
+#done
+vec.__init = ::
+  _parent.data = ()
+
+#done
+vec.length.__write = ::
+  for 0..$:
+    __parent.data = __parent.data ++ 0
+
+#done
+vec.bits.__write = ::
+  b = $
+  __parent.data.each:
+    $ as __bits:n
+    I $ is __bits:n
+    I $.__bits == n
+
+#done
+vec.__index_read = ::
+  I $ < __parent.data.__nelems      #DOUBT
+  return __parent.data[$]
+
+#done
+vec.__index_write = ::
+  I addr < __parent.data.__nelems     #DOUBT
+  addr = $0
+  data = $1
+  __parent.data[addr] = data
+
+
+sram = vec
+
+# Everything the same but read last flop value (1 cycle delay)
+#done
+sram.__index_read ::                        
+  I $ < __parent.data.__nelems      #DOUBT
+  return __parent.data.__flop[$]
+
+
+#done
+f as stage::
+
+  a as vec
+
+  a as length:16 # Resizes vector
+  a.bits = 3
+  a.bits = 4  # Resets bits again as can be only once
+  a = bits:3  # same as before (different from __bits:3)
+
+  for 0..15::             #DOUBT
+    a[$] = $ #done
+
+  I a[3] == 3 #done
+
+  b as sram __bits:3 length:16  #done
+
+  for 0..15::     #DOUBT
+    b[$] = $  #done
+
+  I b[3] == 0 # next cycle is 3 #done
+

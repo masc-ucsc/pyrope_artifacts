@@ -1,0 +1,26 @@
+{
+  "name": "LivePyrope",
+  "version": "0.1.0",
+  "description": "Pyrope Parsing Infrastructure",
+  "main": "prp",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "commander": "^2.11.0",
+    "pegjs-backtrace": "^0.1.1",
+    "prettier": "^1.5.3",
+    "underscore": "^1.8.3"
+  },
+  "scripts": {
+    "test": "ava"
+  },
+  "devDependencies": {
+    "ava": "^0.21.0"
+  },
+  "ava": {
+    "files": [
+      "tests/*.js",
+      "!**/not-this-file.js"
+    ],
+    "failFast": true
+  }
+}

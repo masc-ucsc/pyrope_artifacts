@@ -1,0 +1,49 @@
+#!/usr/bin/env node
+
+/**
+ * parse options
+ */
+
+var program = require("commander");
+
+program
+  .version("0.1.0")
+  .usage("[options] [file]")
+  .option("--write", "Format the file in-place. (Beware!)")
+  .option("-o, --output [file]", "formatted file output")
+  .parse(process.argv);
+
+var path = require("path");
+var fs = require("fs");
+
+var input_file_name = "/dev/stdin";
+
+if (program.args.length > 0) {
+  input_file_name = program.args[0];
+
+  if (!fs.existsSync(input_file_name)) {
+    console.log("input file name %s not found", input_file_name);
+    process.exit(-1);
+  }
+}
+var data = fs.readFileSync(input_file_name).toString();
+
+var prp_path = path.join(path.dirname(__filename), "..");
+
+var prp = require(path.join(prp_path, "src/prpfmt.js"));
+
+result = prp.prpfmt(prp_path, input_file_name, data);
+
+var output_file_fd = process.stdout.fd;
+if (program.output != undefined) {
+  output_file_fd = fs.openSync(program.output, "w", 0644);
+}else if (program.write && program.args.length > 0) {
+  output_file_fd = fs.openSync(program.args[0], "w", 0644);
+}
+
+fs.writeSync(output_file_fd, result, function(err) {
+  if (err) {
+    return console.error(err);
+  }
+});
+

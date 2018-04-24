@@ -1,0 +1,18 @@
+cla == :(a b) when a.__bits==8:{           # specialize cla when bits == 8
+  s1 = cla a[[0..3]] b[[0..3]] cin:0       # cla for 4 bits
+  s2 = cla a[[4..7]] b[[4..7]] cin:s1.cout # pass fast s1.cout as cin
+  $sum = (s2.sum s1.sum)[[]]               # bit concatenation
+}
+cla == :(a b) when a.__bits==12:{          # specialize cla when bits == 12
+  s1 = cla a[[0...6]] b[[0...6]] cin:0     # ... vs .. ranges like in Ruby
+  s2 = cla a[[6..11]] b[[6..11]] cin:s1.cout
+  $sum = (s2.sum s1.sum)[[]]
+}
+cla == :(a b):{                            # default CLA (not CLA, just RCA)
+  $sum = rca.(a b cin:0).sum
+}
+test = ::{
+  s = cla 3 5
+  I s.sum == 8
+}
+

@@ -1,0 +1,84 @@
+
+
+a = :(b,c,d):
+  %sum = $a + $b + $c
+end
+
+a = :(b c d):
+  %sum = $a + $b + $c
+end
+
+square = :(a):
+ % = $a.a  * $a.b
+end
+
+a = square.(a:3, b:4)
+a = square a:3 b:4
+
+asdas.(asda asd asd )  # explicit
+  foo a b c # implicit
+foo a b c # implicit
+
+   = foo a b c # implicit
+
+# both a1 and a2 are fcalls with arguments b and c
+a1 b c ; a2 b c
+
+a.b.c a b
+
+w = a b.(c d) == a.(b.(c,d))
+
+puts a.v.d a a
+
+puts a b c + 1 # error
+puts a,b, c+1  # OK
+puts.(a,b,c+1) # OK
+
+
+a = b.(c,d,
+  e,f,g)
+
+
+# Argument list finish at new line, comparator (==, !=, <=...) or pipe operator (|>)
+
+
+###############################
+
+A
+a = f3.(f2.(f1.(a)))
+a = f |> f1 |> f2 |> f3
+
+
+a = f |> f1.(1, 3) |> f2 1 3 |> f3
+
+
+###############################
+
+if a ++ b ++ c != ()
+  puts a
+end
+
+if a + b - c > 0  # OK
+  puts a
+end
+
+if a and b or c # compile error
+  puts a
+end
+if a
+   and b or c # OK
+  puts a
+end
+
+if a and
+   b or c # compile error
+  puts a
+end
+
+if a
+   and b
+   or c # compile error
+  puts a
+end
+
+

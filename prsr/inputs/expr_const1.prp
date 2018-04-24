@@ -1,0 +1,33 @@
+
+# Legal comment
+
+0xFF
+
+error invalid hexadecimal:
+  0xGF
+
+0b1101_0011
+
+error invalid binary:
+  0b1211
+
+0xFs16 # 16 bit signed number
+0x3s12 # 12 bit signed number
+
+0x3u12 # 12 bit unsigned number
+
+0b1111_0000u8 # 8 bit unsigned nunber
+
+123
+
+123u8 # unsigned 8 bit number 123 in decimal
+
+error constant requires more bits than assigned:
+  0x123u8
+
+error constant requires more bits than assigned:
+  123u3
+
+error constants can not have zero bits:
+  2u0
+

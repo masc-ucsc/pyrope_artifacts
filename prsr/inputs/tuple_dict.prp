@@ -1,0 +1,39 @@
+
+r = (1 2 3 4)                           #done
+r[1] = 3 # Similar to arrays            #done
+I r == (1 3 3 4)
+
+s.id1 as __bits:3               #done
+s.id2 as __bits:2               #done
+
+r as __set:true
+I r == (1 3 4)
+
+s = (1, 2)                #done
+I r == (1 3 4)
+r = r ++ s                #done
+I r == (1 2 3 4)
+s = (2, 2)                #done
+r = r ++ s                #done
+I r == (1 2 3 4)
+s = (1, 2)                #done
+r = r ++ s                #done
+I r == (1 2 3 4)
+
+r2[(3,3)] = (1,3,4)     #done
+r2[(2,2)] = (4,4,5)      #done
+
+I r2[(3,3)] == (1 3 4)
+
+
+myvar[("potato", "good")] = 1       #done
+myvar[("potato", "bad")] = 0        #done
+myvar[("petrol", "bad")] = 1        #done
+myvar[(_,_)] = 0                    #done
+
+I myvar[("potato","good")] == 1
+I myvar[("petrol","good")] == 0 # default clause
+
+
+foo["bar"] = "hello"        #done
+

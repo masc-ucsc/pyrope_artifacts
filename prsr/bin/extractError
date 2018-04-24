@@ -1,0 +1,11 @@
+#!/bin/bash
+
+dir="$(pwd)"
+if [ -f "$1" ]
+  then
+    sed -n "/error.*/p" $1 > $dir/data/errorLog
+  else
+    echo "ERROR: extractError needs a valid input file as command line argument"
+    exit 0
+fi
+

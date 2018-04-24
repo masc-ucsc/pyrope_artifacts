@@ -1,0 +1,5 @@
+      #DONE
+if   a1>3 and a2<4; c=1
+elif a1>0         ; c=2
+else              ; c=3
+  end

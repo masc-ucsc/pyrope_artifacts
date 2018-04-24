@@ -1,0 +1,395 @@
+
+
+
+fun1 as ::    #done
+  puts "Hello"
+
+# as def stage pipe for if else case when by to until 
+
+
+fun2 = ::     #done
+  return 2
+
+I fun2() == 2   #done
+
+fun2 = ::   #done
+  return 3
+
+I fun2() == 3   #done
+
+
+nfun1 as 3      #done
+
+nfun2 = 3   #done
+nfun2 = 5 #done
+
+
+add2 as ::    #done
+  return %[0] + %[1]
+
+res = add2(1 3 5)     #done
+I res == 4
+
+
+myfun as ::   #done
+  I % == (a:1 b:2 c:3)
+  I %0 == a:1 == 1
+  I %1 == b:2 == 2
+  I %2 == c:3 == 3 == %[2] == %.2
+
+  tot = %               #done
+  tot = tot + 1           #done
+
+  I tot.a == 2 and tot.b == 3 and tot.c == 4
+
+  $ = tot           #done
+
+
+out = myfun(a:1 b:2 c:3)    #done
+I out.a == 2
+I out.b == 3
+I out.c == 4
+
+addall as ::  #done
+  tmp = 0
+  %.each::
+    tmp += %0
+  return tmp
+
+a = addall(1 2 3 4)         #done
+I a==10
+a = addall(1 2)               #done
+I a==3
+I (1 2 3).addall == 6       #done
+I addall(1 2 3) == 6    #done
+I (1 2).addall(3) == 6    #done
+I (1).addall(2 3) == 6    #done
+
+a = add()             #done
+I a == 0
+a = add  # If empty tuple, legal to omit ()       #done
+I a == 0
+
+a = &add  # Reference to method, do not call it       #done
+b = a(3 2)    #done
+I b == 5
+
+adda_b as ::        #done
+  return %a + %b
+
+a = 3   #done 
+b = 4   #done
+
+tmp = adda_b()    #done
+I tmp == 7
+
+b = 5           #done
+tmp = adda_b    #done
+I tmp == 8
+
+
+adda_b_toc as ::    #done
+  $c = %a + %b
+
+c = 1     #done
+a = 3   #done
+b = 4   #done
+= adda_b_toc()    #done
+I c == 7    #done
+a = 5 #done
+tmp2 = adda_b_toc()     #done
+a = 4     #done
+I tmp2 == 9 and tmp2.c == 9   #done
+I c == 7      #done
+
+foo.bar = 3     #done
+I foo.bar == 3  #done
+I foo == 3  #done
+foo.too = 4 #done
+I foo != 3  #done
+
+#####
+# 
+bar = (a:1 b:2)   #done
+I bar.a == 1 and bar.b == 2       #done
+= (a:1 b:2)           #done
+I a == 1 and b == 2   #done
+
+error unnamed tables can not be assigned to current variable scope:
+  = (1 2)       #done
+
+error unnamed tables can not be assigned to current variable scope:
+  = 1       #done
+
+error unnamed tables can not be assigned to current variable scope:
+  = (a:1 3)     #done
+
+
+a = 1
+fun3 as ::    #done
+  return %a
+I fun3() == 1
+a = 3
+I fun3() == 3
+I fun3 == 3
+
+a as ::           #done
+  if $a == 1:
+    return 0
+
+potato:         #done
+  if $a == 1:
+    return 0
+
+foo=potato(&a)  # Same as the previous potato call      #done
+
+potato(1 3):      #done
+  if $a == 1:
+    return 0
+
+foo=potato(1 3 &a)  # Same as the previous potato call    #done
+
+
+#done
+sub1 as ::
+  $.each::
+    tmp = tmp ++ ($0 - 1)
+  return tmp
+
+
+###################
+
+#done
+sub1 as ::
+  tmp = (1 2)
+  tmp = ()
+  %.each::
+    tmp = tmp ++ (%0 - 1)
+  return tmp
+
+add1 as ::              #done
+  %.each::
+    tmp = tmp ++ (%0 + 1)
+  return tmp
+
+map2 as ::
+  return $0($(1..))
+
+a = map2(&sub1 3 1)     #done
+I a == (2 0)          #done
+a = map2(&add1 3 1)     #done
+I a == (4 2)      #done
+
+a = add1          #done
+I a.__bits == 0   #done
+
+a = (&sub1 3 1).map2      #done
+I a == map2(&sub1 3 1)    #done
+
+a = (3 1).map2(&sub1).map2(&add1)   #done
+I a == [3 1]
+
+fun1 = ::         #done
+ res.fun2 = ::
+  puts "inside"
+ return $
+
+fun2 = ::
+ puts "outside"
+ return $
+
+(1 2 3).fun1.fun2() # UNIX pipe cat (1 2 3) | fun1 | fun2     #done and  #DOUBT as well "()" added
+#prints "inside"
+(1 2 3).fun2 # UNIX pipe cat (1 2 3) | fun1 | fun2    #done
+#prints "outside"
+
+(1 2).fun2(3 4).fun2(1 2 3 4)   #done
+
+a = (4 5 1).map2(:: %0 - 1).map2(: %0 + 2)     #done
+I a == [5 6 2]
+
+Or alternatively:
+
+a = (4 5 1).map2:   #Done
+  %0 - 1
+
+a = a.map2:     #Done
+  I true
+  %0 + 2
+
+fun(1 2)              #done
+(1).fun(2)
+(1 2).fun
+
+# Exactly the same    
+fun(1, :: puts $)     #done
+(1, :: puts $).fun
+1.fun(:: puts $)
+1.fun ::
+  puts $
+
+###################
+
+#done
+check as ::   
+  I %.0 == 1
+  I %.1 == 2
+  I %.2 == 3
+
+check(1 2 3)      #done
+(2 3).check(1)    #done
+(3).check(1 2)    #done
+(1 2 3).check   #done
+
+#done
+a.fun as ::
+  return 1
+
+#done
+fun as ::
+  return 2
+
+I a.fun == 1        #done
+I fun == 2        #done
+I a.fun.fun == 2    #done
+
+#######################
+# Operators overload
+
+#done
++ = ::          
+  tmp = 0
+  $.each::
+    tmp += $0
+  return tmp
+
+
+# .foo. means that foo is a method that can be used as "element" operator
+#done
+.myxor. as __assoc:true
+.myxor. as ::
+  tmp = 0
+  $.each::
+    tmp = tmp * $0
+  return tmp
+
+I myxor(1 3) == myxor(3 1) == (3).myxor(1) == (1).myxor(3) == (1 3).myxror == (3 1).myxor
+
+I (1 .myxor. 3 .myxor. 5) + 3       #done 
+
+I 1 .myxor. (3+4)     #done
+I 1 .myxor. (3 + 4) #done
+
+#done
+I (1 2 ) ..mytuple_op.. 3
+I (1 2 ) .myelem_op. 3
+
+# alphanum operators need space (in .op. by ...), non alphanumeric is optional (++ --...)
+
+I 3 ++ 4 == (3 4)  # ++ is a tuple operator         #done
+I 4 + 5 == 9       # + is an element operator         #done
+
+error parenthesis needed for same precedence operators:
+  I true or false and true                                #done
+  
+error parenthesis needed for same precedence operators: 
+  I 1 .myxor. 3 .myxor. 5 + 3                      
+
+#done
+..myjoin.. as ::
+  tmp = ()
+  $.each::
+    tmp = tmp ++ $
+  return tmp
+
+I (1 3) ++ 4 == (1 3) ..myjoin.. 4 == myjoin(1 3 4)
+
+
+#done
++ = ::
+ # My custom add
+
+
+#done
+^^^ = ::
+  # my custom operator
+
+#All the operators are also functions. But all the functions are not operators
+# all non-alphanum functions are operators
+
+a = +(1 2 3)
+b = (1)+(2 3)       #Done // need "." to use function (refer example in line 90)
+c =  1 + (2 3)      #Done
+d = 1 + 2 + 3
+e = (1 2) + 3
+I a == b == c == d == e
+
+# Creating the each function
+
+#done
+each as ::
+  fun = %0
+  I fun is def
+  for a:%(1..):
+    fun(%)
+
+#done
+(1 3 4).each::
+  puts %
+
+a as ::
+  puts %
+each(&a 1 2 3)  #Done  //function call without any assignment to a variable
+
+# Overload
+
+::
+  puts "hello"
+
+:(a: b:): # restrict inputs
+  puts "hello"
+
+:when condition: #Execute only if condition true
+  puts "hello"
+
+:(a:, c:, d:) when condition: #restrict inputs and Execute only if condition true
+  puts "hello"
+
+error a block must have at least one statement:
+  ::
+
+
+add as :when %0>0 && %1>0:   #Done // use "if" before the "def" rather than "when" // is "def" still valid??
+  return %0 + %1
+
+#done
+add as ::
+  %0 + %1 + 100
+
+#done
+add as :when false: # Never called
+  I false
+  %0 + %1 + 100
+
+
+#done
+a = add(3 4)
+b = add(-1 0)
+
+#done
+I a == 7
+I b == 99
+
+
++ as def equivalent:MY_ID2: #DOUBT
+  # RCA
+  return %0 + %1
+
++ as def equivalent:MY_ID2: #DOUBT
+  # CSA
+  return %0 + %1
+
+
+
+
+

@@ -1,0 +1,14 @@
+#done
+
+each as ::
+  fun = $0
+  I fun.__def
+  for a:$1..)::     #DOUBT
+    fun($)
+
+
+map as ::
+  $0($(1..))
+
+# I (1 2 3).map(:: $0+1) ==(2 3 4)      #DOUBT
+

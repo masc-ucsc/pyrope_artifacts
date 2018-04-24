@@ -1,0 +1,24 @@
+#DONE
+
+#ALL BUGS FIXED
+
+a  = 3
+I (a == 3)    # compile pass 
+I (a != 3)    # compile error if code is instantiated
+I (a > val)   # compile check if possible, run-time otherwise
+C I (a > val) # compile check or error for not being able to check
+end
+C I true;end #blankspace/blankline issue FIXED
+
+I false     # always compile time error
+if val < 4
+  I false  # run-time time check. Same as I val >= 4
+end
+if val > 3
+  I (val > 5)    # run-time check
+else
+  I ($in == 2) # No check because $in is invalid in this case
+b as bits:3
+I (b <2)       # compile warning, b could have just 2 bits, not 3
+end
+

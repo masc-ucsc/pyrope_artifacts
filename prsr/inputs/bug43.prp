@@ -1,0 +1,73 @@
+#DONE
+#
+sub1 as ::
+  $.each ::
+    tmp = tmp ++ ($0 - 1)
+  end
+  return tmp
+end
+
+add1 as ::
+  $.each::
+    tmp = tmp ++ ($0 + 1)
+  return tmp
+  end
+end
+
+a = map2(&sub1, 3, 1)
+I (a == (2, 0))
+a = map2(&add1, 3, 1)
+I (a == (4, 2))
+
+a = add1
+I (a._attr.bits == 0)
+I (a.bits == 0)
+
+a as ::
+  if $a == 1
+    return 0
+   end
+end
+
+a = 1..-3
+
+poao::
+  if $a == 1
+    return 0; end
+end
+
+poao(&a)  # Same as the previous poao call
+
+poao(1, 3,::
+  if $a == 1
+    end
+    return 0
+end)
+
+poao(1, 3, &a)  # Same as the previous poao call
+
+map2 as ::
+  return ($0($[1..]))
+end
+
+poao as ::
+  $[-1]($[0..-2])  #-1 is last 0..-1 is the same as 0..
+end
+
+a = ::
+  puts "a"
+end
+
+foo = ::
+  puts "c"
+  if $0 is def; $0(); end
+end
+
+foo &a  # prints c and then a
+foo a  # prints a and then c
+
+
+
+
+
+

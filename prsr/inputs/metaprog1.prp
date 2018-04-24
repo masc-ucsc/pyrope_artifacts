@@ -1,0 +1,66 @@
+
+
+a = 3     #done
+b.b = 3 #done
+b.c = 3 #done
+c = 3 #done
+
+c._foo = 4  #done
+
+I a == c # No hidden fields in comparison
+
+a as potato:1 #done
+
+error No matching type fields:    #done
+  I a != c
+  I a == c
+
+I a{} == c{}  #done
+
+
+#done
+I a is potato:1 
+N b is potato:1 
+I a is potato
+
+#done
+b as potato:0
+I b is .potato  # Notice the dot checking the field
+
+# as sets a value in the attribute table
+# has checks that a value property has a value in the attribute table
+# is checks that the objects have same fields in attribute table (not value field or nelems)
+
+
+a.b = 1
+a[b:] = 1     #DOUBT
+
+
+#done
+get_field = :(var:, field:):
+  I field is string
+  return var[string]
+
+
+
+a.f1 = 1        #done
+I get_field(a 'f1') == 1                           #done
+I a.get_field('f1') == 1                           #done
+I a.get_field(f1:) == 1  # Label is a single word string         #done
+
+############################
+# Assertions and meta-programming
+
+a.__read ++= ::       #Done
+  __parent += 1  # Read changes the value       #done
+
+#done
+a = 1
+I a == 1
+b = a + 1
+I a == 2
+
+#done
+I (a+3) == 5  # Notice no change in "a" value
+I (a+3) == 5 
+

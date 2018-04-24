@@ -1,0 +1,265 @@
+
+
+error Access without assignment:
+  a
+
+error Access without assignment:
+  2 + 2
+
+a=3                     #done
+
+a = ("potato","bar")    #done
+a = ('potato','bar')    #done
+
+I true            #done
+
+a = 3             #done
+I a == 3    # compile pass                                    #done
+I a != 3    # compile error if code is instantiated           #done
+I a > val   # compile check if possible, runtime otherwise    #done
+C I a > val # compile check or error for not being able to check
+
+error only boolean expressions in assertions:
+  I 2+3                                             #done
+
+I false     # always compile time error             #done
+if val < 4:                                             #done
+  I false  # runtime time check. Same as I val >= 4     #done
+
+if val > 3:                           #done
+  I val > 5    # runtime check          #done
+else:                                 #done
+  I $in == 2 # No check because $in is invalid in this case
+
+I true
+  or false
+
+C a = 3       #done
+C I = 3       #done
+
+C:                #done
+  a = 3
+  b = 4
+
+# I boolean_expression [string tuple for error]
+C I a>=3 'unexpected a=' ++ a ++ ' with c=' ++ c
+
+a = 10            #done
+puts 'a=' ++ a
+C N a<3
+c = 3                 #done
+I a>=3                #done
+N a<3
+
+
+if a is const: # checks if a has type const                   #done
+  puts "a was const"                                          #done
+
+I a is __bits:3  # checks if a has __bits:3 type                #done
+
+C I a>3                 #done
+C a
+I a>3                   # Same as CI because is const               #done
+
+I b>3 and b is const  # Same as CI, explicit check                      #done
+C I (b>3 and b)         # Same as CI, explicit check              #done
+
+C if a>3:               # compile time if                        #done 
+  b = 3
+
+C a = 3                 #done
+C b = a + c             # b,a,c must be const                 #done
+I (b,a,c) is const                                  #done
+
+error is only checks variable types:
+  I 3 is __bits:2                           #done
+
+a as (potato:3, __max:3, bar:4)   #done
+a as potato:3 __max:3 bar:4       #done
+a as __bits:3 __max:4               #done
+
+bits = 3                                    #done
+
+error as is a reserved keyword:
+  as = 3          #done
+
+error for is a reserved keyword:
+  for = 3         #done
+
+error if is a reserved keyword:
+  if = 3            #done
+
+a  = 3            #done
+a := 3   #done
+a= 3    #done
+a:= 3   #done
+a=3     #done
+a:=3    #done
+a   =3  #done
+a :=3   #done
+
+
+# Typecast comparison
+I 1 :!= 3 or d :== g            #done
+I a :<= 4 and b :< c and c:> e  #done
+I a :>= c                       #done
+
+
+# Bit selection {} vs tuple selection []
+
+a = 5               #done
+I a{0} == 1     #done
+I a{1} == 0     #done
+I a{2} == 1     #done
+
+odd  = 0              #done
+even = 0              #done
+for a:(1 2 3):    #done
+  if a{0} != 0:   #done
+    odd  += a   #done
+  else:           #done
+    even += a     #done
+
+b.a = (1,3,4)                           #done
+for b: # same as for a:(1 2 3)  #done
+  if a{0} != 0:
+    off += a
+  else
+    even += a
+
+if odd == 1:              #done
+  puts "one odd"
+elif even == 1:
+  puts "one even"
+else:
+  puts "otherwise"
+
+# Compact matrix multiply                             #done
+for i:(1,2,3),j:(1,7,5),k:(0,1,2,3,-4):
+  c[i][j] += a[i][k] * b[k][j]
+
+# Same as the 3 nested                      #done
+for i:(1,2,3):
+  for j:(1,7,5):
+    for k:(0,1,2,3,-4):
+      c[i][j] += a[i][k] * b[k][j]
+
+
+conta = 0                                                             #done
+for (a:(b:1 c:(3 4)), d:5):                 #done
+  I d == 5
+  if conta == 0:
+    I a == 1
+    I a.b == 1
+  else:
+    I a == (3 4)
+    I a.c == (3 4)
+  conta = conta + 1
+
+conta = 0
+for (d:(5 6), a:(b:1 c:(3 4))):           #done
+  I d == 5 or d == 6
+  if conta == 0:
+    I a == 1
+    I a.b == 1
+  else:
+    I a == (3 4)
+    I a.c == (3 4)
+  conta = conta + 1
+  if conta == 2:
+    conta = 0
+conta = 0
+
+# Same as this
+for d:(5 6):                        #done
+  for a:(b:1 c:(3 4)):
+    I d == 5 or d == 6
+    if conta == 0:
+      I a == 1
+      I a.b == 1
+    else:
+      I a == (3 4)
+      I a.c == (3 4)
+    conta = conta + 1
+    if conta == 2:
+      conta = 0
+
+for a:(1 2 3):                #done
+  puts a
+
+# for loop does not need to have a label
+niters = 0
+for (1 2 3):                  #done
+  niters = niters + 1
+I niters == 3
+
+
+for a:1:                #done
+  puts a
+
+for (a:1):                  #done
+  I a==1
+
+b = 1
+for (a:1..3):     #done
+  I b == 1
+  puts a
+  b = 2
+I b == 2
+
+for (a:1..3)::    #done
+  b = 0
+  puts a
+I b == 1
+
+error for without index need a new scope:
+  for 1..3:
+    I $<4
+
+for 1..3::        #done
+  I $ in (1 2 3)
+
+a = 1   #done
+b = 2   #done
+::            #done
+  I a: in $
+  I b: in $
+  I $.b == 2
+  I $.a == 1
+
+:(a:):        #done
+  I a: == $
+  I $.a == 1
+
+for (a:1..3):   #done
+  puts a
+
+if   a1>3 and a2<4: c=1
+elif a1>0         : c=2
+lse               : c=3
+
+a = 1         #done
+b = 1             #done
+
+if   (a b) ==  (1 _): puts "a is 1, b is whatever"
+elif (a b) ==  (_ 2): puts "b is 2, a is whatever"
+else:
+  puts "the rest"
+
+if (a b) ==  (1 ?): puts "a is 1, b is whatever"
+elif (a b) ==  (? 2): puts "b is 2, a is whatever"
+elif (a b) ==  (_ _): puts "the rest"
+else: I false
+
+if true: puts "it was true"                   #done
+if false: puts "Never here" ++ "really"       #done
+
+error single statement after double colon:
+  if true: a = 3 c =4                             #done
+
+if true: a = 3; c =4                                        
+
+error space required after semicolon for multiple line statements:
+  if true: a = 3;c =4                               #done
+
+

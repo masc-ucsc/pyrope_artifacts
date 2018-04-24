@@ -1,0 +1,33 @@
+
+#
+# as fixes the values in the attributes
+# attribute fields can be changed with assignments too but they allow change
+#
+
+
+
+
+#doubt
+#MyBoolean.__bool = true       #done
+
+MyBoolean.__bits = 3  #done
+
+foo as bool:true  #done
+bar.__bool = true #done
+
+foo = true    #done
+bar = true  #done
+
+I foo == bar  #done
+
+#done
+foo.__bool = false # compile error: bool was fix as true
+bar.__bool = false # ok
+
+#done
+a = 3
+a.__notsure = true
+
+#done
+I a != 3
+

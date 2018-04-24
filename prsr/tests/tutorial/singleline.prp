@@ -1,0 +1,17 @@
+if true { x = 3 }        # OK
+if true {
+x = 3 }                  # OK
+#if true
+#{ x = 3 }               # parse error, no newline
+if true ::{ puts __parent.x} # new scope in block
+if true { puts x }       # OK too
+if true ::{ a = 3 ; puts a }
+# parse error, no space between :: {
+#if true :: {puts false}
+c = 0
+d = 0
+if false ::{ c = 1 ; d = 2 }
+I d == 0 and c == 0      # :: is a new scope
+for a:(1..3) {puts a}
+I a == 3                 # compile error
+# ; is same as a newline

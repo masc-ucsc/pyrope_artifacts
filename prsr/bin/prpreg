@@ -1,0 +1,10 @@
+#!/bin/bash
+
+dir="$(pwd)"
+if [ -f "$1" ]
+  then
+    node $dir/src/if_prp_prpreg.js $1
+  else
+    echo "ERROR: prpreg needs a valid input file as command line argument"
+    exit 0
+fi

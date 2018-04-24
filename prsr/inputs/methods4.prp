@@ -1,0 +1,17 @@
+
+# Pipe (like boost C++) and UNIX syntax support
+
+sub = ::
+  $0 - $1
+
+a = sub(1 2)
+b = 2.sub(1)
+c = (1 2).sub
+
+I a == b == c
+
+d = 2 | sub(1)
+e = (1 2) | sub
+
+I a == d == e
+

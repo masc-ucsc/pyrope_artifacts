@@ -1,0 +1,29 @@
+
+
+a = (1 2)   #done
+b = 1   #done
+
+a ++= b     #done
+I a == (1 2 1)  #done
+
+
+#doubt
+#error destination of asigment must be a single variable:
+#  (a b) = (1 2)
+  # unclear is a == (1 2) and b == () ;or a = 1 and b = 2
+
+a = 3     #done
+a += 1      #done
+I a == 4    #done
+a ++= 4   #done
+I a == (4 4)    #done
+
+
+a = (1) ++ (2)      #done
+b = 1 ++ (2)      3done
+c = 1 ++ 2    #done
+d = (1) ++ 2    #done
+I a == b == c == d
+
+I 1 == (1) == (1).0
+

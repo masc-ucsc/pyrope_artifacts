@@ -1,0 +1,207 @@
+[
+   {
+      "start_pos": 0,
+      "end_pos": 4,
+      "type": "function_call",
+      "function": {
+         "type": "tuple_array",
+         "arr_obj": {
+            "type": "identifier",
+            "value": "a"
+         },
+         "arr_idx": {
+            "type": "identifier",
+            "value": "b"
+         }
+      },
+      "arguments": [
+         null
+      ],
+      "body": null
+   },
+   {
+      "start_pos": 5,
+      "end_pos": 12,
+      "type": "function_call",
+      "function": {
+         "type": "tuple_array",
+         "arr_obj": {
+            "type": "tuple_array",
+            "arr_obj": {
+               "type": "identifier",
+               "value": "x"
+            },
+            "arr_idx": {
+               "type": "identifier",
+               "value": "y"
+            }
+         },
+         "arr_idx": {
+            "type": "identifier",
+            "value": "z"
+         }
+      },
+      "arguments": [
+         null
+      ],
+      "body": null
+   },
+   {
+      "start_pos": 13,
+      "end_pos": 20,
+      "type": "function_call",
+      "function": {
+         "type": "tuple_array",
+         "arr_obj": {
+            "type": "identifier",
+            "value": "p"
+         },
+         "arr_idx": {
+            "type": "tuple_array",
+            "arr_obj": {
+               "type": "identifier",
+               "value": "q"
+            },
+            "arr_idx": {
+               "type": "identifier",
+               "value": "r"
+            }
+         }
+      },
+      "arguments": [
+         null
+      ],
+      "body": null
+   },
+   {
+      "start_pos": 21,
+      "end_pos": 29,
+      "type": "function_call",
+      "function": {
+         "type": "tuple_array",
+         "arr_obj": {
+            "type": "identifier",
+            "value": "a"
+         },
+         "arr_idx": {
+            "type": "binary_expression",
+            "operator": {
+               "type": "arithmetic_operator",
+               "operation": "+"
+            },
+            "left": {
+               "type": "binary_expression",
+               "operator": {
+                  "type": "arithmetic_operator",
+                  "operation": "*"
+               },
+               "left": {
+                  "type": "number",
+                  "value": "1"
+               },
+               "right": {
+                  "type": "number",
+                  "value": "2"
+               }
+            },
+            "right": {
+               "type": "number",
+               "value": "3"
+            }
+         }
+      },
+      "arguments": [
+         null
+      ],
+      "body": null
+   },
+   {
+      "start_pos": 30,
+      "end_pos": 39,
+      "type": "function_call",
+      "function": {
+         "type": "tuple_array",
+         "arr_obj": {
+            "type": "identifier",
+            "value": "b"
+         },
+         "arr_idx": {
+            "start_pos": 32,
+            "end_pos": 38,
+            "type": "function_call",
+            "function": {
+               "type": "identifier",
+               "value": "foo"
+            },
+            "arguments": null,
+            "body": null
+         }
+      },
+      "arguments": [
+         null
+      ],
+      "body": null
+   },
+   {
+      "start_pos": 40,
+      "end_pos": 52,
+      "type": "function_call",
+      "function": {
+         "type": "tuple_array",
+         "arr_obj": {
+            "type": "identifier",
+            "value": "foo"
+         },
+         "arr_idx": {
+            "type": "tuple_array",
+            "arr_obj": {
+               "type": "tuple_array",
+               "arr_obj": {
+                  "type": "identifier",
+                  "value": "x"
+               },
+               "arr_idx": {
+                  "type": "identifier",
+                  "value": "y"
+               }
+            },
+            "arr_idx": {
+               "type": "identifier",
+               "value": "z"
+            }
+         }
+      },
+      "arguments": [
+         null
+      ],
+      "body": null
+   },
+   {
+      "start_pos": 0,
+      "end_pos": 11,
+      "type": "assignment_expression",
+      "operator": "=",
+      "left": {
+         "type": "tuple_array",
+         "arr_obj": {
+            "type": "tuple_array",
+            "arr_obj": {
+               "type": "identifier",
+               "value": "a"
+            },
+            "arr_idx": {
+               "type": "number",
+               "value": "0d1"
+            }
+         },
+         "arr_idx": {
+            "type": "number",
+            "value": "0d2"
+         }
+      },
+      "right": {
+         "type": "number",
+         "value": "0d3"
+      }
+   }
+]

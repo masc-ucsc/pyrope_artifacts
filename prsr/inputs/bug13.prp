@@ -1,0 +1,34 @@
+#DONE
+
+if foo
+  a as 3
+  b = 5
+  b = 1
+  b.__bits=2           # explicit sets & checks that b has 2 bit
+  b = __bits:1         # explicit sets & checks that b has 1 bit
+  b = 0
+
+  c = 5
+  I (a == b and b == c)  # Same value
+
+  a = 5                # compile error: as 3 fixed the value to 3
+  b = 2
+  c = 1
+
+  c as __bits:2        # compile error: c had 1 and 5 (over bits:2)
+
+  b = 9                # compile error: b explicit 1 bit, 9 has 4 bits
+
+  val1 = 'string'
+  val1 = true          # OK
+
+  val2 as 'string'     # as is the same as = from a parsing point of view
+  val2 as true         # compile error: before it was not true
+
+  val3 as "string"
+  val3 as 'string'     # OK, redundant but OK
+
+  a = "123"
+  a = '123'
+#DOUBT  a = "\n"
+end

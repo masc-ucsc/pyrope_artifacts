@@ -1,0 +1,163 @@
+[
+   {
+      "start_pos": 0,
+      "end_pos": 7,
+      "type": "assignment_expression",
+      "operator": "=",
+      "left": {
+         "type": "identifier",
+         "value": "a"
+      },
+      "right": {
+         "start_pos": 4,
+         "end_pos": 7,
+         "type": "function_call",
+         "function": {
+            "type": "identifier",
+            "value": "foo"
+         },
+         "arguments": [
+            null
+         ],
+         "body": null
+      }
+   },
+   {
+      "start_pos": 8,
+      "end_pos": 17,
+      "type": "assignment_expression",
+      "operator": "=",
+      "left": {
+         "type": "identifier",
+         "value": "b"
+      },
+      "right": {
+         "start_pos": 12,
+         "end_pos": 17,
+         "type": "function_call",
+         "function": {
+            "type": "identifier",
+            "value": "bar"
+         },
+         "arguments": [
+            {
+               "type": "identifier",
+               "value": "x"
+            },
+            {
+               "type": "identifier",
+               "value": "y"
+            }
+         ],
+         "body": null
+      }
+   },
+   {
+      "start_pos": 0,
+      "end_pos": 17,
+      "type": "assignment_expression",
+      "operator": "=",
+      "left": {
+         "type": "identifier",
+         "value": "a"
+      },
+      "right": {
+         "start_pos": 4,
+         "end_pos": 17,
+         "type": "function_call",
+         "function": {
+            "type": "identifier",
+            "value": "foo"
+         },
+         "arguments": [
+            {
+               "type": "identifier",
+               "value": "x"
+            },
+            {
+               "type": "binary_expression",
+               "operator": {
+                  "type": "arithmetic_operator",
+                  "operation": "+"
+               },
+               "left": {
+                  "type": "number",
+                  "value": "1"
+               },
+               "right": {
+                  "type": "number",
+                  "value": "2"
+               }
+            },
+            {
+               "type": "identifier",
+               "value": "y"
+            }
+         ],
+         "body": null
+      }
+   },
+   {
+      "start_pos": 0,
+      "end_pos": 16,
+      "type": "assignment_expression",
+      "operator": "=",
+      "left": {
+         "type": "identifier",
+         "value": "d"
+      },
+      "right": {
+         "start_pos": 4,
+         "end_pos": 16,
+         "type": "function_call",
+         "function": {
+            "type": "identifier",
+            "value": "bar"
+         },
+         "arguments": [
+            {
+               "start_pos": 9,
+               "end_pos": 15,
+               "type": "function_call",
+               "function": {
+                  "type": "identifier",
+                  "value": "bus"
+               },
+               "arguments": null,
+               "body": null
+            }
+         ],
+         "body": null
+      }
+   }
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

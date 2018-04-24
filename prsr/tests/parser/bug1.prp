@@ -1,0 +1,8 @@
+
+a = (b c)[[]] # bit concatenation
+a = bar
+a = (bar)[[]] # Typecast, just keep bits
+
+if ($input)[[]] {
+  puts "Bit concat is useles here, but legal"
+}

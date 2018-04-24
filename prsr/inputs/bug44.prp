@@ -1,0 +1,13 @@
+#DONE
+
+a.addn as :: # addn as a local method
+  return 100
+end
+
+addn as ::  # addn as a global method
+  return ($0 + 2)
+end
+
+I (3.addn == 5)
+I (3.addn.addn == 7)
+

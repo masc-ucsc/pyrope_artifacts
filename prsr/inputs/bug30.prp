@@ -1,0 +1,8 @@
+#DONE
+
+a = 123 + 1
+
+a = a<3
+#error "puts puts" is not legal, use a single puts:
+  puts (puts "hello")  #valid now - puts is a function now
+

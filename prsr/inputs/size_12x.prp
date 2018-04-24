@@ -1,0 +1,1272 @@
+
+a = 1
+a = 1 + 1*3  # ERROR: this should pass
+if a:
+  puts "foo"
+else:
+  a = a+2
+
+x=x/2
+
+
+if a:
+  if b:
+    c = 1
+
+else: # allow blank and comments anytime
+  c = 2
+
+
+
+
+a = 1
+
+b = 2
+# if error
+if a:
+  # Nothing here
+else:
+  # NMother there
+c = 1
+
+
+
+var ++= ::
+  asd()
+
+a()
+#a  # Legal function call
+a()
+# Also legal
+a(.*)
+a(v:1)
+
+
+
+a = :when c>300:
+  3
+
+
+b = :: 
+  3  # Maybe better to have this for regularity
+
+a = :when c<3: 
+  3
+
+if a: a=3
+
+if a: a=3; b=2
+
+a.map(:: 3)
+
+
+
+puts "Hello"
+
+
+a = 1 ++ 2
+I a == (1 2)
+
+
+hell(1 2)
+puts (1 2)
+puts (   1     2     )
+puts (   1  ,  2     )
+
+puts a ++ "foo" ++ 3 ++ ""
+
+puts "There too" ++ "More text"
+
+puts 1 ++ 2
+
+puts a ++ 3
+
+
+
+a = (1,3,4) ++ (1,2)
+a = a + 3 + 4
+
+a = 1
+a = 1+2
+if a==3:
+  puts "Hello World"
+else:
+  puts "haha"
+  a = 3
+
+a = 1
+
+
+
+a = b.3
+a = b._foo
+a = b.__foo
+
+a = b.__def  # No reserved keyword
+
+
+a = 1
+a = 1 + 1*3  # ERROR: this should pass
+if a:
+  puts "foo"
+else:
+  a = a+2
+
+x=x/2
+
+
+if a:
+  if b:
+    c = 1
+
+else: # allow blank and comments anytime
+  c = 2
+
+
+
+
+a = 1
+
+b = 2
+# if error
+if a:
+  # Nothing here
+else:
+  # NMother there
+c = 1
+
+
+
+var ++= ::
+  asd()
+
+a()
+#a  # Legal function call
+a()
+# Also legal
+a(.*)
+a(v:1)
+
+
+
+a = :when c>300:
+  3
+
+
+b = :: 
+  3  # Maybe better to have this for regularity
+
+a = :when c<3: 
+  3
+
+if a: a=3
+
+if a: a=3; b=2
+
+a.map(:: 3)
+
+
+
+puts "Hello"
+
+
+a = 1 ++ 2
+I a == (1 2)
+
+
+hell(1 2)
+puts (1 2)
+puts (   1     2     )
+puts (   1  ,  2     )
+
+puts a ++ "foo" ++ 3 ++ ""
+
+puts "There too" ++ "More text"
+
+puts 1 ++ 2
+
+puts a ++ 3
+
+
+
+a = (1,3,4) ++ (1,2)
+a = a + 3 + 4
+
+a = 1
+a = 1+2
+if a==3:
+  puts "Hello World"
+else:
+  puts "haha"
+  a = 3
+
+a = 1
+
+
+
+a = b.3
+a = b._foo
+a = b.__foo
+
+a = b.__def  # No reserved keyword
+
+
+a = 1
+a = 1 + 1*3  # ERROR: this should pass
+if a:
+  puts "foo"
+else:
+  a = a+2
+
+x=x/2
+
+
+if a:
+  if b:
+    c = 1
+
+else: # allow blank and comments anytime
+  c = 2
+
+
+
+
+a = 1
+
+b = 2
+# if error
+if a:
+  # Nothing here
+else:
+  # NMother there
+c = 1
+
+
+
+var ++= ::
+  asd()
+
+a()
+#a  # Legal function call
+a()
+# Also legal
+a(.*)
+a(v:1)
+
+
+
+a = :when c>300:
+  3
+
+
+b = :: 
+  3  # Maybe better to have this for regularity
+
+a = :when c<3: 
+  3
+
+if a: a=3
+
+if a: a=3; b=2
+
+a.map(:: 3)
+
+
+
+puts "Hello"
+
+
+a = 1 ++ 2
+I a == (1 2)
+
+
+hell(1 2)
+puts (1 2)
+puts (   1     2     )
+puts (   1  ,  2     )
+
+puts a ++ "foo" ++ 3 ++ ""
+
+puts "There too" ++ "More text"
+
+puts 1 ++ 2
+
+puts a ++ 3
+
+
+
+a = (1,3,4) ++ (1,2)
+a = a + 3 + 4
+
+a = 1
+a = 1+2
+if a==3:
+  puts "Hello World"
+else:
+  puts "haha"
+  a = 3
+
+a = 1
+
+
+
+a = b.3
+a = b._foo
+a = b.__foo
+
+a = b.__def  # No reserved keyword
+
+
+a = 1
+a = 1 + 1*3  # ERROR: this should pass
+if a:
+  puts "foo"
+else:
+  a = a+2
+
+x=x/2
+
+
+if a:
+  if b:
+    c = 1
+
+else: # allow blank and comments anytime
+  c = 2
+
+
+
+
+a = 1
+
+b = 2
+# if error
+if a:
+  # Nothing here
+else:
+  # NMother there
+c = 1
+
+
+
+var ++= ::
+  asd()
+
+a()
+#a  # Legal function call
+a()
+# Also legal
+a(.*)
+a(v:1)
+
+
+
+a = :when c>300:
+  3
+
+
+b = :: 
+  3  # Maybe better to have this for regularity
+
+a = :when c<3: 
+  3
+
+if a: a=3
+
+if a: a=3; b=2
+
+a.map(:: 3)
+
+
+
+puts "Hello"
+
+
+a = 1 ++ 2
+I a == (1 2)
+
+
+hell(1 2)
+puts (1 2)
+puts (   1     2     )
+puts (   1  ,  2     )
+
+puts a ++ "foo" ++ 3 ++ ""
+
+puts "There too" ++ "More text"
+
+puts 1 ++ 2
+
+puts a ++ 3
+
+
+
+a = (1,3,4) ++ (1,2)
+a = a + 3 + 4
+
+a = 1
+a = 1+2
+if a==3:
+  puts "Hello World"
+else:
+  puts "haha"
+  a = 3
+
+a = 1
+
+
+
+a = b.3
+a = b._foo
+a = b.__foo
+
+a = b.__def  # No reserved keyword
+
+
+a = 1
+a = 1 + 1*3  # ERROR: this should pass
+if a:
+  puts "foo"
+else:
+  a = a+2
+
+x=x/2
+
+
+if a:
+  if b:
+    c = 1
+
+else: # allow blank and comments anytime
+  c = 2
+
+
+
+
+a = 1
+
+b = 2
+# if error
+if a:
+  # Nothing here
+else:
+  # NMother there
+c = 1
+
+
+
+var ++= ::
+  asd()
+
+a()
+#a  # Legal function call
+a()
+# Also legal
+a(.*)
+a(v:1)
+
+
+
+a = :when c>300:
+  3
+
+
+b = :: 
+  3  # Maybe better to have this for regularity
+
+a = :when c<3: 
+  3
+
+if a: a=3
+
+if a: a=3; b=2
+
+a.map(:: 3)
+
+
+
+puts "Hello"
+
+
+a = 1 ++ 2
+I a == (1 2)
+
+
+hell(1 2)
+puts (1 2)
+puts (   1     2     )
+puts (   1  ,  2     )
+
+puts a ++ "foo" ++ 3 ++ ""
+
+puts "There too" ++ "More text"
+
+puts 1 ++ 2
+
+puts a ++ 3
+
+
+
+a = (1,3,4) ++ (1,2)
+a = a + 3 + 4
+
+a = 1
+a = 1+2
+if a==3:
+  puts "Hello World"
+else:
+  puts "haha"
+  a = 3
+
+a = 1
+
+
+
+a = b.3
+a = b._foo
+a = b.__foo
+
+a = b.__def  # No reserved keyword
+
+
+a = 1
+a = 1 + 1*3  # ERROR: this should pass
+if a:
+  puts "foo"
+else:
+  a = a+2
+
+x=x/2
+
+
+if a:
+  if b:
+    c = 1
+
+else: # allow blank and comments anytime
+  c = 2
+
+
+
+
+a = 1
+
+b = 2
+# if error
+if a:
+  # Nothing here
+else:
+  # NMother there
+c = 1
+
+
+
+var ++= ::
+  asd()
+
+a()
+#a  # Legal function call
+a()
+# Also legal
+a(.*)
+a(v:1)
+
+
+
+a = :when c>300:
+  3
+
+
+b = :: 
+  3  # Maybe better to have this for regularity
+
+a = :when c<3: 
+  3
+
+if a: a=3
+
+if a: a=3; b=2
+
+a.map(:: 3)
+
+
+
+puts "Hello"
+
+
+a = 1 ++ 2
+I a == (1 2)
+
+
+hell(1 2)
+puts (1 2)
+puts (   1     2     )
+puts (   1  ,  2     )
+
+puts a ++ "foo" ++ 3 ++ ""
+
+puts "There too" ++ "More text"
+
+puts 1 ++ 2
+
+puts a ++ 3
+
+
+
+a = (1,3,4) ++ (1,2)
+a = a + 3 + 4
+
+a = 1
+a = 1+2
+if a==3:
+  puts "Hello World"
+else:
+  puts "haha"
+  a = 3
+
+a = 1
+
+
+
+a = b.3
+a = b._foo
+a = b.__foo
+
+a = b.__def  # No reserved keyword
+
+
+a = 1
+a = 1 + 1*3  # ERROR: this should pass
+if a:
+  puts "foo"
+else:
+  a = a+2
+
+x=x/2
+
+
+if a:
+  if b:
+    c = 1
+
+else: # allow blank and comments anytime
+  c = 2
+
+
+
+
+a = 1
+
+b = 2
+# if error
+if a:
+  # Nothing here
+else:
+  # NMother there
+c = 1
+
+
+
+var ++= ::
+  asd()
+
+a()
+#a  # Legal function call
+a()
+# Also legal
+a(.*)
+a(v:1)
+
+
+
+a = :when c>300:
+  3
+
+
+b = :: 
+  3  # Maybe better to have this for regularity
+
+a = :when c<3: 
+  3
+
+if a: a=3
+
+if a: a=3; b=2
+
+a.map(:: 3)
+
+
+
+puts "Hello"
+
+
+a = 1 ++ 2
+I a == (1 2)
+
+
+hell(1 2)
+puts (1 2)
+puts (   1     2     )
+puts (   1  ,  2     )
+
+puts a ++ "foo" ++ 3 ++ ""
+
+puts "There too" ++ "More text"
+
+puts 1 ++ 2
+
+puts a ++ 3
+
+
+
+a = (1,3,4) ++ (1,2)
+a = a + 3 + 4
+
+a = 1
+a = 1+2
+if a==3:
+  puts "Hello World"
+else:
+  puts "haha"
+  a = 3
+
+a = 1
+
+
+
+a = b.3
+a = b._foo
+a = b.__foo
+
+a = b.__def  # No reserved keyword
+
+
+a = 1
+a = 1 + 1*3  # ERROR: this should pass
+if a:
+  puts "foo"
+else:
+  a = a+2
+
+x=x/2
+
+
+if a:
+  if b:
+    c = 1
+
+else: # allow blank and comments anytime
+  c = 2
+
+
+
+
+a = 1
+
+b = 2
+# if error
+if a:
+  # Nothing here
+else:
+  # NMother there
+c = 1
+
+
+
+var ++= ::
+  asd()
+
+a()
+#a  # Legal function call
+a()
+# Also legal
+a(.*)
+a(v:1)
+
+
+
+a = :when c>300:
+  3
+
+
+b = :: 
+  3  # Maybe better to have this for regularity
+
+a = :when c<3: 
+  3
+
+if a: a=3
+
+if a: a=3; b=2
+
+a.map(:: 3)
+
+
+
+puts "Hello"
+
+
+a = 1 ++ 2
+I a == (1 2)
+
+
+hell(1 2)
+puts (1 2)
+puts (   1     2     )
+puts (   1  ,  2     )
+
+puts a ++ "foo" ++ 3 ++ ""
+
+puts "There too" ++ "More text"
+
+puts 1 ++ 2
+
+puts a ++ 3
+
+
+
+a = (1,3,4) ++ (1,2)
+a = a + 3 + 4
+
+a = 1
+a = 1+2
+if a==3:
+  puts "Hello World"
+else:
+  puts "haha"
+  a = 3
+
+a = 1
+
+
+
+a = b.3
+a = b._foo
+a = b.__foo
+
+a = b.__def  # No reserved keyword
+
+
+a = 1
+a = 1 + 1*3  # ERROR: this should pass
+if a:
+  puts "foo"
+else:
+  a = a+2
+
+x=x/2
+
+
+if a:
+  if b:
+    c = 1
+
+else: # allow blank and comments anytime
+  c = 2
+
+
+
+
+a = 1
+
+b = 2
+# if error
+if a:
+  # Nothing here
+else:
+  # NMother there
+c = 1
+
+
+
+var ++= ::
+  asd()
+
+a()
+#a  # Legal function call
+a()
+# Also legal
+a(.*)
+a(v:1)
+
+
+
+a = :when c>300:
+  3
+
+
+b = :: 
+  3  # Maybe better to have this for regularity
+
+a = :when c<3: 
+  3
+
+if a: a=3
+
+if a: a=3; b=2
+
+a.map(:: 3)
+
+
+
+puts "Hello"
+
+
+a = 1 ++ 2
+I a == (1 2)
+
+
+hell(1 2)
+puts (1 2)
+puts (   1     2     )
+puts (   1  ,  2     )
+
+puts a ++ "foo" ++ 3 ++ ""
+
+puts "There too" ++ "More text"
+
+puts 1 ++ 2
+
+puts a ++ 3
+
+
+
+a = (1,3,4) ++ (1,2)
+a = a + 3 + 4
+
+a = 1
+a = 1+2
+if a==3:
+  puts "Hello World"
+else:
+  puts "haha"
+  a = 3
+
+a = 1
+
+
+
+a = b.3
+a = b._foo
+a = b.__foo
+
+a = b.__def  # No reserved keyword
+
+
+a = 1
+a = 1 + 1*3  # ERROR: this should pass
+if a:
+  puts "foo"
+else:
+  a = a+2
+
+x=x/2
+
+
+if a:
+  if b:
+    c = 1
+
+else: # allow blank and comments anytime
+  c = 2
+
+
+
+
+a = 1
+
+b = 2
+# if error
+if a:
+  # Nothing here
+else:
+  # NMother there
+c = 1
+
+
+
+var ++= ::
+  asd()
+
+a()
+#a  # Legal function call
+a()
+# Also legal
+a(.*)
+a(v:1)
+
+
+
+a = :when c>300:
+  3
+
+
+b = :: 
+  3  # Maybe better to have this for regularity
+
+a = :when c<3: 
+  3
+
+if a: a=3
+
+if a: a=3; b=2
+
+a.map(:: 3)
+
+
+
+puts "Hello"
+
+
+a = 1 ++ 2
+I a == (1 2)
+
+
+hell(1 2)
+puts (1 2)
+puts (   1     2     )
+puts (   1  ,  2     )
+
+puts a ++ "foo" ++ 3 ++ ""
+
+puts "There too" ++ "More text"
+
+puts 1 ++ 2
+
+puts a ++ 3
+
+
+
+a = (1,3,4) ++ (1,2)
+a = a + 3 + 4
+
+a = 1
+a = 1+2
+if a==3:
+  puts "Hello World"
+else:
+  puts "haha"
+  a = 3
+
+a = 1
+
+
+
+a = b.3
+a = b._foo
+a = b.__foo
+
+a = b.__def  # No reserved keyword
+
+
+a = 1
+a = 1 + 1*3  # ERROR: this should pass
+if a:
+  puts "foo"
+else:
+  a = a+2
+
+x=x/2
+
+
+if a:
+  if b:
+    c = 1
+
+else: # allow blank and comments anytime
+  c = 2
+
+
+
+
+a = 1
+
+b = 2
+# if error
+if a:
+  # Nothing here
+else:
+  # NMother there
+c = 1
+
+
+
+var ++= ::
+  asd()
+
+a()
+#a  # Legal function call
+a()
+# Also legal
+a(.*)
+a(v:1)
+
+
+
+a = :when c>300:
+  3
+
+
+b = :: 
+  3  # Maybe better to have this for regularity
+
+a = :when c<3: 
+  3
+
+if a: a=3
+
+if a: a=3; b=2
+
+a.map(:: 3)
+
+
+
+puts "Hello"
+
+
+a = 1 ++ 2
+I a == (1 2)
+
+
+hell(1 2)
+puts (1 2)
+puts (   1     2     )
+puts (   1  ,  2     )
+
+puts a ++ "foo" ++ 3 ++ ""
+
+puts "There too" ++ "More text"
+
+puts 1 ++ 2
+
+puts a ++ 3
+
+
+
+a = (1,3,4) ++ (1,2)
+a = a + 3 + 4
+
+a = 1
+a = 1+2
+if a==3:
+  puts "Hello World"
+else:
+  puts "haha"
+  a = 3
+
+a = 1
+
+
+
+a = b.3
+a = b._foo
+a = b.__foo
+
+a = b.__def  # No reserved keyword
+
+
+a = 1
+a = 1 + 1*3  # ERROR: this should pass
+if a:
+  puts "foo"
+else:
+  a = a+2
+
+x=x/2
+
+
+if a:
+  if b:
+    c = 1
+
+else: # allow blank and comments anytime
+  c = 2
+
+
+
+
+a = 1
+
+b = 2
+# if error
+if a:
+  # Nothing here
+else:
+  # NMother there
+c = 1
+
+
+
+var ++= ::
+  asd()
+
+a()
+#a  # Legal function call
+a()
+# Also legal
+a(.*)
+a(v:1)
+
+
+
+a = :when c>300:
+  3
+
+
+b = :: 
+  3  # Maybe better to have this for regularity
+
+a = :when c<3: 
+  3
+
+if a: a=3
+
+if a: a=3; b=2
+
+a.map(:: 3)
+
+
+
+puts "Hello"
+
+
+a = 1 ++ 2
+I a == (1 2)
+
+
+hell(1 2)
+puts (1 2)
+puts (   1     2     )
+puts (   1  ,  2     )
+
+puts a ++ "foo" ++ 3 ++ ""
+
+puts "There too" ++ "More text"
+
+puts 1 ++ 2
+
+puts a ++ 3
+
+
+
+a = (1,3,4) ++ (1,2)
+a = a + 3 + 4
+
+a = 1
+a = 1+2
+if a==3:
+  puts "Hello World"
+else:
+  puts "haha"
+  a = 3
+
+a = 1
+
+
+
+a = b.3
+a = b._foo
+a = b.__foo
+
+a = b.__def  # No reserved keyword
+

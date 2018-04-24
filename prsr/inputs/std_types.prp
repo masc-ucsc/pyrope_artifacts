@@ -1,0 +1,66 @@
+
+########### bool type
+
+bool as __bool:true __bits:1 __nelems:1 #done
+
+#done
+false as boolean
+false as 0
+
+#done
+true as boolean
+true as 1
+
+I 0b111 == 7
+
+I 0b101{1 2} == 0b10
+I true{} == 1         #DOUBT
+I true is boolean
+
+#done
+b as boolean
+b = true
+b = false
+
+#done
+I b == false
+
+# compile error: I 1 == true
+
+########### string type
+
+#done
+string as __bits:8 # 8 bit character
+
+to_s  = ::                        #done
+  tmp = "" # same as tmp = ()     #done
+  $.each::    #done
+    if $0 is def:   #done
+      # Nothing                           #DOUBT (if block cannot be empty as per previous discussion)
+    elif $0 is string:  #done
+      tmp ++= $0                    #done
+    else:           #done
+      val = $
+      if %base==2:            #done
+        while val>0:                          #DOUBT(while not yet discussed)
+          if val{0} == 0:
+            tmp ++= '0'
+          else:
+            tmp ++= '1'
+          val = val>>1
+      else:                   
+        while val>0:                    #DOUBT
+          tmp ++= 'a' + val{0..3} 
+          val = val>>4
+
+# 3.to_s(base:2) == "11"
+# 255.to_s() == "FF"
+
+########### Generic Operators
+.is. = :                                          #DOUBT:
+  lhs = $0      #done
+  rhs = $1  #done
+  a = lhs.__attributes in rhs.__attributes  #done
+  b = rhs.__attributes in lhs.__attributes  #done
+  return a and b  #done
+

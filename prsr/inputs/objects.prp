@@ -1,0 +1,109 @@
+
+a.__reset ::           #done
+  __parent.a = 0
+  __parent.b = 0
+  
+a.dump = ::         #done
+  __parent.each:
+    if $ isnt def:
+      puts $
+
+a.calc = ::             #done
+  __parent.sum = __parent.a + __parent.b
+
+a.setup = :when $.__nelems == 2:
+  __parent.a = $0
+  __parent.b = $1
+
+
+#read, write, parent, nelems etc are keywords????????
+a.sum2.__read ::  # Lazy called on read only            #done
+  __parent.sum2 = __parent.a + __parent.b 
+
+a.a.__write ::                    #done
+  __parent.sum3 = $ + __parent.b
+  return $
+
+a.b.__write ::                        #done
+  __parent.sum3 = $ + __parent.a
+  return $
+
+
+#done
+a.vector.__index_read ::  # this does multiple address read, not multiple dimensional read (lib specific)
+  tmp = ()
+  $.each::
+    if $ == __parent.vector_fwd_addr:
+      tmp = tmp ++ __parent.vector_fwd_data
+    else
+      tmp = tmp ++ __parent.vector.__flop[$]
+  return tmp
+
+
+#done
+a.vector.__index_write ::
+  addr = $0
+  data = $1
+
+  __parent.vector_fwd_addr = addr[0]
+  __parent.vector_fwd_data = data[0]
+
+  I addr.__nelems == data.__nelems
+  for i:0 upto addr.__nelems:
+    __parent.vector.__flop[addr[i]] = data[i]
+
+
+#done
+fun33 = ::
+  return 3
+
+# fun33 # error return in a function call that should not return
+
+#done
+f as ::
+  a1 as a
+
+  a.calc()    #Done
+  I a.sum  == 0
+  I a.sum2 == 0
+  I a.sum3 == 0
+
+  a.setup(1 2)      #Done
+  I a.sum  == 0
+  I a.sum2 == 3
+  I a.sum3 == 3
+
+  a.calc()        #DONE
+  I a.sum  == 3
+  I a.sum2 == 3
+  I a.sum3 == 3
+
+  a.b = 2
+  I a.sum  == 3
+  I a.sum2 == 4  # triggered when read
+  I a.sum3 == 4  # triggered when a.b gets written
+
+  a.vector_orig[0] = 1
+  I a.vector_orig[0] == 0  # No forward
+
+  a.vector[0] = 1
+  I a.vector[0] == 1 # Forward support
+
+  b = (1 2 3)
+  I b[0] == 1
+  I b[0 1] == (1 2)     #done
+  I b[(0 1)] == (1 2) #done
+  a.vector[1 2] = (2 3)       #DOne
+  a.vector[(1, 2)] = (2 3)       #Done
+  I a.vector[0 1 2] == (0 2 0)  # The implementation had just 1 forward value to track (first of multiple writes)   #done
+ 
+# Methods per variable
+#
+# __read  # Read of before block executed
+# __write # Write or after block executed
+# __reset  # First time instantiated or after reset
+# __flop  # Last cycle value if flop. Otherwise same as current value
+# __parent # Parent in base scope hierarchy
+# __index_read  # a = foo[3]
+# __index_write # bar[3] = a
+

@@ -1,0 +1,7 @@
+#DONE
+
+if a==3
+  a = 3
+  a=1
+  #a++  # Invalid op
+end

@@ -1,0 +1,53 @@
+#doubts
+
+:
+  puts "Same as before"
+  :
+    puts "Boring but right"
+
+puts "done"
+
+a as stage
+#doubt a = ::
+
+try:            #done
+  %sum = $a + $b
+
+try:: # OK too, :: means new local scope        #doubt
+  %sum2 = $a2 + $b2
+catch:
+  %sum2 = 3
+
+b as stage
+b = ::
+
+  if $inp1?: #done
+    puts "inp1 is valid"
+  else:
+    puts "inp1 is not ready"
+
+  if %out1?:  # Fluid Valid          #done
+    puts "There was a write to out1, but it may not be accepted"
+  if %out1!:  # Fluid Retry  #done
+    puts "out1 is stalled, and it will not accept a new output
+
+  error valid check only possible in input and output variables:
+    I a?     #done
+
+  error valid check only possible in input and output variables:
+    I 3?     #done
+
+  %foo? = false # Kills the variable output      #done
+
+  error valid check is a boolean only property:
+    %foo? = 3      #done
+
+  error invalid to toggle the output fluid retry. It is read only:
+    %foo! = true   #done
+
+  error invalid to toggle the input fluid retry. It is read only:
+    $inp! = false  #done
+
+  error invalid to toggle the input fluid valid. It is read only:
+    $inp? = false  #done
+

@@ -1,0 +1,4 @@
+# This should parse correctly
+bar = x == 3
+   or x == 3 and !(x!=3)
+   or false

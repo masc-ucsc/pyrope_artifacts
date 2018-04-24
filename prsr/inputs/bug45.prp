@@ -1,0 +1,9 @@
+#DONE
+|+| as ::
+  tmp = 0
+  $.each::
+    tmp += $0
+  end
+  return tmp
+end
+

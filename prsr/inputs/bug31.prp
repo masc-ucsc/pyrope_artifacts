@@ -1,0 +1,11 @@
+#DONE
+
+a = 123 + 1
+
+a = a<3
+
+if true
+  false = 3  #(should be parsed at parsing? and flagged error at compile time?)
+end
+
+

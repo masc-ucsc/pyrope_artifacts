@@ -1,0 +1,147 @@
+
+(a,b) = (c,d)         #done
+I a == c and b == d
+
+(a,b,_) = (1,2,3,4,5,6)   #done
+I a == 1 and b == 2
+
+(a,_,c) = 1 2 3 4 5     #done
+I a == 1 and c == 5
+
+(_,b) = (1 3       # My other comment is OK too
+         2+4# and without spaces too
+# An comments breaking the sequence too  with nasty ))))) 
+         3 
+         4+100) # done
+
+I b == 104
+
+if (3,_) == (3,5):        #done
+  I true
+else:
+  I false # Never here
+ 
+if (4,_) == (3,5):          #done
+  I false # Never true
+else:
+  I true
+
+
+I (1 2 3)[1] == 2
+
+I (a:1 b:2 c:3).a == 1
+I (a:1 b:2 c:3).a.0.0.0 == 1
+I (a:1 b:2 c:3).a[0][0] == 1
+
+a = 1                 #done
+if (a+3) == 4:        #done
+  I true
+
+error single underscore in matching tuple allowed:
+  (_,a,_) = (1,2,3)
+
+error Underscore only in the right side of the match/assignment:
+  (a,b) = (3,_)
+
+error Single assignment allowed:
+  a = b = 3                                   #done
+
+error no assignment inside if condition:
+  if a = 3:                                 #done
+    I false
+
+a as __bits:3
+a = 3               #done
+
+a as 3
+I a == 3
+error incompatible type assignment:
+  a = 4
+I (a+2) == 5
+
+a.0 = 1                 #done
+a.1 = 1                 #done
+a[(2,3,4)] = 10 11 12
+I a == (1 1 10 11 12)
+
+a = (1 2)               #done
+a[0 1] = a[1 0]
+I a == (2 1)
+
+a = (1 2 (2+3))       #done
+I a == ( 1  2   5 )
+
+# 
+# EXPR: EXPR_BOOLEAN \ EXPR_ARITH
+#
+# OR_EXPR: tuple_boolean or tuple_boolean
+#
+# tuple_boolean: term \ term (.term)+ \ term[EXPR] (.term | [EXPR])* 
+# 
+# if EXPR_BOOLEAN:
+#
+# I EXPR_BOOLEAN
+#
+# a = EXPR
+#
+
+
+
+a = (a:3,b:4)            #done
+I a.a == 3 and a.b == 4
+
+a = (a:-3 ,  b:5)  #done
+a = (a:foo ,  bar:b) #done
+
+error recursive tuple assignment not allowed:
+  foo = (bar:foo, a:3)
+
+a = (a:(a:1 b:2) b:4)  #done
+I a.a.a == 1 and a.a.b == 2 and a.b == 4
+
+a = (b:1+3 , c:(5+3-1))   #done
+v = (field1:1 + 3   , d:3+4*4)  #done
+
+error no space after label allowed:
+  a = b: 1
+
+error no space after label allowed:
+  a = (b:1+2, c: -3)
+
+error no replicated label assignment allowed in a tuple:
+  a = (b:1+2, c:1, b: -3)
+
+a.0 = (bar:3)  #done
+a.foo = (1,3)  #done
+
+a.0.1.3 = field1:foo.bar.c   #done   # Single element tuple does not need parenthesis
+a.0.1.3 = (field1:foo.bar.c) #done
+# a.0.1.3 same as a[0][1][3]
+
+a.0 = 3  #done
+a[1] = 3 #done
+a.2 = 4  #done
+a[2+1] = 10  #done
+
+error space not allowed before tuple bracket:
+  a [3] = 4  # done
+
+a[0] as __bits:3   #done
+a[1] as __bits:4   #done
+a.2  as __bits:1   #done
+
+a = 0b1101111   #done
+
+# RUle: TUPE as TUPLE
+
+a[0] as __bits:3  #done
+a[1] as __bits:4 label:c
+a[2] as __bits:1  #done
+
+a = 0b11100001  #done
+I a.c == 0
+
+b[0] = 0b111   #done
+b[1] = c:0u4   #done
+b[2] = 0b1     #done
+

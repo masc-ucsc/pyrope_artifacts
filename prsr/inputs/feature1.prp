@@ -1,0 +1,14 @@
+
+var += ::
+  return 1
+
+var ++= ::
+  return 3
+
+a = (1,2) ++ (3)
+I a == (1 2 3)
+
+error Not possible to add blocks. You may be wanting to use ++= instead:
+  a += ::
+    return 1
+

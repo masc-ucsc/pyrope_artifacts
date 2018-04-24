@@ -1,0 +1,9 @@
+
+a = ::
+  if d:
+    return 4
+  3
+
+error constant values only allowed as last statement as a shortcut to avoid return statement:
+  3  # Only inside a method as return value (last)
+

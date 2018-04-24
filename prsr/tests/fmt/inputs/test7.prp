@@ -1,0 +1,25 @@
+#inputs to check function declaration
+#function declaration with no arguments and no body
+b=::{}
+
+#function declaration with arguments and no body
+b=:(x y):{   }
+
+#function declaration with no arguments and body
+b=::{  a=1}
+
+#function declaration with arguments and body
+b=:(x y ):{a=1
+d=1}
+
+#function declaration in a function declaration
+b = :(x y z):{
+a=1
+b=1
+j=::{k=::{}
+c=1
+d=1
+}
+l=::{}
+}
+

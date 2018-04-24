@@ -1,0 +1,82 @@
+
+foo.a =1                                    #done
+foo.b =2    #done
+foo.c =3    #done
+
+foo = (a:1 b:2 c:3)   #done
+
+error comma separator must be present:
+  I foo == (a:  b:  c:)         #done
+  
+I foo == (a:,  b:,c:)   #done
+
+# I foo has a as field?
+#I foo is (a:, b:, c:)
+
+base.fun1 = ::            #done
+  I $._nelems == 3
+  I $ is (a:, b: c:)
+  %sum = $a + $b
+
+base.fun2 = ::        #done
+  I $._nelems == 2
+  I $ is (a:, b:)
+  %sum = $a + $b
+
+other.fun3 = ::     #done
+  a = 1
+  b = 2
+  c = 3
+
+  :(a:):            #done
+    I $ is (a:)
+    I $==1
+    I $.a == 1
+
+  :(a:, b:):        #done
+    I $ is (a:, b:)
+    I $.a == 1
+    I $.b == 2
+
+  ::            #done
+    I $.a == 1
+    I $.b == 2
+    I $.c == 3
+
+  f1 as base.fun1   #done
+  f2 as base.fun2   #done
+
+  d = f1(.*)    #done
+  I d.sum == 3
+  d = f2(a:a b:b) # restrict to just a and b as inputs  #done
+  I d.sum == 3
+  d = f2(a:, b:)  # restrict to just .a and .b as inputs  #done
+  d = f1  # Same as f1(.*)
+
+  # foo() restrict to no inputs passed to foo
+
+
+riscv.fetch as :: #done
+  # code here
+  %pc = 3
+
+riscv.decode as ::      #done
+  # code here
+  %pc = $pc
+
+riscv as ::             #done
+  decode <-(pc:) fetch
+
+  # Same as this
+  decode.pc <- fetch.pc
+
+  # Same as this (any matching name)
+  decode <-(.*) fetch
+
+  # Same as this (any matching name)
+  decode <- fetch
+
+  # Same as this
+  for a:(pc:):
+    decode $a <- fetch $a
+ 

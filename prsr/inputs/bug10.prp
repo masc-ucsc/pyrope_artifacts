@@ -1,0 +1,9 @@
+#DONE
+
+if a is string
+  tmp ++= a
+elif $0 is string
+  tmp ++= v
+else# Spaces make it fail
+  puts "a"
+end

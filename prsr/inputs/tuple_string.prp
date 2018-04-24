@@ -1,0 +1,17 @@
+
+a = "potato"            #done
+
+I a.0 == "p"
+I a.1 == "o"
+
+I a == ("p" "o" "t" "a" "t" "o")
+
+b = "hello" ++ " world"   #done
+I b == "hello world"
+
+error strings only accept expression operators:
+  c = "hello" + 3      #done
+
+b = "hello" -- "l"    #done
+I b == "heo"
+

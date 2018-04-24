@@ -1,0 +1,70 @@
+
+# Default parameters in methods
+
+fun1 = ::
+  return $.a + $b # Both legal $.a and $a (same for tuple)
+
+fun2 = :(a:,b:):
+  return $a + $b
+
+fun3 = :(a:1,b:2):  # Default values if not provided
+  return $a + $b
+
+
+r1 = fun3
+r2 = fun3(a:(2+4) b:1) - 4 #6+1-4
+r3 = fun3(b:1, a:1)    + 1 #1+1+1
+a = 1
+r4 = fun3(b:2,a)       + 0 #2+1+0
+r5 = fun3(.*,b:3)      - 1 #1+3-1
+b = 6
+r6 = fun3              - 4 #1+6-4
+
+I r1 == r2 == r3 == r4 == r5 == r6 == 3
+
+a = 1
+b = 2
+c = 7
+r7 = fun1
+r8 = fun2
+I r7 == r8 == 3
+
+fun1 ++= ::
+  return $b - $a
+
+t1 = fun1
+I t1 == (3 1) # Concat tuples. a+b, b-a
+
+fun1 ++= :when $a > $b:
+  return 100+$a-$b
+
+fun1 ++= :when $a < $b:
+  return 100+$b-$a
+
+t2 = fun1
+I t2 == (1+2, 2-1, 100+2-1) # Notice when $a>$b was not called
+b = 1
+a = 2
+t3 = fun1
+I t3 == (1+2, 1-2, 100+2-1) # Notice when $a<$b was not called
+a = 1
+b = 1
+t4 = fun1
+I t4 == (1+1, 1-1)
+
+fun4 ++= :(a:1, b:) when $b>$a:
+  return $a+$b+200
+fun4 ++= :when $b==$a:
+  return 0
+
+x1 = fun4(a:1,b:1)
+I x1 == 0
+x1 = fun4(a:1,b:2)
+I x1 == 203
+
+fun4 ++= :(a:1, b:) when $a>0 and $b>0:
+  return $a+$b+100
+
+x1 = fun4(a:1,b:1)
+I x1 == (0, 102)
+

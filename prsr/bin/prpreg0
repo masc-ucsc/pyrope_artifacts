@@ -1,0 +1,13 @@
+#!/bin/bash
+
+dir="$(pwd)"
+if [ -f "$1" ]
+  then
+		mkdir -p $dir/tests/
+    rm -f $dir/tests/*.prp
+    node $dir/src/if_prpreg0test.js $1
+  else
+    echo "ERROR: prpreg0 needs a valid input file as command line argument"
+    exit 0
+fi
+
