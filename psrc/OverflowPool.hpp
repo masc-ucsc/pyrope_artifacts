@@ -27,13 +27,13 @@ namespace Pyrope
 
       PyropeInteger load(Char_Array_ID id) const {
         const char *buffer = pool.get_char(id);
-        pyrint size = pool.get_field(id);
+        pyrsize size = pool.get_field(id);
 
         return PyropeInteger::from_buffer((const pyrchunk *) buffer, size);
       }
     
     private:
-      Char_Array<pyrint> pool;
+      Char_Array<pyrsize> pool;
   };
 }
 
