@@ -14,6 +14,7 @@ var operators = ["overload","arithmetic_operator","logical_operator","relational
 var block_list = ["if","while","for"];
 var method_id_track = 0;
 
+//test comment
 cfg_gen_setup = function(input){ //enable this to pass AST to cfg_gen_setup; also change tmp_count -> tmp_count_track
   for(var i = 0; i < input.length; i++){
     tmp_count_track = 0;
