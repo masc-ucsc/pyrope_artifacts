@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 project(pyrope)
 
-add_definitions("-std=c++11")
+# C++1z is enough, but C++14 is supposed to be more standard/stable
+set(CMAKE_CXX_STANDARD 14)
+#add_definitions("-std=c++14")
 
 include_directories(src)
 include_directories(src/sim)
