@@ -82,6 +82,9 @@
     tmp.unshift(head.value)
     return tmp.join('')
  }
+ 
+ 
+ 
 }
 
 
@@ -176,13 +179,13 @@ scope_else
    	}
 
 scope_body
-	= head:code_blocks tail:(EOS x:unary_expression __ {return x})? {
+	= head:code_blocks tail:(EOS x:logical_expression __ {return x})? {
     	if(tail){
           head.push(tail)
         }
         return head
     }
-    / head:unary_expression __ {return head}
+    / head:logical_expression __ {return head}
     
 scope
         = COLON args:scope_condition? COLON {
@@ -190,13 +193,13 @@ scope
    }
 
 scope_condition
-        =  head:scope_argument tail:(WHEN x:(unary_expression) {return x} )? {
+        =  head:scope_argument tail:(WHEN x:(logical_expression) {return x} )? {
      return {
        scope_arg_list:head,
        when:tail
      }
    }
-   / head:(x:scope_argument {return x})? WHEN tail:(unary_expression)  {
+   / head:(x:scope_argument {return x})? WHEN tail:(logical_expression)  {
      return {
        arg_list:head,
        when:tail
@@ -214,7 +217,7 @@ scope_argument
    }
 
 if_statement
-        = IF if_test:unary_expression sc:((_ x:"::" LBRACE y:(EOS/__) )/_ LBRACE x:(EOS/__) {return x})  
+        = IF if_test:logical_expression sc:((_ x:"::" LBRACE y:(EOS/__) )/_ LBRACE x:(EOS/__) {return x})  
         if_true:(x:code_blocks? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)}) RBRACE ELSE:(__ x:else_statement{return x})? 
    	{
     	//return sc
@@ -250,7 +253,7 @@ if_statement
    	}
         
 else_statement
-        = ELIF else_test:unary_expression sc:((_ x:"::" LBRACE (EOS/__))/_ LBRACE x:(EOS/__) {return x}) 
+        = ELIF else_test:logical_expression sc:((_ x:"::" LBRACE (EOS/__))/_ LBRACE x:(EOS/__) {return x}) 
         else_true:(x:code_blocks? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)}) RBRACE else_false:(__ x:else_statement{return x})? 
   	{
     	if((sc instanceof Array) && sc.length==0)sc=null
@@ -352,7 +355,7 @@ for_index
    }
 
 while_statement
-   = WHILE cond:unary_expression sc:((_ x:"::" LBRACE (EOS/__))/_ LBRACE x:(EOS/__) {return x}) 
+   = WHILE cond:logical_expression sc:((_ x:"::" LBRACE (EOS/__))/_ LBRACE x:(EOS/__) {return x}) 
    	body:(x:code_blocks? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)}) RBRACE 
     {
     	if((sc instanceof Array))sc=null
@@ -385,7 +388,7 @@ while_statement
    	}
 
 return_statement
-	= RETURN head:unary_expression {
+	= RETURN head:logical_expression {
     	return{
         	start_pos:location().start.offset,
         	end_pos:location().end.offset,
@@ -395,7 +398,7 @@ return_statement
     }
     
 assertion_statement
-  	= ASSERTION head:unary_expression {
+  	= ASSERTION head:logical_expression {
  		return {
         	start_pos:location().start.offset,
         	end_pos:location().end.offset,
@@ -405,7 +408,7 @@ assertion_statement
 	}
 
 negation_statement
-   	= NEGATION head:unary_expression {
+   	= NEGATION head:logical_expression {
     	return {
         	start_pos:location().start.offset,
         	end_pos:location().end.offset,
@@ -426,7 +429,7 @@ compile_check_statement
 
 assignment_expression
         =  head:(overload_notation/lhs_expression) __ op:assignment_operator __
-   tail:(function_pipe/fcall_implicit/rhs_expression_property/unary_expression) /*prop:(_ x:rhs_expression_property{return x})* */  {
+   tail:(function_pipe/fcall_implicit/rhs_expression_property/logical_expression) /*prop:(_ x:rhs_expression_property{return x})* */  {
     return {
     	start_pos:location().start.offset,
        	end_pos:location().end.offset,    
@@ -521,14 +524,14 @@ fcall_arg_notation
         var char = buildList(head, tail, 1);
        return char
    }
-   / LPAR head:unary_expression tail:(COMMA unary_expression)* RPAR {
+   / LPAR head:(rhs_expression_property/logical_expression) tail:(COMMA (rhs_expression_property/logical_expression))* RPAR {
         var char = buildList(head, tail, 1);
        return char
    }
    / LPAR RPAR {return null}
 
 function_pipe 
-	= head:(fcall_implicit/unary_expression) _ tail:(FUNC_PIPE x:(fcall_implicit/fcall_explicit) _{return{f:x}})+ {
+	= head:(fcall_implicit/logical_expression) _ tail:(FUNC_PIPE x:(fcall_implicit/fcall_explicit) _{return{f:x}})+ {
         return tail.reduce(function(result,element){
         	return{
             	start_pos:location().start.offset,
@@ -539,16 +542,7 @@ function_pipe
             }
         },head);
     }
-
-unary_expression
-	= logical_expression
-    / op:NOT arg:logical_expression {
-    	return{
-        	type:"not_op",
-            not_arg:arg
-        }
-    }
-        
+         
 logical_expression
         =  head:relational_expression tail:(__ (OR/AND) _ relational_expression)* {
      return buildBinaryExpression(head, tail);
@@ -559,8 +553,8 @@ relational_expression
      return buildBinaryExpression(head, tail);
    }
 
-additive_expression
-	= head:bitwise_expression tail:(__ (T_PLUS/PLUS/MINUS/LEFT/RIGHT/T_STAR/UNION/INTERSECT/IN/overload_notation) _ bitwise_expression)*{
+additive_expression //IN rule has conflicts with id beginning with "in". (eg) foo = inc # throws error
+	= head:bitwise_expression tail:(__ (T_PLUS/PLUS/MINUS/LEFT/RIGHT/T_STAR/UNION/INTERSECT/ /*IN*/ overload_notation) _ bitwise_expression)*{
    		return buildBinaryExpression(head, tail);
   	}   
 
@@ -571,28 +565,37 @@ bitwise_expression
    	}
 
 multiplicative_expression
-	= head:factor tail:(__ (STAR/DIV) _ factor)* {
+	= head:unary_expression tail:(__ (STAR/DIV) _ unary_expression)* {
         return buildBinaryExpression(head, tail);
    	}
 
+unary_expression
+	= factor 
+    / op:NOT arg:factor {
+    	return{
+        	type:"not_op",
+            not_arg:arg
+        }
+    }
+    
 factor
-	= LPAR __ head:unary_expression __ RPAR xhead:(LBRK LBRK x:unary_expression? RBRK RBRK) {
+	= LPAR __ head:logical_expression __ RPAR xhead:bit_selection_bracket? {
   		if(xhead){ //rule and ast for '(' expr ')'[[ ]] - bit sel statements
-			head = {
-         		type:"bit_select",
-                bit_obj:head,
-                bit_sel:xhead[2]
-            }
+       		return xhead.reduce(function(result, element) {
+       			return {
+         			type: "bit_select",
+         			bit_obj: result,
+         			bit_sel: element.bit_property,
+       			};
+     		}, head);
         }
         return head;
   	}
-   / LPAR __ head:unary_expression __ RPAR{
-        return head;
-  	}
+   // unary_expression
    / rhs_expression
 
 tuple_by_notation
-        = white_space+ BY head:lhs_var_name {return head}
+        = BY head:lhs_var_name {return head}
 
 tuple_notation_no_bracket
    = head:bit_selection_notation tail:(_ bit_selection_notation)* {
@@ -602,50 +605,58 @@ tuple_notation_no_bracket
         	elements:char,
         }
    }
-   //a[1 2] works; a[1+2,3] not working
-   /* head:(rhs_expression_property/logical_expression/range_notation/bit_selection_notation) _
-   tail:(COMMA (rhs_expression_property/logical_expression/range_notation/bit_selection_notation) __)*
-   {
-       var char = buildList(head, tail, 1);
-       return {
-        	type:"tuple_list",
-        	elements:char,
-       }
-   }*/
-   
+
+
 tuple_notation
-        = LPAR head:bit_selection_notation tail:(_ bit_selection_notation)* RPAR by:tuple_by_notation? {
-       if (by) {
-       		var char = buildList(head, tail, 1);
-            return {
-            	type:"tuple_list",
-            	elements:char,
-            	skip_by:by
-        	}
-     	}
-       	var char = buildList(head, tail, 1);
-        return {
-        	type:"tuple_list",
-        	elements:char,
+	= LPAR head:bit_selection_notation tail:(_ bit_selection_notation)* RPAR by:tuple_by_notation? {
+ 	if (by) {
+   		var char = buildList(head, tail, 1);
+       	return {
+            type:"tuple_list",
+            elements:char,
+            skip_by:by
         }
-   }
-   / LPAR head:(rhs_expression_property/unary_expression/range_notation/bit_selection_notation/tuple_notation) _
-   tail:(COMMA (rhs_expression_property/unary_expression/range_notation/bit_selection_notation/tuple_notation) __)* RPAR by:tuple_by_notation?
-   {
-        if(by) {
-        	var char = buildList(head, tail, 1);
-            return {
+  	}
+            
+ 	var char = buildList(head, tail, 1);
+   	return {
+    	type:"tuple_list",
+     	elements:char,
+  	}
+}
+
+   / LPAR head:(rhs_expression_property/logical_expression/range_notation/bit_selection_notation/tuple_notation) _
+   tail:(COMMA (rhs_expression_property/logical_expression/range_notation/bit_selection_notation/tuple_notation) __)* RPAR 
+   by:(tuple_by_notation/bit_selection_bracket)?
+   	{
+    	var char = buildList(head, tail, 1);
+       	if(by instanceof Array){ //rule and ast for '(' expr ')'[[ ]] - bit sel statements
+            var by_tuple = {
+        		type:"tuple_list",
+        		elements:char,
+       		}
+    		return by.reduce(function(result, element) {
+       			return {
+         			type: "bit_select",
+         			bit_obj: result,
+         			bit_sel: element.bit_property,
+       			};
+     		}, by_tuple);
+ 		}else{
+        	return{
             	type:"tuple_list",
-                elements:char,
-               	skip_by:by
-          	}
-       }
-       var char = buildList(head, tail, 1);
-       return {
+        		elements:char,
+                skip_by:by
+            }
+        }
+    
+       	var char = buildList(head, tail, 1);
+       	return {
         	type:"tuple_list",
-        	elements:char,
-       }
-   }
+        	elements:char
+       	}
+  	}
+    
    / LPAR RPAR {
      return {
        type:"tuple_list",
@@ -656,7 +667,7 @@ tuple_notation
    //range_notation
 
 range_notation
-        = head:bit_selection_notation? ".." tail:(bit_selection_notation)? by:tuple_by_notation? {
+        = head:(bit_selection_notation)? ".." tail:(bit_selection_notation)? by:tuple_by_notation? {
 		if(by){
         	return {
        			type:"range",
@@ -672,48 +683,79 @@ range_notation
      	}
    }
 
+bit_selection_bracket
+	= tail:(LBRK LBRK property:(logical_expression/tuple_notation_no_bracket)? RBRK RBRK {return {bit_property:property}})*
+   
 bit_selection_notation
-	= head:(tuple_dot_notation) tail:(LBRK LBRK property:(unary_expression/tuple_notation_no_bracket)? RBRK RBRK {return {property:property}})* {
+	= head:(tuple_dot_notation) tail:bit_selection_bracket {
      return tail.reduce(function(result, element) {
        return {
          type: "bit_select",
          bit_obj: result,
-         bit_sel: element.property,
+         bit_sel: element.bit_property,
        };
      }, head);
    }
 
+tuple_dot_dot
+	= tail:(DOT property:(tuple_array_notation) {return {dot_property:property}})*
+
 tuple_dot_notation
-	= head:tuple_array_notation tail:(DOT property:(tuple_array_notation) {return {property:property}})* {
+	= head:tuple_array_notation tail:tuple_dot_dot {
  		return tail.reduce(function(result, element) {
      		return {
         		type: "tuple_dot",
          		dot_obj: result,
-         		dot_prop: element.property,
+         		dot_prop: element.dot_property,
        		};
  		}, head);
 	}
-   
+
+tuple_array_bracket
+	=  tail:(LBRK property:(logical_expression/range_notation/bit_selection_notation/tuple_notation_no_bracket) RBRK {return {arr_property:property}})*
+    
 tuple_array_notation
-	=  ref:"/"? head:(lhs_var_name) tail:(LBRK property:(unary_expression/range_notation/bit_selection_notation/tuple_notation_no_bracket) 
-	RBRK {return {property:property}})* {
-   		if(ref){
-        	var tmp = [];
-            tmp.push(ref);
-            tmp.push(head.value)
-        	head.value = tmp.join('')
-        }
+	=  head:(lhs_var_name) tail:tuple_array_bracket {
    		return tail.reduce(function(result, element) {
        		return {
          		type: "tuple_array",
          		arr_obj: result,
-         		arr_idx: element.property,
+         		arr_idx: element.arr_property,
        		};
      	}, head);
    	}
 
 lhs_expression
-        = range_notation/tuple_notation
+        = x:"\\"? y:(range_notation/tuple_notation) {
+        	function slash(y, type){
+            	if(y[type]['type'] == "tuple_dot"){
+                	return slash(y['dot_obj'], 'dot_obj');
+                }if(y[type]['type'] == "tuple_array"){
+                	return slash(y['arr_obj'], 'arr_obj');
+                }
+                
+                var arr = [];
+                arr.push('\\');
+                arr.push(y[type]['value']);
+                y[type]['value'] = arr.join('');
+            }
+        	if(x){
+            	var arr = [];
+                arr.push('\\');
+                if(y['type'] == "identifier"){
+                	arr.push(y['value']);
+                    y['value'] = arr.join('');
+                }else if(y['type'] == "tuple_dot"){
+                	slash(y, "dot_obj");
+                }else if(y['type'] == "tuple_array"){
+                	slash(y, "arr_obj");
+                }
+                //y['value'] = arr.join('');
+            	return y
+            }else{
+            	return y
+            }
+        }
 
 lhs_var_name
         = head:(identifier/constant) {return head}
@@ -932,18 +974,18 @@ decimal_signed
 }
 
 decimal_digit "integer greater than or equal to zero"
-	= head:("-")? tail:["?"0-9_]+ {
+	= head:("-")? tail:["?"0-9] tail2:["?"0-9_]* {              
   	var tmp = "0d"
    	if(head) {
        	return {
         	type:"number",
-         	value:head+tmp+tail.join(''),
+         	value:head+tmp+tail+tail2.join(''),
        	}
    	}
      
    	return {
      	type:"number",
-       	value:tmp+tail.join(''),
+       	value:tmp+tail+tail2.join(''),
    	}
 }
 
@@ -1112,11 +1154,11 @@ PLUSEQU    =  x:PLUS EQU         {return x}
 MINUSEQU   =  x:MINUS EQU      {return x}
 LEFTEQU    =  x:LEFT EQU        {return x}
 RIGHTEQU    =  x:RIGHT EQU       {return x}
-COMMA      =  ","    __
+COMMA      =  _ ","    __
 COLON      =  ":"
 DOUBLE_COLON       =  "::"                white_space*
 DOT        =  x:"."          //{return x;}
-BY                      = "by" white_space+
+BY         = "by" white_space*
 IF         = "if"         white_space+
 ELIF         = "elif"         white_space+
 ELSE         = "else"         white_space*

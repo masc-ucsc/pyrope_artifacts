@@ -10,7 +10,7 @@ cla = :(a b) when a.__bits==12:{           # specialize cla when bits == 12
   $sum = (s2.sum s1.sum)[[]]
 }
 cla = :(a b):{                             # default CLA (not CLA, just RCA)
-  $sum = rca.(a b cin:0).sum
+  $sum = rca.(a b cin:0).sum      
 }
 test = ::{
   s = cla 3 5
