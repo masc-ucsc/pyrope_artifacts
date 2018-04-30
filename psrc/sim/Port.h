@@ -27,7 +27,7 @@ namespace Pyrope
       virtual void write_u16(uint16_t v) { *(uint16_t *) data_ptr() = v; }
       virtual void write_u32(uint32_t v) { *(uint32_t *) data_ptr() = v; }
       virtual void write_u64(uint64_t v) { *(uint64_t *) data_ptr() = v; }
-      virtual void write_int(const PyropeInteger &v) { ((PyropeInteger *) data_ptr())->set_value(v); }
+      virtual void write_int(const Integer &v) { ((Integer *) data_ptr())->set_value(v); }
       virtual void write(const char *v, size_t bytes);
 
       PortWidth type;

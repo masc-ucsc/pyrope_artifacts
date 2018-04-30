@@ -3,7 +3,7 @@
 
 #include <cassert>
 #include <cstdint>
-#include "PyropeInteger.h"
+#include "Integer.hpp"
 
 namespace Pyrope {
 
@@ -62,7 +62,7 @@ namespace Pyrope {
     return sa >> sb;
   }
 
-  inline uint64_t __pyr64_set_access(const PyropeInteger &variable, uint32_t index) {
+  inline uint64_t __pyr64_set_access(const Integer &variable, uint32_t index) {
     return variable.get_bit(index);
   }
 

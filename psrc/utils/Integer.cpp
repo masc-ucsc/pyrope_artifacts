@@ -1,5 +1,5 @@
-#include "PyropeInteger.h"
-using Pyrope::PyropeInteger;
+#include "Integer.hpp"
+using Pyrope::Integer;
 using Pyrope::pyrchunk;
 using Pyrope::pyrint;
 using Pyrope::pyrsize;
@@ -12,7 +12,7 @@ using Pyrope::pyrsize;
 #include <sstream>
 using std::string;
 
-PyropeInteger::PyropeInteger(pyrint value)
+Integer::Integer(pyrint value)
 {
     if (value > UINT32_MAX) {
         bits = 64;
@@ -27,13 +27,13 @@ PyropeInteger::PyropeInteger(pyrint value)
     }
 }
 
-PyropeInteger::PyropeInteger(const PyropeInteger &other)
+Integer::Integer(const Integer &other)
   : bits(other.get_bits()), data(new pyrchunk[get_array_size()])
 {
   memcpy(data, other.const_data_ptr(), sizeof(pyrchunk) * get_array_size());
 }
 
-PyropeInteger::PyropeInteger(pyrint value, pyrsize bits) :
+Integer::Integer(pyrint value, pyrsize bits) :
   bits(bits), data(new pyrchunk[get_array_size()])
 {
     data[0] = (pyrchunk) value;
@@ -42,17 +42,17 @@ PyropeInteger::PyropeInteger(pyrint value, pyrsize bits) :
         data[1] = value >> PINT_CHUNK_SIZE;
 }
 
-PyropeInteger PyropeInteger::from_buffer(const pyrchunk *chunks, pyrsize bits)
+Integer Integer::from_buffer(const pyrchunk *chunks, pyrsize bits)
 {
-  PyropeInteger i(0, bits);
+  Integer i(0, bits);
   memcpy(i.data_ptr(), chunks, i.get_array_size() * sizeof(pyrchunk));
 
   return i;
 }
 
-PyropeInteger::~PyropeInteger() { delete[] data; }
+Integer::~Integer() { delete[] data; }
 
-string PyropeInteger::str() const
+string Integer::str() const
 {
     std::ostringstream strm;
 
@@ -64,7 +64,7 @@ string PyropeInteger::str() const
     return strm.str();
 }
 
-PyropeInteger &PyropeInteger::operator=(const PyropeInteger &other)
+Integer &Integer::operator=(const Integer &other)
 {
     if (this != &other) {
         auto array_size = get_array_size();
@@ -81,7 +81,7 @@ PyropeInteger &PyropeInteger::operator=(const PyropeInteger &other)
     return *this;
 }
 
-int PyropeInteger::get_bit(pyrsize index) const
+int Integer::get_bit(pyrsize index) const
 {
     pyrsize arr_index = array_index(index);
     pyrsize bit_index = chunk_bit_index(index);
@@ -94,7 +94,7 @@ int PyropeInteger::get_bit(pyrsize index) const
     return (masked == 0) ? 0 : 1;
 }
 
-pyrchunk PyropeInteger::get_bits32(pyrsize start_index, pyrsize end_index) const
+pyrchunk Integer::get_bits32(pyrsize start_index, pyrsize end_index) const
 {
     pyrsize start_arr_index = array_index(start_index / 32);
     pyrsize end_arr_index = chunk_bit_index(end_index / 32);
@@ -120,7 +120,7 @@ pyrchunk PyropeInteger::get_bits32(pyrsize start_index, pyrsize end_index) const
     }
 }
 
-void PyropeInteger::set_bit(pyrsize index, int value)
+void Integer::set_bit(pyrsize index, int value)
 {
     pyrsize arr_index = array_index(index);
     pyrsize bit_index = chunk_bit_index(index);
@@ -136,7 +136,7 @@ void PyropeInteger::set_bit(pyrsize index, int value)
         data[arr_index] |= mask;
 }
 
-void PyropeInteger::invert()
+void Integer::invert()
 {
     unsigned int i;
     auto arr_size = get_array_size();
@@ -154,7 +154,7 @@ void PyropeInteger::invert()
     }
 }
 
-void PyropeInteger::set_value(const PyropeInteger &other, bool sign_extend)
+void Integer::set_value(const Integer &other, bool sign_extend)
 {
     auto arr_size = get_array_size();
     auto other_arr_size = other.get_array_size();
@@ -178,7 +178,7 @@ void PyropeInteger::set_value(const PyropeInteger &other, bool sign_extend)
     }
 }
 
-void PyropeInteger::set_bits64(pyrsize s, pyrsize e, uint64_t value)
+void Integer::set_bits64(pyrsize s, pyrsize e, uint64_t value)
 {
     auto s_array_index = array_index(s);
     auto s_bit_index = chunk_bit_index(s);
@@ -214,7 +214,7 @@ void PyropeInteger::set_bits64(pyrsize s, pyrsize e, uint64_t value)
     }
 }
 
-void PyropeInteger::write_upper_chunk_helper(pyrsize bits_to_write, pyrsize remaining_bits_to_write, int chunk_index, uint64_t value)
+void Integer::write_upper_chunk_helper(pyrsize bits_to_write, pyrsize remaining_bits_to_write, int chunk_index, uint64_t value)
 {
     value >>= bits_to_write - remaining_bits_to_write;
     pyrchunk value_mask = (1 << remaining_bits_to_write) - 1;
@@ -223,7 +223,7 @@ void PyropeInteger::write_upper_chunk_helper(pyrsize bits_to_write, pyrsize rema
     data[chunk_index] |= value & value_mask;
 }
 
-pyrsize PyropeInteger::highest_set_bit() const
+pyrsize Integer::highest_set_bit() const
 {
   for (auto i = get_array_size() - 1; i >= 0; i++) {
     if (data[i] > 0) {
@@ -242,7 +242,7 @@ pyrsize PyropeInteger::highest_set_bit() const
   throw Pyrope::LogicError("highest_set_bit() called on 0");
 }
 
-string PyropeInteger::x_string() const
+string Integer::x_string() const
 {
   string xs;
 
@@ -252,7 +252,7 @@ string PyropeInteger::x_string() const
   return xs;
 }
 
-int PyropeInteger::cmp(const PyropeInteger &other) const
+int Integer::cmp(const Integer &other) const
 {
   pyrsize len = get_array_size();
   pyrsize olen = other.get_array_size();
@@ -270,6 +270,6 @@ int PyropeInteger::cmp(const PyropeInteger &other) const
   return 0;
 }
 
-bool Pyrope::operator>(const PyropeInteger &i1, const PyropeInteger &i2) { return i1.cmp(i2) > 0; }
-bool Pyrope::operator<(const PyropeInteger &i1, const PyropeInteger &i2) { return i1.cmp(i2) < 0; }
+bool Pyrope::operator>(const Integer &i1, const Integer &i2) { return i1.cmp(i2) > 0; }
+bool Pyrope::operator<(const Integer &i1, const Integer &i2) { return i1.cmp(i2) < 0; }
 

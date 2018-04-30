@@ -46,13 +46,13 @@ namespace Pyrope
     char *data_ptr() { return (char *) data->data_ptr(); }
     const char *const_data_ptr() const { return (const char *) data->const_data_ptr(); }
     
-    const PyropeInteger &read() const { return *data; }
-    void write(const PyropeInteger &i) { FluidPort::write(); *data = i; }
+    const Integer &read() const { return *data; }
+    void write(const Integer &i) { FluidPort::write(); *data = i; }
     
-    void connect(FluidConnection *c) { FluidPort::connect(c); data = (PyropeInteger *) c->data; }
+    void connect(FluidConnection *c) { FluidPort::connect(c); data = (Integer *) c->data; }
     FluidConnection get_connection() { return FluidConnection(type, (void *) data, vlid, rtry); }
 
-    PyropeInteger *data;
+    Integer *data;
   };
 
   class FluidPortU64 : public FluidPort

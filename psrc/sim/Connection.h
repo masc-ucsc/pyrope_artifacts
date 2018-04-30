@@ -5,7 +5,7 @@
 #include <iostream>
 using std::string;
 
-#include "PyropeInteger.h"
+#include "Integer.hpp"
 
 #ifndef UINT32_MAX
 #define UINT32_MAX        4294967295U

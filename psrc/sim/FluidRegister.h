@@ -1,7 +1,7 @@
 #ifndef FLUID_REGISTER_H_
 #define FLUID_REGISTER_H_
 
-#include "PyropeInteger.h"
+#include "Integer.hpp"
 #include "FluidPort.h"
 
 #include <cstdint>
@@ -132,8 +132,8 @@ namespace Pyrope
       const void *const_output_data_ptr() const { return &data_out; }
       const void *const_retry_slot_data_ptr() const { return &retry_slot; }
 
-      PyropeInteger data_in, data_out;
-      PyropeInteger retry_slot;
+      Integer data_in, data_out;
+      Integer retry_slot;
     protected:
       void read_from_stream(std::ifstream &);
   };

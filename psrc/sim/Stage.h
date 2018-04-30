@@ -2,7 +2,7 @@
 #define PYROPE_STAGE_H
 
 #include "Connection.h"
-#include "PyropeInteger.h"
+#include "Integer.hpp"
 #include "InternalRegister.h"
 
 #include <string>

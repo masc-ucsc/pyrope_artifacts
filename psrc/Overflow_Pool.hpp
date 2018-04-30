@@ -2,17 +2,17 @@
 #define OVERFLOW_POOL_H_
 
 #include "lgraph/core/char_array.hpp"
-#include "PyropeInteger.h"
+#include "Integer.hpp"
 #include <string>
 
 namespace Pyrope
 {
-  class OverflowPool
+  class Overflow_Pool
   {
     public:
-      OverflowPool(const std::string &path) : pool(path, "_ofp") { }
+      Overflow_Pool(const std::string &path) : pool(path, "_ofp") { }
 
-      Char_Array_ID save(const PyropeInteger &i) {
+      Char_Array_ID save(const Integer &i) {
         auto buffer_size = i.get_array_size() * sizeof(pyrchunk);
         char *buffer = new char[buffer_size + 1];
 
@@ -25,11 +25,11 @@ namespace Pyrope
         return id;
       }
 
-      PyropeInteger load(Char_Array_ID id) const {
+      Integer load(Char_Array_ID id) const {
         const char *buffer = pool.get_char(id);
         pyrsize size = pool.get_field(id);
 
-        return PyropeInteger::from_buffer((const pyrchunk *) buffer, size);
+        return Integer::from_buffer((const pyrchunk *) buffer, size);
       }
     
     private:

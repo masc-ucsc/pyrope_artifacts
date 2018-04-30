@@ -3,7 +3,7 @@
 
 #include <cassert>
 #include <cstdint>
-#include "PyropeInteger.h"
+#include "Integer.hpp"
 
 inline uint8_t __pyr8_numeric_and(uint8_t a, uint8_t b) { return a & b; }
 inline uint8_t __pyr8_numeric_or(uint8_t a, uint8_t b) { return a | b; }

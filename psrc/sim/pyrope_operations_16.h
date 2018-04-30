@@ -2,7 +2,7 @@
 #define PYROPE_OPERATIONS_16_H_
 
 #include <cassert>
-#include "PyropeInteger.h"
+#include "Integer.hpp"
 
 namespace Pyrope {
 

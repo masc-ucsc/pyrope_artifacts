@@ -15,16 +15,16 @@ namespace Pyrope
   const pyrchunk PINT_CHUNK_MASK = 0xFFFFFFFF;
   const pyrchunk PINT_CHUNK_MAX  = 0xFFFFFFFF;
 
-  class PyropeInteger
+  class Integer
   {
   public:
-    PyropeInteger(pyrint value);
-    PyropeInteger(pyrint value, pyrsize size);
-    PyropeInteger(const PyropeInteger &other);
-    ~PyropeInteger();
+    Integer(pyrint value);
+    Integer(pyrint value, pyrsize size);
+    Integer(const Integer &other);
+    ~Integer();
     
-    PyropeInteger &operator=(const PyropeInteger &other);
-    int cmp(const PyropeInteger &other) const;
+    Integer &operator=(const Integer &other);
+    int cmp(const Integer &other) const;
     
     pyrchunk get_chunk(pyrsize index) const { return data[index]; }
     void set_chunk(pyrsize index, pyrchunk value) { data[index] = value; }
@@ -43,9 +43,9 @@ namespace Pyrope
     pyrchunk *data_ptr() { return data; }
 
     void invert();
-    void set_value(const PyropeInteger &other, bool sign_extend = false);
+    void set_value(const Integer &other, bool sign_extend = false);
 
-    static PyropeInteger from_buffer(const pyrchunk *, pyrsize);    // could not overload as constructor
+    static Integer from_buffer(const pyrchunk *, pyrsize);    // could not overload as constructor
 
     static pyrsize array_index(pyrsize bits) { return bits >> 5; }
     static pyrsize chunk_bit_index(pyrsize bits) { return bits & 0x1f; }
@@ -59,8 +59,8 @@ namespace Pyrope
     pyrchunk *data;
   };
   
-  bool operator>(const PyropeInteger &i1, const PyropeInteger &i2);
-  bool operator<(const PyropeInteger &i1, const PyropeInteger &i2);
+  bool operator>(const Integer &i1, const Integer &i2);
+  bool operator<(const Integer &i1, const Integer &i2);
 }
 
 #endif

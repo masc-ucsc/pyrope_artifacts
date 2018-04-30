@@ -3,7 +3,7 @@
 
 #define COLLAPSED_CYCLE_COUNT     1024
 
-#include "PyropeInteger.h"
+#include "Integer.hpp"
 #include "Connection.h"
 #include "pyrope_utils.h"
 #include "pyrope_operations.h"

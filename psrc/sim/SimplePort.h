@@ -5,7 +5,7 @@
 #include <iostream>
 using std::string;
 
-#include "PyropeInteger.h"
+#include "Integer.hpp"
 #include "Connection.h"
 #include "Port.h"
 

@@ -53,7 +53,7 @@ namespace Pyrope {
       case PYROPE_TYPE_N8:
         return format_data_8b(*(uint8_t *) data);
       case PYROPE_TYPE_INT:
-        return ((PyropeInteger *) data)->str();
+        return ((Integer *) data)->str();
       default:
         assert(false);
         return "";
@@ -73,7 +73,7 @@ namespace Pyrope {
   void Connection::write(const void *src, size_t bytes)
   {
     if (type.get_flag() == PYROPE_TYPE_INT)
-      memcpy(((PyropeInteger *) data)->data_ptr(), src, bytes);
+      memcpy(((Integer *) data)->data_ptr(), src, bytes);
     else
       memcpy(data, src, bytes);
   }
@@ -81,7 +81,7 @@ namespace Pyrope {
   void Connection::read(void *dst, size_t bytes) const
   {
     if (type.get_flag() == PYROPE_TYPE_INT)
-      memcpy(dst, ((PyropeInteger *) data)->data_ptr(), bytes);
+      memcpy(dst, ((Integer *) data)->data_ptr(), bytes);
     else
       memcpy(dst, data, bytes);
   }
@@ -107,7 +107,7 @@ namespace Pyrope {
         rtrn = "xx";
         break;
       case PYROPE_TYPE_INT:
-        rtrn = ((PyropeInteger *) data)->x_string();
+        rtrn = ((Integer *) data)->x_string();
         break;
       default:
         assert(false);

@@ -5,7 +5,7 @@
 #include <string.h>
 #include <assert.h>
 
-#include "PyropeInteger.h"
+#include "Integer.hpp"
 #include "pyrope_operations_8.h"
 #include "pyrope_operations_16.h"
 #include "pyrope_operations_32.h"
@@ -20,7 +20,7 @@ namespace Pyrope {
   // wrapper for vprintf which can respond to the --benchmark flag
   void pyrprintf(const char *fmt, ...);
 
-  PyropeInteger __pyr_concat(uint32_t result_size, PyropeInteger a, uint32_t a_size, PyropeInteger b, uint32_t b_size);
+  Integer __pyr_concat(uint32_t result_size, Integer a, uint32_t a_size, Integer b, uint32_t b_size);
 
   inline bool __pyrbool_sel(bool sel, bool tc, bool fc) {
     return sel ? tc : fc;
@@ -38,37 +38,37 @@ namespace Pyrope {
   inline bool __pyrbool_logical_not(bool a)                  { return !a; }
   inline bool __pyrbool_logical_and(bool a, bool b)          { return a && b; }
 
-  inline PyropeInteger __pyr_multiplication(uint32_t result_size, uint64_t a, uint64_t b)
+  inline Integer __pyr_multiplication(uint32_t result_size, uint64_t a, uint64_t b)
   {
     // TODO: fill in this method
-    PyropeInteger result(0, result_size);
+    Integer result(0, result_size);
     return result;
   }
 
-  inline PyropeInteger &__pyr_bit_write(PyropeInteger &result, const PyropeInteger &a, uint32_t index, uint32_t value)
+  inline Integer &__pyr_bit_write(Integer &result, const Integer &a, uint32_t index, uint32_t value)
   {
     result = a;
     result.set_bit(index, value);
     return result;
   }
 
-  inline PyropeInteger &__pyr_bit_write(PyropeInteger &result, const PyropeInteger &a, uint32_t start_index, uint32_t end_index, uint64_t value)
+  inline Integer &__pyr_bit_write(Integer &result, const Integer &a, uint32_t start_index, uint32_t end_index, uint64_t value)
   {
     result = a;
     result.set_bits64(start_index, end_index, value);
     return result;
   }
 
-  inline PyropeInteger &__pyr_numeric_or(PyropeInteger &result, const PyropeInteger &a, const PyropeInteger &b) {
+  inline Integer &__pyr_numeric_or(Integer &result, const Integer &a, const Integer &b) {
     for (size_t i = 0; i < result.get_array_size(); i++)
       result.set_chunk(i, a.get_chunk(i) | b.get_chunk(i));
 
     return result;
   }
 
-  inline PyropeInteger &__pyr_left_shift(PyropeInteger &result, const PyropeInteger &a, uint32_t b) {
-    auto array_offset = PyropeInteger::array_index(b);
-    auto bit_offset = PyropeInteger::chunk_bit_index(b);
+  inline Integer &__pyr_left_shift(Integer &result, const Integer &a, uint32_t b) {
+    auto array_offset = Integer::array_index(b);
+    auto bit_offset = Integer::chunk_bit_index(b);
     auto inverse_bit_offset = PINT_CHUNK_SIZE - bit_offset;
 
     uint32_t carry_mask = (1 << bit_offset) - 1;
@@ -85,15 +85,15 @@ namespace Pyrope {
     return result;
   }
 
-  inline PyropeInteger &__pyr_concat(PyropeInteger &result, const PyropeInteger &a, uint32_t a_size, const PyropeInteger &b, uint32_t b_size) {
+  inline Integer &__pyr_concat(Integer &result, const Integer &a, uint32_t a_size, const Integer &b, uint32_t b_size) {
     __pyr_left_shift(result, a, b_size);
     __pyr_numeric_or(result, result, b);
 
     return result;
   }
 
-  inline PyropeInteger __pyr_addition(uint32_t result_size, const PyropeInteger &a, const PyropeInteger &b) {
-    PyropeInteger result(0, result_size);
+  inline Integer __pyr_addition(uint32_t result_size, const Integer &a, const Integer &b) {
+    Integer result(0, result_size);
     uint64_t buffer;
     uint32_t aval, bval, cval;
     unsigned int i;
@@ -114,9 +114,9 @@ namespace Pyrope {
     return result;
   }
 
-  inline PyropeInteger __pyr_subtraction(uint32_t result_size, const PyropeInteger &a, const PyropeInteger &b) {
-    PyropeInteger result(0, result_size);
-    PyropeInteger b_copy(0, b.get_bits());
+  inline Integer __pyr_subtraction(uint32_t result_size, const Integer &a, const Integer &b) {
+    Integer result(0, result_size);
+    Integer b_copy(0, b.get_bits());
 
     b_copy.set_value(b);
 
@@ -133,9 +133,9 @@ namespace Pyrope {
       out[i] = counter;
   }
 
-  inline PyropeInteger __pyr_right_shift(uint32_t result_size, const PyropeInteger &a, uint32_t b)
+  inline Integer __pyr_right_shift(uint32_t result_size, const Integer &a, uint32_t b)
   {
-    PyropeInteger result(0, result_size);
+    Integer result(0, result_size);
     
     for (unsigned int i = 0; i < result_size; i++) {
       if (i + b >= a.get_bits())
@@ -147,9 +147,9 @@ namespace Pyrope {
     return result;
   }
 
-  inline PyropeInteger __pyr_numeric_and(uint32_t result_size, const PyropeInteger &a, const PyropeInteger &b)
+  inline Integer __pyr_numeric_and(uint32_t result_size, const Integer &a, const Integer &b)
   {
-    PyropeInteger result(0, result_size);
+    Integer result(0, result_size);
     uint32_t aval, bval;
 
     for (unsigned int i = 0; i < result.get_array_size(); i++) {

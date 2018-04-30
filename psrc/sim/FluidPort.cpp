@@ -19,7 +19,7 @@ namespace Pyrope
       case PYROPE_TYPE_N8:
         return format_data_8b(*(uint8_t *) const_data_ptr());
       case PYROPE_TYPE_INT:
-        return ((PyropeInteger *) const_data_ptr())->str();
+        return ((Integer *) const_data_ptr())->str();
       default:
         assert(false);
         return "";

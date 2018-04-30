@@ -6,7 +6,7 @@
 #include <sparsehash/dense_hash_map>
 
 #include "Type.hpp"
-#include "OverflowPool.hpp"
+#include "Overflow_Pool.hpp"
 
 namespace Pyrope
 {
@@ -40,10 +40,10 @@ namespace Pyrope
       void merge(const VarID &var, const VarID &other) { symbols[var].merge(symbols[other]); }
       void merge(const VarID &var, const Type &other) { symbols[var].merge(other); }
 
-      OverflowPool *memory_pool() { return &pool; }
+      Overflow_Pool *memory_pool() { return &pool; }
     
     private:
-      OverflowPool pool;
+      Overflow_Pool pool;
       SymbolTable symbols;
       DictionaryMembers dict_members;
   };  

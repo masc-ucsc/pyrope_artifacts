@@ -3,7 +3,7 @@
 
 #include <cstdint>
 #include <cassert>
-#include "PyropeInteger.h"
+#include "Integer.hpp"
 
 namespace Pyrope {
 
@@ -26,11 +26,11 @@ namespace Pyrope {
     return ((source & (((uint64_t) 1U) << index)) > 0) ? 1 : 0;
   }
 
-  inline uint32_t __pyr32_bit_read(PyropeInteger &i, uint32_t index) {
+  inline uint32_t __pyr32_bit_read(Integer &i, uint32_t index) {
     return i.get_bit(index);
   }
 
-  inline uint32_t __pyr32_bit_read(PyropeInteger &i, uint32_t start_index, uint32_t end_index) {
+  inline uint32_t __pyr32_bit_read(Integer &i, uint32_t start_index, uint32_t end_index) {
     return i.get_bits32(start_index, end_index);
   }
 
@@ -66,7 +66,7 @@ namespace Pyrope {
   inline uint32_t __pyr64_arithmetic_xor(uint64_t a, uint64_t b) { return a ^ b; }
   inline uint32_t __pyr32_numeric_not(uint32_t a)            { return ~a; }
 
-  inline uint32_t __pyr32_set_access(const PyropeInteger &variable, uint32_t index) {
+  inline uint32_t __pyr32_set_access(const Integer &variable, uint32_t index) {
     return variable.get_bit(index);
   }
 
@@ -79,7 +79,7 @@ namespace Pyrope {
     return sa >> sb;
   }
 
-  inline bool __pyr32_is_not_equal(const PyropeInteger &a, const PyropeInteger &b) {
+  inline bool __pyr32_is_not_equal(const Integer &a, const Integer &b) {
     uint32_t max_index, i;
     uint32_t aval, bval;
 

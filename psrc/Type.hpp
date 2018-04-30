@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <cmath>
 
-#include "OverflowPool.hpp"
+#include "Overflow_Pool.hpp"
 
 namespace Pyrope
 {
@@ -77,17 +77,17 @@ namespace Pyrope
       TypeName get_name() const { return name; }
 
       pyrint get_min() const { return min; }
-      PyropeInteger get_overflow_min() const;
+      Integer get_overflow_min() const;
       bool min_overflow() const { return _min_overflow; }
       void set_min_overflow(bool v = true) { _min_overflow = v; }
 
       pyrint get_max() const { return max; }
-      PyropeInteger get_overflow_max() const;
+      Integer get_overflow_max() const;
       bool max_overflow() const { return _max_overflow; }
       void set_max_overflow(bool v = true) { _max_overflow = v; }
 
       pyrint get_len() const { return len; }
-      PyropeInteger get_overflow_len() const;
+      Integer get_overflow_len() const;
       bool len_overflow() const { return _len_overflow; }
       void set_len_overflow(bool v = true) { _len_overflow = v; }
 

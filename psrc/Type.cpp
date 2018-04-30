@@ -88,10 +88,10 @@ namespace Pyrope
   int Type::compare_attributes(pyrint attr1, bool attr1_overflow, pyrint attr2, bool attr2_overflow)
   {
     if (attr1_overflow || attr2_overflow) {
-      const PyropeInteger attr1_int = (attr1_overflow) ? context->memory_pool()->load((Char_Array_ID) attr1) : attr1;
-      const PyropeInteger attr2_int = (attr2_overflow) ? context->memory_pool()->load((Char_Array_ID) attr2) : attr2;
+      const Integer attr1_int = (attr1_overflow) ? context->memory_pool()->load((Char_Array_ID) attr1) : attr1;
+      const Integer attr2_int = (attr2_overflow) ? context->memory_pool()->load((Char_Array_ID) attr2) : attr2;
 
-      if (attr1_int > attr2_int)        // doing a normal subtraction would necessitate creating a new PyropeInteger
+      if (attr1_int > attr2_int)        // doing a normal subtraction would necessitate creating a new Integer
         return 1;
       else if (attr1_int < attr2_int)
         return -1;
@@ -138,7 +138,7 @@ namespace Pyrope
   pyrsize Type::signed_bits_required(pyrint attr, bool attr_overflow)
   {
     if (attr_overflow) {
-      PyropeInteger pint = context->memory_pool()->load((Char_Array_ID) attr);
+      Integer pint = context->memory_pool()->load((Char_Array_ID) attr);
       
       if (pint < 0)
         pint.invert();
@@ -155,7 +155,7 @@ namespace Pyrope
   pyrsize Type::unsigned_bits_required(pyrint attr, bool attr_overflow)
   {
     if (attr_overflow) {
-      const PyropeInteger pint = context->memory_pool()->load((Char_Array_ID) attr);
+      const Integer pint = context->memory_pool()->load((Char_Array_ID) attr);
       return pint.highest_set_bit();
     } else {
       return log2(attr) + 1;
@@ -197,9 +197,9 @@ namespace Pyrope
     }
   }
 
-  PyropeInteger Type::get_overflow_min() const { return context->memory_pool()->load((Char_Array_ID) min); }
-  PyropeInteger Type::get_overflow_max() const { return context->memory_pool()->load((Char_Array_ID) max); }
-  PyropeInteger Type::get_overflow_len() const { return context->memory_pool()->load((Char_Array_ID) len); }
+  Integer Type::get_overflow_min() const { return context->memory_pool()->load((Char_Array_ID) min); }
+  Integer Type::get_overflow_max() const { return context->memory_pool()->load((Char_Array_ID) max); }
+  Integer Type::get_overflow_len() const { return context->memory_pool()->load((Char_Array_ID) len); }
 
   bool Type::flags_match(const Type &o) const
   {
