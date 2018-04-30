@@ -7,6 +7,3 @@
 [submodule "subs/sparsehash-c11"]
 	path = subs/sparsehash-c11
 	url = https://github.com/sparsehash/sparsehash-c11.git
-[submodule "subs/spdlog"]
-	path = subs/spdlog
-	url = https://github.com/gabime/spdlog.git

@@ -10,7 +10,7 @@ include_directories(psrc/sim)
 include_directories(psrc/utils)
 include_directories(subs)
 include_directories(subs/sparsehash-c11)
-include_directories(subs/spdlog/include)
+include_directories(subs/lgraph/misc/spdlog/include)
 
 file(GLOB SOURCES "psrc/*.cpp" "psrc/sim/*.cpp" "psrc/utils/*.cpp")
 
