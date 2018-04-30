@@ -83,8 +83,6 @@
     return tmp.join('')
  }
  
- 
- 
 }
 
 
@@ -554,7 +552,22 @@ relational_expression
    }
 
 additive_expression //IN rule has conflicts with id beginning with "in". (eg) foo = inc # throws error
-	= head:bitwise_expression tail:(__ (T_PLUS/PLUS/MINUS/LEFT/RIGHT/T_STAR/UNION/INTERSECT/ /*IN*/ overload_notation) _ bitwise_expression)*{
+	= head:bitwise_expression tail:(__ (T_PLUS/PLUS/MINUS/LEFT/RIGHT/T_STAR/UNION/INTERSECT/ /*IN*/ overload_notation) _ bitwise_expression)*
+    tail2:(x:".." y:additive_expression?)?
+    {	
+    	if(tail2){
+        	var tmp = buildBinaryExpression(head, tail);
+            if(tail2[1] == null){
+            	tail2 = null;
+            }else{
+            	tail2 = tail2[1];
+            }
+        	return {
+       			type:"range",
+       			u_bound:tmp,
+       			l_bound:tail2
+     		}
+        }
    		return buildBinaryExpression(head, tail);
   	}   
 
@@ -625,9 +638,8 @@ tuple_notation
   	}
 }
 
-   / LPAR head:(rhs_expression_property/logical_expression/range_notation/bit_selection_notation/tuple_notation) _
-   tail:(COMMA (rhs_expression_property/logical_expression/range_notation/bit_selection_notation/tuple_notation) __)* RPAR 
-   by:(tuple_by_notation/bit_selection_bracket)?
+   / LPAR head:(rhs_expression_property/logical_expression) _
+   tail:(COMMA (rhs_expression_property/logical_expression) __)* RPAR by:(tuple_by_notation/bit_selection_bracket)
    	{
     	var char = buildList(head, tail, 1);
        	if(by instanceof Array){ //rule and ast for '(' expr ')'[[ ]] - bit sel statements
@@ -667,7 +679,7 @@ tuple_notation
    //range_notation
 
 range_notation
-        = head:(bit_selection_notation)? ".." tail:(bit_selection_notation)? by:tuple_by_notation? {
+        = head:(bit_selection_notation)? ".." tail:(additive_expression)? by:tuple_by_notation? {
 		if(by){
         	return {
        			type:"range",

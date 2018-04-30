@@ -390,7 +390,6 @@ function cfg_gen(data){
     if(i == "operator" && !(typeof(data[i])=="object")){
       arr.push(data[i]);  //handles "=" push into CFG array
     }
-
     
     if(typeof(data[i])=="object" && data[i] != null){
       if(data[i]["type"] == "binary_expression"){
@@ -398,7 +397,12 @@ function cfg_gen(data){
         tmp_count = tmp_count + 1;
         tmp_count_track = 1;
         cfg_gen(data[i]);
-      }else if(data[i]["type"] == "number" || data[i]["type"] == "identifier" || data[i]["type"] == "overload"){
+      }else if(data[i]["type"] == "not_op"){
+        arr.push('tmp'+tmp_count);
+        tmp_count = tmp_count + 1;
+        tmp_count_track = 1;
+        cfg_gen(data[i]["not_arg"]);
+      }else if(data[i]["type"] == "number" || data[i]["type"] == "identifier"){
         arr.push(data[i]["value"]);
       }else if(operators.indexOf(data[i]["type"]) >= 0){
         arr.push(data[i]["value"]);
