@@ -5,16 +5,16 @@ project(pyrope)
 set(CMAKE_CXX_STANDARD 14)
 #add_definitions("-std=c++14")
 
-include_directories(src)
-include_directories(src/sim)
-include_directories(src/utils)
-include_directories(../lgraph/misc/sparsehash)
-include_directories(../lgraph/misc)
-include_directories(../lgraph/core)
+include_directories(psrc)
+include_directories(psrc/sim)
+include_directories(psrc/utils)
+include_directories(subs)
+include_directories(subs/sparsehash-c11)
+include_directories(subs/spdlog/include)
 
-file(GLOB SOURCES "src/*.cpp" "src/sim/*.cpp" "src/utils/*.cpp")
+file(GLOB SOURCES "psrc/*.cpp" "psrc/sim/*.cpp" "psrc/utils/*.cpp")
 
-add_executable(type_test ${SOURCES} "tests/types.cpp")
+add_executable(type_test ${SOURCES} "test/types.cpp")
 
 find_package(Threads)
 

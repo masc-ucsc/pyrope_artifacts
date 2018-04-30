@@ -1,7 +1,7 @@
 #ifndef OVERFLOW_POOL_H_
 #define OVERFLOW_POOL_H_
 
-#include "char_array.hpp"
+#include "lgraph/core/char_array.hpp"
 #include "PyropeInteger.h"
 #include <string>
 

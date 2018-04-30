@@ -106,10 +106,13 @@ namespace Pyrope
       bool is_private() const { return _is_private; }
       void set_private(bool v = true) { _is_private = v; }
 
+      bool flags_match(const Type &) const;
+
       std::string to_string() const;
       std::string type_name() const;
 
       static Context *context;                  // set in Context
+      static const Type undefined;              // undefined type
 
     protected:
 
@@ -142,6 +145,8 @@ namespace Pyrope
       bool _min_fixed : 1;
       bool _len_fixed : 1;
   };
+
+  bool operator==(const Type &t1, const Type &t2);
 }
 
 #endif

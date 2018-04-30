@@ -9,7 +9,6 @@ namespace Pyrope
 {
   Context *Type::context = nullptr;
 
-  
   void Type::merge(const Type &other)
   {
     if (get_name() == UNDEF) {
@@ -197,8 +196,40 @@ namespace Pyrope
         throw DebugError("Not implemented yet");
     }
   }
-      
+
   PyropeInteger Type::get_overflow_min() const { return context->memory_pool()->load((Char_Array_ID) min); }
   PyropeInteger Type::get_overflow_max() const { return context->memory_pool()->load((Char_Array_ID) max); }
   PyropeInteger Type::get_overflow_len() const { return context->memory_pool()->load((Char_Array_ID) len); }
+
+  bool Type::flags_match(const Type &o) const
+  {
+    return (
+      _is_signed == o._is_signed &&
+      _is_input == o._is_input &&
+      _is_output == o._is_output &&
+      _is_register == o._is_register &&
+      _is_private == o._is_private &&
+      _max_overflow == o._max_overflow &&
+      _min_overflow == o._min_overflow &&
+      _len_overflow == o._len_overflow &&
+      _max_fixed == o._max_fixed &&
+      _min_fixed == o._min_fixed &&
+      _len_fixed == o._len_fixed
+    );
+  }
+
+  bool operator==(const Type &t1, const Type &t2)
+  {
+    if (t1.get_name() != t2.get_name() || !t1.flags_match(t2))
+      return false;
+    
+    switch (t1.get_name()) {
+      case NUMERIC:
+        return (t1.get_max() == t2.get_max() && t1.get_min() == t2.get_min() && t1.get_len() == t2.get_len());
+      case STRING:
+        return t1.get_len() == t2.get_len();
+      default:
+        return true;
+    }
+  }
 }
