@@ -11,7 +11,6 @@ var elif_condition_track=0, return_track=0;
 var list = [":","func_pipe","binary_expression","tuple_array","range","bit_select","function_call","tuple_list","tuple_dot"];
 var arg_list = [":","func_pipe","binary_expression","tuple_array","range","bit_select","func_decl","function_call","tuple_list","tuple_dot"];
 var operators = ["overload","arithmetic_operator","logical_operator","relational_operator","shift_operator","bitwise_operator","tuple_operator"];
-var block_list = ["if","while","for"];
 var method_id_track = 0;
 var elif_next_track = 0;
 var elif_phi_mark = 0;
