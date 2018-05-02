@@ -13,6 +13,9 @@ var arg_list = [":","func_pipe","binary_expression","tuple_array","range","bit_s
 var operators = ["overload","arithmetic_operator","logical_operator","relational_operator","shift_operator","bitwise_operator","tuple_operator"];
 var block_list = ["if","while","for"];
 var method_id_track = 0;
+var elif_next_track = 0;
+var elif_phi_mark = 0;
+var tmp_if_phi = 0;
 
 //test comment
 cfg_gen_setup = function(input){ //enable this to pass AST to cfg_gen_setup; also change tmp_count -> tmp_count_track
@@ -30,6 +33,11 @@ function cfg_gen(data){
   if(method_id_track == 1){ //insert k_next=null for last element in block
     arr.push("null");
     method_id_track = 0;
+  }
+
+  if(elif_next_track == 1){ //insert k_next=null for elif statement's cfg
+    arr.push("null");
+    elif_next_track = 0;
   }
 
   if(tmp_count_track > 0){ 
@@ -281,11 +289,20 @@ function cfg_gen(data){
     }
 
     if(i == "true_case"){
+      var if_phi;
       if(data[i] == null){
         arr.push("null");
       }else if(Array.isArray(data[i])){
         k_count++;      //k_count for "if"
         k_next_count++;
+        
+        if(elif_phi_mark == 0){
+          if_phi = k_count;
+          tmp_if_phi = if_phi;
+        }else{
+          if_phi = tmp_if_phi;
+          elif_phi_mark = 0;
+        }
         
         arr.unshift('K'+k_count); // push k_id to arr        
         arr.push('K'+(k_count+2)); //index for true case
@@ -333,11 +350,15 @@ function cfg_gen(data){
           } 
         } 
       }else if(typeof(data[i])=="object"){
+        elif_next_track = 1;
         arr.push('K'+(k_count+2)); //push elif target k_id to arr
         k_count++;
         k_next_count++;
+        elif_phi_mark = 1;
         cfg_gen(data[i]);
+        elif_phi_mark = 0;
       }
+      arr.push("'K"+if_phi);
     }   
 
     if(arr[3] == 'if' && i == "false_case"){
@@ -347,7 +368,7 @@ function cfg_gen(data){
     }else if(arr[4] == 'if' && i == "false_case"){ //this loop removes additional "tmp" in "if" cfg arr
       k_count = k_count + 1;
       k_next_count = k_next_count + 1;
-      arr.splice(3,1);
+      //arr.splice(3,1);  // #FIXME this is causing a bug. Remove if not needed
       arr.splice(1, 0, 'K'+k_next_count); //push k_next to arr
     }
 
@@ -398,10 +419,14 @@ function cfg_gen(data){
         tmp_count_track = 1;
         cfg_gen(data[i]);
       }else if(data[i]["type"] == "not_op"){
-        arr.push('tmp'+tmp_count);
-        tmp_count = tmp_count + 1;
-        tmp_count_track = 1;
-        cfg_gen(data[i]["not_arg"]);
+        if(data[i]["not_arg"]["type"] == "number" || data[i]["not_arg"]["type"] == "identifier"){
+          arr.push('!'+data[i]["not_arg"]["value"]);
+        }else{
+          arr.push('!tmp'+tmp_count);
+          tmp_count = tmp_count + 1;
+          tmp_count_track = 1;
+          cfg_gen(data[i]["not_arg"]);
+        }
       }else if(data[i]["type"] == "number" || data[i]["type"] == "identifier"){
         arr.push(data[i]["value"]);
       }else if(operators.indexOf(data[i]["type"]) >= 0){
