@@ -61,6 +61,10 @@ function cfg_gen(data){
       arr.push("if");       
     }
 
+    if(i == "uif_condition"){
+      arr.push("uif");
+    }
+
     if(i == "while_condition"){
       arr.push("while");
     }
@@ -360,11 +364,11 @@ function cfg_gen(data){
       arr.push("'K"+if_phi);
     }   
 
-    if(arr[3] == 'if' && i == "false_case"){
+    if((arr[3] == 'if' || arr[3] == 'uif') && i == "false_case"){
       k_count = k_count + 1;
       k_next_count = k_next_count + 1;
       arr.splice(1, 0, 'K'+k_next_count); //push k_next to arr
-    }else if(arr[4] == 'if' && i == "false_case"){ //this loop removes additional "tmp" in "if" cfg arr
+    }else if((arr[3] == 'if' || arr[3] == 'uif') && i == "false_case"){ //this loop removes additional "tmp" in "if" cfg arr
       k_count = k_count + 1;
       k_next_count = k_next_count + 1;
       //arr.splice(3,1);  // #FIXME this is causing a bug. Remove if not needed
@@ -508,6 +512,7 @@ function cfg_gen(data){
   }
 
   if(arr[5] == 'if'){ //remove additional "tmp" var in if statements
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@"); //print for debug
     arr.splice(4,1);
   }
  

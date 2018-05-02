@@ -215,10 +215,11 @@ scope_argument
    }
 
 if_statement
-        = IF if_test:logical_expression sc:((_ x:"::" LBRACE y:(EOS/__) )/_ LBRACE x:(EOS/__) {return x})  
+        = if_type:(UNIQUE_IF/IF) if_test:logical_expression sc:((_ x:"::" LBRACE y:(EOS/__) )/_ LBRACE x:(EOS/__) {return x})  
         if_true:(x:code_blocks? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)}) RBRACE ELSE:(__ x:else_statement{return x})? 
    	{
     	//return sc
+        var type_of_if = "if";
         if((sc instanceof Array) && sc.length==0)sc=null
         if(if_true!=null){
         	if(sc && sc.length!=4){
@@ -237,12 +238,23 @@ if_statement
                 sc=sc[1]                
         	}
         }
-        //return if_true
+        if(if_type[0] == "unique if"){
+        	type_of_if = "uif";
+          return {
+       	    start_pos:location().start.offset,
+        		end_pos:location().end.offset,
+            type:type_of_if,
+            uif_condition:if_test,
+       			scope:sc,
+       			true_case:if_true,
+       			false_case:ELSE
+     		  }
+        }
         //return sc        
 		return {
        		start_pos:location().start.offset,
         	end_pos:location().end.offset,
-            type:"if",
+            type:type_of_if,
             condition:if_test,
        		scope:sc,
        		true_case:if_true,
@@ -618,7 +630,6 @@ tuple_notation_no_bracket
         	elements:char,
         }
    }
-
 
 tuple_notation
 	= LPAR head:bit_selection_notation tail:(_ bit_selection_notation)* RPAR by:tuple_by_notation? {
@@ -1037,6 +1048,7 @@ keyword "keywords"
    / n:"FALSE"
    / n:"TRUE"
    / n:"true"
+   / n:"unique"
    / n:"when") !id_char
 
 assignment_operator
@@ -1172,6 +1184,7 @@ DOUBLE_COLON       =  "::"                white_space*
 DOT        =  x:"."          //{return x;}
 BY         = "by" white_space*
 IF         = "if"         white_space+
+UNIQUE_IF  = "unique if" white_space+
 ELIF         = "elif"         white_space+
 ELSE         = "else"         white_space*
 FOR         = "for"         white_space+
