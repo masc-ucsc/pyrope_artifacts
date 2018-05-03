@@ -5,7 +5,7 @@ using Pyrope::VarID;
 
 #include <cassert>
 
-const Pyrope::pyrsize WORD_WIDTH = 32;
+const Pyrope::pyrsize WORD_WIDTH = 2;
 
 int main(int argc, char **argv)
 {

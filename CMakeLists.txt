@@ -15,8 +15,9 @@ include_directories(subs/lgraph/subs/sparsehash-c11)
 file(GLOB SOURCES "psrc/*.cpp" "psrc/sim/*.cpp" "psrc/utils/*.cpp")
 
 add_executable(type_test ${SOURCES} "test/types.cpp")
+add_executable(hash_tb ${SOURCES} "test/hash_tb.cpp")
 
 find_package(Threads)
 
-target_link_libraries(type_test ${CMAKE_THREAD_LIBS_INIT})
-target_link_libraries(type_test dl)
+target_link_libraries(type_test ${CMAKE_THREAD_LIBS_INIT} dl)
+target_link_libraries(hash_tb ${CMAKE_THREAD_LIBS_INIT} dl)
