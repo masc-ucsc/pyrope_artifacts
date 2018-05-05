@@ -14,7 +14,7 @@ namespace Pyrope
   typedef google::dense_hash_map<VarID, Type> SymbolTable;
   typedef google::dense_hash_map<VarID, std::vector<VarID>> DictionaryMembers;
 
-  const std::string DEFAULT_POOL_DIR = ".";
+  const VarID DEFAULT_POOL_DIR = ".";
   const VarID DHM_EMPTY_KEY = "<empty>";
   const VarID DHM_DELETED_KEY = "<deleted>";
 
@@ -26,7 +26,7 @@ namespace Pyrope
         symbols.set_deleted_key(DHM_DELETED_KEY);
 
         dict_members.set_empty_key(DHM_EMPTY_KEY);
-        dict_members.set_empty_key(DHM_DELETED_KEY);
+        dict_members.set_deleted_key(DHM_DELETED_KEY);
 
         Type::context = this;             // global static pointer for all Types
       }

@@ -6,7 +6,7 @@
 #include <string>
 using std::string;
 
-Pyrope::Context *singleton = NULL;
+Pyrope::SimulationContext *singleton = NULL;
 
 // helper function to resolve *.so paths
 string so_path(const std::string &libfile);
@@ -16,10 +16,10 @@ void so_load(void **handle_out, void **tlfunc_out, string *id_out, const std::st
 
 // database object must be dynamic.  using just a file-level global (non-pointer) variable has caused double-free
 // errors when using map/unordered_map
-Pyrope::Context *context()
+Pyrope::SimulationContext *context()
 {
   if (singleton == NULL)
-    singleton = new Pyrope::Context();
+    singleton = new Pyrope::SimulationContext();
   
   return singleton;
 }
@@ -132,7 +132,7 @@ void so_load(void **handle_out, void **tlfunc_out, string *id_out, const std::st
 // Pyrope Context
 //
 
-Pyrope::Context::~Context()
+Pyrope::SimulationContext::~SimulationContext()
 {
   while (pipes.size() > 0) {
     auto itr = pipes.begin();

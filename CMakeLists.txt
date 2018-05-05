@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 project(pyrope)
 
 # C++1z is enough, but C++14 is supposed to be more standard/stable
-set(CMAKE_CXX_STANDARD 14)
-#add_definitions("-std=c++14")
+#set(CMAKE_CXX_STANDARD 14)
+add_definitions("-std=c++1z")
 
 include_directories(psrc)
 include_directories(psrc/sim)
@@ -15,9 +15,7 @@ include_directories(subs/lgraph/subs/sparsehash-c11)
 file(GLOB SOURCES "psrc/*.cpp" "psrc/sim/*.cpp" "psrc/utils/*.cpp")
 
 add_executable(type_test ${SOURCES} "test/types.cpp")
-add_executable(hash_tb ${SOURCES} "test/hash_tb.cpp")
 
 find_package(Threads)
 
 target_link_libraries(type_test ${CMAKE_THREAD_LIBS_INIT} dl)
-target_link_libraries(hash_tb ${CMAKE_THREAD_LIBS_INIT} dl)

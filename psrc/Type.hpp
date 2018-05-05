@@ -54,7 +54,7 @@ namespace Pyrope
 
       static Type create_logical() { return Type(LOGICAL); }
       static Type create_unsigned(pyrint max, pyrint min) { return Type(NUMERIC, max, min); }
-      static Type create_unsigned(pyrint bits) { return Type(NUMERIC, pow(2, bits)); }
+      static Type create_unsigned(pyrint bits) { return Type(NUMERIC, 0, pow(2, bits)); }
       static Type create_string(pyrint len) { return Type(STRING, 0, 0, len); }
 
       static Type create_signed(pyrint max, pyrint min) {
@@ -147,6 +147,7 @@ namespace Pyrope
   };
 
   bool operator==(const Type &t1, const Type &t2);
+  bool operator!=(const Type &t1, const Type &t2);
 }
 
 #endif

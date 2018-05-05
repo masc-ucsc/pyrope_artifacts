@@ -56,10 +56,10 @@ namespace Pyrope
   /////////////////////////////////////////////////////////////////////////
   // global Context
 
-  class Context
+  class SimulationContext
   {
     public:
-      ~Context();
+      ~SimulationContext();
 
       void add_pipe(const std::string &name, const PipeHandle &ph) { pipes[name] = ph; }
       void add_stage(const std::string &name, const StageHandle &sh) { stages[name] = sh; }

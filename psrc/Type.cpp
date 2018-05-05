@@ -232,4 +232,6 @@ namespace Pyrope
         return true;
     }
   }
+
+  bool operator!=(const Type &t1, const Type &t2) { return !(t1 == t2); }
 }
