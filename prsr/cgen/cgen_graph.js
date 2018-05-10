@@ -523,7 +523,7 @@ function cfg_gen(data){
   }
 
   if(arr[5] == 'if'){ //remove additional "tmp" var in if statements
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@"); //print for debug
+    //console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@"); //print for debug
     arr.splice(4,1);
   }
  
