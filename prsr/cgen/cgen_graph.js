@@ -5,6 +5,7 @@ var tmp_count = 0;
 var tmp_count_track = 0;
 var start = 0, end = 0;
 var k_count = 0, k_next_count = 1;
+var scope_count = 0, tmp_scope_count = 0;
 var scope_pos_track = 0, when_track = 0; 
 var false_count_track = -2;
 var elif_condition_track=0, return_track=0;
@@ -171,7 +172,11 @@ function cfg_gen(data){
             data[i].splice(j, 1);
           }
         }
-
+        
+        //the three lines below handle scope_count field in arr
+        scope_count = tmp_scope_count;    
+        scope_count++;
+        tmp_scope_count = scope_count;
         for(var j = 0; j < data[i].length; j++){
           if(j == data[i].length - 1){
             method_id_track = 1;
@@ -180,6 +185,7 @@ function cfg_gen(data){
             cfg_gen(data[i][j]);
           }
         }
+        scope_count = 0;
       }
     }   
 
@@ -197,6 +203,10 @@ function cfg_gen(data){
           }
         }
 
+        //the three lines below handle scope_count field in arr
+        scope_count = tmp_scope_count;
+        scope_count++;
+        tmp_scope_count = scope_count;
         for(var j = 0; j < data[i].length; j++){
           if(j == data[i].length - 1){
             method_id_track = 1;
@@ -205,6 +215,7 @@ function cfg_gen(data){
             cfg_gen(data[i][j]);
           }
         }
+        scope_count = 0;
       }
     }
 
@@ -528,6 +539,8 @@ function cfg_gen(data){
     arr[4] = arr[5];
     arr[5] = tmp;
   }*/
+
+  arr.splice(2,0,scope_count);  //insert scope_count in arr
 
   console.log(arr.join('\t'));
 }
