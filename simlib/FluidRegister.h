@@ -34,7 +34,7 @@
                                       ;\
                                     }
 
-namespace Pyrope 
+namespace Pyrope
 {
   class FluidRegister
   {
@@ -143,7 +143,7 @@ namespace Pyrope
   public:
     FluidRegisterBool();
     void update_int();
-    
+
     void *input_data_ptr() { return &data_in; }
     void *output_data_ptr() { return &data_out; }
     void *retry_slot_data_ptr() { return &retry_slot; }
@@ -224,7 +224,7 @@ namespace Pyrope
       FluidPortU16 *cport = (FluidPortU16 *) port;
       CONNECT_TO_INPUT(cport);
     }
-    
+
     void connect_to_output(FluidPort *port) {
       FluidPortU16 *cport = (FluidPortU16 *) port;
       CONNECT_TO_OUTPUT(cport);
@@ -242,11 +242,11 @@ namespace Pyrope
   public:
     FluidRegisterU32();
     void update_int();
-    
+
     void *input_data_ptr() { return &data_in; }
     void *output_data_ptr() { return &data_out; }
     void *retry_slot_data_ptr() { return &retry_slot; }
-    
+
     const void *const_input_data_ptr() const { return &data_in; }
     const void *const_output_data_ptr() const { return &data_out; }
     const void *const_retry_slot_data_ptr() const { return &retry_slot; }
