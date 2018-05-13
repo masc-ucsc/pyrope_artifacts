@@ -19,7 +19,7 @@ namespace Pyrope
 
     std::string format_data() const;
     std::string state() const;
-      
+
     void write_logical(bool v) { Port::write_logical(v); *vlid = true; }
     void write_u8(uint8_t v) { Port::write_u8(v); *vlid = true; }
     void write_u16(uint16_t v) { Port::write_u16(v); *vlid = true; }
@@ -45,10 +45,10 @@ namespace Pyrope
 
     char *data_ptr() { return (char *) data->data_ptr(); }
     const char *const_data_ptr() const { return (const char *) data->const_data_ptr(); }
-    
+
     const Integer &read() const { return *data; }
     void write(const Integer &i) { FluidPort::write(); *data = i; }
-    
+
     void connect(FluidConnection *c) { FluidPort::connect(c); data = (Integer *) c->data; }
     FluidConnection get_connection() { return FluidConnection(type, (void *) data, vlid, rtry); }
 
@@ -62,7 +62,7 @@ namespace Pyrope
 
     char *data_ptr() { return (char *) data; }
     const char *const_data_ptr() const { return (const char *) data; }
-    
+
     uint64_t read() const { return *data; }
     void write(uint64_t d) { FluidPort::write(); *data = d; }
 
@@ -94,10 +94,10 @@ namespace Pyrope
 
     char *data_ptr() { return (char *) data; }
     const char *const_data_ptr() const { return (const char *) data; }
-    
+
     uint16_t read() const { return *data; }
     void write(uint16_t d) { FluidPort::write(); *data = d; }
-    
+
     void connect(FluidConnection *c) { FluidPort::connect(c); data = (uint16_t *) c->data; }
 
     uint16_t *data;
@@ -110,10 +110,10 @@ namespace Pyrope
 
     char *data_ptr() { return (char *) data; }
     const char *const_data_ptr() const { return (const char *) data; }
-    
+
     uint8_t read() const { return *data; }
     void write(uint8_t d) { FluidPort::write(); *data = d; }
-    
+
     void connect(FluidConnection *c) { FluidPort::connect(c); data = (uint8_t *) c->data; }
 
     uint8_t *data;
@@ -126,10 +126,10 @@ namespace Pyrope
 
     char *data_ptr() { return (char *) data; }
     const char *const_data_ptr() const { return (const char *) data; }
-    
+
     bool read() const { return *data; }
     void write(bool d) { FluidPort::write(); *data = d; }
-    
+
     void connect(FluidConnection *c) { FluidPort::connect(c); data = (bool *) c->data; }
 
     bool *data;
