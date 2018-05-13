@@ -1,6 +1,5 @@
 #ifndef PYROPE_UTILS_H_
 #define PYROPE_UTILS_H_
-
 namespace Pyrope {
   struct PyropeArgBundle
   {

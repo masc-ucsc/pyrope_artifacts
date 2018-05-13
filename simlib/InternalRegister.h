@@ -41,7 +41,7 @@ namespace Pyrope
       operator uint8_t() const { return data; }
 
       InternalRegister *copy() const { return new RegisterU8(data); }
-    
+
     private:
       uint8_t data;
   };
@@ -59,7 +59,7 @@ namespace Pyrope
       operator uint32_t() const { return data; }
 
       InternalRegister *copy() const { return new RegisterU32(data); }
-    
+
     private:
       uint32_t data;
   };
@@ -77,7 +77,7 @@ namespace Pyrope
       operator uint64_t() const { return data; }
 
       InternalRegister *copy() const { return new RegisterU64(data); }
-    
+
     private:
       uint64_t data;
   };
@@ -97,7 +97,7 @@ namespace Pyrope
       const uint32_t &operator[](size_t idx) const { return data[idx]; }
 
       InternalRegister *copy() const { return new RegisterArrayU32(*this); }
-    
+
     private:
       size_t length;
       uint32_t *data;
@@ -118,7 +118,7 @@ namespace Pyrope
       const uint64_t &operator[](size_t idx) const { return data[idx]; }
 
       InternalRegister *copy() const { return new RegisterArrayU64(*this); }
-    
+
     private:
       size_t length;
       uint64_t *data;

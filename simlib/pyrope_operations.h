@@ -102,7 +102,7 @@ namespace Pyrope {
     for (i = 0; i < result.get_array_size(); i++) {
       aval = (i < a.get_array_size()) ? a.get_chunk(i) : 0;
       bval = (i < b.get_array_size()) ? b.get_chunk(i) : 0;
-      
+
       buffer = aval + bval + cval;
       result.set_chunk(i, (uint32_t) buffer & 0xFFFF);
       if (buffer > UINT32_MAX)
@@ -136,7 +136,7 @@ namespace Pyrope {
   inline Integer __pyr_right_shift(uint32_t result_size, const Integer &a, uint32_t b)
   {
     Integer result(0, result_size);
-    
+
     for (unsigned int i = 0; i < result_size; i++) {
       if (i + b >= a.get_bits())
         break;
@@ -155,7 +155,7 @@ namespace Pyrope {
     for (unsigned int i = 0; i < result.get_array_size(); i++) {
       aval = (i < a.get_array_size()) ? a.get_chunk(i) : 0;
       bval = (i < b.get_array_size()) ? b.get_chunk(i) : 0;
-      
+
       result.set_chunk(i, aval & bval);
     }
 
