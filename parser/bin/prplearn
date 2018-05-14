@@ -4,4 +4,4 @@ SCRIPT=`realpath $0`
 export PRP_PATH=`dirname $SCRIPT`"/.."
 dir="$(pwd)"
 #rm $dir/data/prplearn.json
-node $PRP_PATH/src/ifPrpLearn.js
+node $PRP_PATH/src/prplearn_bin.js
