@@ -71,7 +71,7 @@ namespace Pyrope
 
       const std::string &directory() const { return working_dir; }
       void set_directory(const std::string &d) { working_dir = d; }
-    
+
     private:
       std::unordered_map<std::string, PipeHandle> pipes;
       std::unordered_map<std::string, StageHandle> stages;

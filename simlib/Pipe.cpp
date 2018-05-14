@@ -202,7 +202,7 @@ void Pipe::clear_state()
 {
   for (const auto &pair : fluid_registers)
     pair.second->clear();
-  
+
   for (const auto &stage_pair : stages) {
     auto &stage_name = stage_pair.first;
     auto stage = stage_pair.second;
@@ -275,7 +275,7 @@ void Pipe::copy_checkpoint_data(CheckpointData *out) const
 {
   for (const auto &pair : stages)
     out->stages[pair.first] = new Stage(*pair.second);
-  
+
   for (const auto &pair : fluid_registers)
     out->fluid_registers[pair.first] = pair.second->copy();
 }
@@ -294,7 +294,7 @@ void Pipe::load_checkpoint(const string &filename)
 
     if (!read_destination(is, destination))
       break;
-    
+
     size_t period = destination.find(".");
 
     if (period != string::npos) {
@@ -347,8 +347,8 @@ bool Pipe::read_destination(std::ifstream &is, string &dest)
   while (is >> c) {
     if (c == ':')
       return true;
-    
-    else if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '.')
+
+    if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '.')
       dest += c;
   }
 
@@ -367,7 +367,7 @@ char Pipe::read_number(std::ifstream &is, void *dest, int width)
   while (is >> c) {
     if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'))
       buffer[bindex++] = c;
-    
+
     if (bindex == 2) {
       uint8_t high = char_to_byte(buffer[0]);
       uint8_t low = char_to_byte(buffer[1]);
