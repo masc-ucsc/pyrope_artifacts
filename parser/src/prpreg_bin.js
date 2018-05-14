@@ -22,7 +22,7 @@ var errorLocation;
 //var parser = require('./integerparser.js');
 //var parser = require('./constantsAndExpressions.js');
 //var parser = require('./ifPegParser.js');
-var parser = require('./tupleParser.js');
+var parser = require('./prp_parser.js');
 var fs = require('fs');
 var path = require('path');
 readline = require('readline');
