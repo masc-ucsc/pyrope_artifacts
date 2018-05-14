@@ -1,11 +1,7 @@
-123
-error alpha
- abc
-4567
-112233
-error alphanum
- 123bb
- b456c
-224466
-error gamma
- xyz
+a = 123
+error constants are not allowed on lhs of an expression
+ 1 = a + b
+b = 4567
+error function name cannot begin with a constant
+ 1a
+c = 224466

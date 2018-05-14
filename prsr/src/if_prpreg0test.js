@@ -6,9 +6,7 @@ var count = 0;
 var actualError;
 var fname = process.argv[2].split('/').pop();
 
-//var parser = require('./integerparser.js');
-//var parser = require('./ifPegParser.js');
-var parser = require('./tupleParser.js');
+var parser = require('./prp_parser.js');
 var fs = require('fs');
 var path = require('path');
 readline = require('readline');
@@ -55,10 +53,10 @@ for (index = 0; index < content.length; index++) {
                 }
                 count = count + 1;
             }
-            tmpContent.push("#" + content[index].slice(0, -1));
+            tmpContent.push("#" + content[index]);
             //console.log(tmpContent);
             //var outputFile = "./src/tests/" + fname.slice(0, -4) + "_error" + errorCounter + ".prp";
-            var outputFile = "tests/" + fname.slice(0, -4) + "_error" + errorCounter + ".prp";
+            var outputFile = "tmp_test/" + fname.slice(0, -4) + "_error" + errorCounter + ".prp";
             var file = fs.createWriteStream(outputFile);
             file.write(tmpContent.join('\n'));
             tmpContent.pop(); 

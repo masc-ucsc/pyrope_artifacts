@@ -1,1 +1,2 @@
-error invalid ^:
+error constants are not allowed on lhs of an expression
+error function name cannot begin with a constant

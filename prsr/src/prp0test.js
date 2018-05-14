@@ -10,9 +10,7 @@ readline = require('readline');
 var content = [];
 
 fs.readFileSync(process.argv[2]).toString().split('\n').forEach(function (line) {
-
-    content.push(line);
-
+  content.push(line);
 });
 
 
@@ -35,6 +33,5 @@ content.forEach(function (element, index) {
 content.forEach(function (element) {
     file.write(element + '\n');
 });
-
 
 

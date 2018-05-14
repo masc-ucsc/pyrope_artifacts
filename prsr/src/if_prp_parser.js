@@ -3,7 +3,6 @@ String.prototype.dup = function(count) {
 };
 
 require('../cgen/cgen_graph.js');
-//require('../cfg/test_traversal.js');
 var errorArray = {};
 var i, j, k, x, y;
 var errorLocation;
@@ -17,15 +16,8 @@ var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
 var filename = process.argv[2];
-//var parser = require(path.join(prp_path,'src/tupleParser.js'));
 var parser = require(path.join(prp_path,'src/prp_parser.js'));
-//var error = process.argv[3];
-//var filepath = path.join(__dirname, 'tests');
-//var filepath = __dirname;
-//var filename;
 
-//var fileList = fs.readdirSync(filepath);
-//var fileList = fs.readdirSync('prplearn.json');
 //var jsonFile = fs.readFileSync("prplearn.json");
 var jsonFile = fs.readFileSync(path.join(prp_path,"data/prplearn.json"));
 //var jsonContent = fs.readFileSync("../data/prplearn.json").toString().split('\n');
