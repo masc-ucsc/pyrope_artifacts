@@ -2,7 +2,7 @@
 
 Pyrope, a modern HDL with a live flow
 
-# Directory structure
+## Directory structure
 
 * parser   ; Pyrope parser and parsing tools
 * simlib   ; C++ library to use in Pyrope generated code
