@@ -1,4 +1,4 @@
-var fs = require('fs');
+//var fs = require('fs');
 //var json_file = fs.readFileSync("./test/ast_for.json");
 //var json_data = JSON.parse(json_file);
 var tmp_count = 0;
@@ -6,9 +6,9 @@ var tmp_count_track = 0;
 var start = 0, end = 0;
 var k_count = 0, k_next_count = 1;
 var scope_count = 0, tmp_scope_count = 0;
-var scope_pos_track = 0, when_track = 0; 
+var scope_pos_track = 0; 
 var false_count_track = -2;
-var elif_condition_track=0, return_track=0;
+var elif_condition_track=0;
 var list = [":","func_pipe","binary_expression","tuple_array","range","bit_select","function_call","tuple_list","tuple_dot"];
 var arg_list = [":","func_pipe","binary_expression","tuple_array","range","bit_select","func_decl","function_call","tuple_list","tuple_dot"];
 var operators = ["overload","arithmetic_operator","logical_operator","relational_operator","shift_operator","bitwise_operator","tuple_operator"];
@@ -397,7 +397,6 @@ function cfg_gen(data){
       if(arr[arr.length-2] == "tmp"+(tmp_count-1)){
         arr.splice(arr.length-2,1);
       }
-      return_track = 1;
     }
     if(i == "arr_obj"){
       arr.push("[]");    
