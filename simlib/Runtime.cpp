@@ -1,9 +1,9 @@
 #include "Runtime.h"
 
-#include <dlfcn.h>
 #include <cassert>
-#include <unordered_map>
+#include <dlfcn.h>
 #include <string>
+#include <unordered_map>
 using std::string;
 
 Pyrope::SimulationContext *singleton = NULL;
@@ -16,11 +16,10 @@ void so_load(void **handle_out, void **tlfunc_out, string *id_out, const std::st
 
 // database object must be dynamic.  using just a file-level global (non-pointer) variable has caused double-free
 // errors when using map/unordered_map
-Pyrope::SimulationContext *context()
-{
-  if (singleton == NULL)
+Pyrope::SimulationContext *context() {
+  if(singleton == NULL)
     singleton = new Pyrope::SimulationContext();
-  
+
   return singleton;
 }
 
@@ -28,17 +27,16 @@ Pyrope::SimulationContext *context()
 // pipes
 //
 
-void Pyrope::load_pipe(const std::string &name, const std::string &libfile)
-{
-  void *handle, *create;
+void Pyrope::load_pipe(const std::string &name, const std::string &libfile) {
+  void * handle, *create;
   string id;
 
   so_load(&handle, &create, &id, libfile, "create");
 
   PipeHandle hobj;
-  hobj.name = id;
-  hobj.handle = handle;
-  hobj.create_func = (Pyrope::create_pipe_t *) create;
+  hobj.name        = id;
+  hobj.handle      = handle;
+  hobj.create_func = (Pyrope::create_pipe_t *)create;
   context()->add_pipe(name, hobj);
 }
 
@@ -48,17 +46,16 @@ Pyrope::Pipe *Pyrope::create_pipe(const std::string &name) { return context()->g
 // stages
 //
 
-void Pyrope::load_stage(const std::string &name, const std::string &libfile)
-{
-  void *handle, *create;
+void Pyrope::load_stage(const std::string &name, const std::string &libfile) {
+  void * handle, *create;
   string id;
 
   so_load(&handle, &create, &id, libfile, "create");
 
   StageHandle hobj;
-  hobj.name = id;
-  hobj.handle = handle;
-  hobj.create_func = (Pyrope::create_stage_t *) create;
+  hobj.name        = id;
+  hobj.handle      = handle;
+  hobj.create_func = (Pyrope::create_stage_t *)create;
   context()->add_stage(name, hobj);
 }
 
@@ -69,15 +66,15 @@ Pyrope::Stage *Pyrope::create_stage(const std::string &name) { return context()-
 //
 
 void Pyrope::load_testbench(const std::string &name, const std::string &libfile) {
-  void *handle, *tlfunc;
+  void * handle, *tlfunc;
   string id;
 
-  so_load(&handle, (void **) &tlfunc, &id, libfile, "tb_main");
+  so_load(&handle, (void **)&tlfunc, &id, libfile, "tb_main");
 
   TestbenchHandle hobj;
-  hobj.name = id;
+  hobj.name   = id;
   hobj.handle = handle;
-  hobj.main = (Pyrope::tb_main *) tlfunc;
+  hobj.main   = (Pyrope::tb_main *)tlfunc;
   context()->add_testbench(name, hobj);
 }
 
@@ -86,67 +83,68 @@ void Pyrope::run_testbench(const std::string &name, Pipe *uut, int argc, char **
   context()->get_testbench(name).main(uut, argc, argv);
 }
 
-void Pyrope::empty_database() { if (singleton) delete singleton; }
+void Pyrope::empty_database() {
+  if(singleton)
+    delete singleton;
+}
 
 //
 // utilities
 //
 
-void Pyrope::set_working_directory(const std::string &dir) { context()->set_directory(dir); }
+void          Pyrope::set_working_directory(const std::string &dir) { context()->set_directory(dir); }
 const string &Pyrope::working_directory() { return context()->directory(); }
 
-void so_load(void **handle_out, void **tlfunc_out, string *id_out, const std::string &libfile, const std::string &func_name)
-{
-  const string &wdir = context()->directory();
-  const string libfile_fullpath = (wdir.length() > 0) ? wdir + "/" + libfile : libfile;
+void so_load(void **handle_out, void **tlfunc_out, string *id_out, const std::string &libfile, const std::string &func_name) {
+  const string &wdir             = context()->directory();
+  const string  libfile_fullpath = (wdir.length() > 0) ? wdir + "/" + libfile : libfile;
 
   *handle_out = dlopen(libfile_fullpath.c_str(), RTLD_LAZY);
-  if (*handle_out == NULL) {
+  if(*handle_out == NULL) {
     std::cerr << "DL-ERROR: " << dlerror() << std::endl;
     assert(false);
   }
 
   *tlfunc_out = dlsym(*handle_out, func_name.c_str());
-  if (*tlfunc_out == NULL) {
+  if(*tlfunc_out == NULL) {
     std::cerr << "DL-ERROR: " << dlerror() << std::endl;
     assert(false);
   }
 
-  Pyrope::metadata_func *mdfunc = (Pyrope::metadata_func *) dlsym(*handle_out, Pyrope::METADATA_HANDLE);
-  if (mdfunc == NULL) {
+  Pyrope::metadata_func *mdfunc = (Pyrope::metadata_func *)dlsym(*handle_out, Pyrope::METADATA_HANDLE);
+  if(mdfunc == NULL) {
     std::cerr << "DL-ERROR: " << dlerror() << std::endl;
     assert(false);
   }
 
   const string metadata = (*mdfunc)();
-  size_t space = metadata.find(" ");
-  if (space == string::npos) {
+  size_t       space    = metadata.find(" ");
+  if(space == string::npos) {
     std::cerr << "Il-formed metadata: " << metadata << std::endl;
     assert(false);
   }
 
-  *id_out = metadata.substr(space+1);
+  *id_out = metadata.substr(space + 1);
 }
 
 //
 // Pyrope Context
 //
 
-Pyrope::SimulationContext::~SimulationContext()
-{
-  while (pipes.size() > 0) {
+Pyrope::SimulationContext::~SimulationContext() {
+  while(pipes.size() > 0) {
     auto itr = pipes.begin();
     dlclose(itr->second.handle);
     pipes.erase(itr);
   }
 
-  while (stages.size() > 0) {
+  while(stages.size() > 0) {
     auto itr = stages.begin();
     dlclose(itr->second.handle);
     stages.erase(itr);
   }
 
-  while (testbenches.size() > 0) {
+  while(testbenches.size() > 0) {
     auto itr = testbenches.begin();
     dlclose(itr->second.handle);
     testbenches.erase(itr);
