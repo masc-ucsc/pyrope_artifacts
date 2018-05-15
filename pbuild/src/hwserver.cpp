@@ -13,7 +13,7 @@ int main() {
   //  Prepare our context and socket
   zmq::context_t context(1);
   zmq::socket_t  socket(context, ZMQ_REP);
-  //socket.bind ("tcp://*:5555");
+  // socket.bind ("tcp://*:5555");
   socket.bind("ipc:///tmp/renau/lgen0");
 
   while(true) {

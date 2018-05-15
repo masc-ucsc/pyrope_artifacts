@@ -19,15 +19,14 @@ int main(int argc, char **argv) {
 
   // Set the event handler which will be used to process particular events
   auto handleNotification = [&](Notification notification) {
-    std::cout << "Event " << notification.event << " on " << notification.path
-              << " was triggered." << std::endl;
+    std::cout << "Event " << notification.event << " on " << notification.path << " was triggered." << std::endl;
   };
 
   // Set the a separate unexpected event handler for all other events. An exception is thrown by
   // default.
   auto handleUnexpectedNotification = [](Notification notification) {
-    std::cout << "Event " << notification.event << " on " << notification.path
-              << " was triggered, but was not expected" << std::endl;
+    std::cout << "Event " << notification.event << " on " << notification.path << " was triggered, but was not expected"
+              << std::endl;
   };
 
   // Set the events to be notified for
@@ -58,4 +57,5 @@ int main(int argc, char **argv) {
   return 0;
 }
 
-// g++ --std=c++14 inotify.cpp ../subs/inotify-cpp/source/*.cpp -I ../subs/inotify-cpp/include/ -lboost_system -lboost_filesystem -lpthread
+// g++ --std=c++14 inotify.cpp ../subs/inotify-cpp/source/*.cpp -I ../subs/inotify-cpp/include/ -lboost_system -lboost_filesystem
+// -lpthread

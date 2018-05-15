@@ -8,7 +8,7 @@ int main() {
   zmq::socket_t  socket(context, ZMQ_REQ);
 
   std::cout << "Connecting to hello world server…" << std::endl;
-  //socket.connect ("tcp://localhost:5555");
+  // socket.connect ("tcp://localhost:5555");
   socket.connect("ipc:///tmp/renau/lgen0");
 
   //  Do 10 requests, waiting each time for a response

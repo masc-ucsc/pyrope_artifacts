@@ -56,7 +56,8 @@ int main(int argc, char **argv) {
       in_comment            = in_singleline_comment | in_multiline_comment;
 
       // At least 128 characters, and not close to the end of file
-      if(nopen == 0 && (ptr_section + 128) < &memblock[i] && !in_comment && (last_c == '\n' || last_c == '\r' || last_c == '\f') && ((i + 128) < sb.st_size)) {
+      if(nopen == 0 && (ptr_section + 128) < &memblock[i] && !in_comment && (last_c == '\n' || last_c == '\r' || last_c == '\f') &&
+         ((i + 128) < sb.st_size)) {
         memblock[i] = 0;
         printf("chunk:\n%s\n", ptr_section);
         ptr_section = &memblock[i + 1];
