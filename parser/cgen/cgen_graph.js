@@ -1,6 +1,3 @@
-//var fs = require('fs');
-//var json_file = fs.readFileSync("./test/ast_for.json");
-//var json_data = JSON.parse(json_file);
 var tmp_count = 0;
 var tmp_count_track = 0;
 var start = 0, end = 0;
@@ -8,16 +5,14 @@ var k_count = 0, k_next_count = 1;
 var scope_count = 0, tmp_scope_count = 0;
 var scope_pos_track = 0; 
 var false_count_track = -2;
-var elif_condition_track=0;
+var elif_condition_track = 0;
 var list = [":","func_pipe","binary_expression","tuple_array","range","bit_select","function_call","tuple_list","tuple_dot"];
 var arg_list = [":","func_pipe","binary_expression","tuple_array","range","bit_select","func_decl","function_call","tuple_list","tuple_dot"];
 var operators = ["overload","arithmetic_operator","logical_operator","relational_operator","shift_operator","bitwise_operator","tuple_operator"];
 var method_id_track = 0;
 var elif_next_track = 0;
-var elif_phi_mark = 0;
-var tmp_if_phi = 0;
+var elif_phi_mark = 0, tmp_if_phi = 0;
 
-//test comment
 cfg_gen_setup = function(input){ //enable this to pass AST to cfg_gen_setup; also change tmp_count -> tmp_count_track
   for(var i = 0; i < input.length; i++){
     tmp_count_track = 0;
@@ -234,7 +229,7 @@ function cfg_gen(data){
       }
     }    
      
-    if(i == "for_body"){
+    if(i == "for_body" || i == "while_body"){
       if(data[i] == null){
         arr.push("null");
       }else if(Array.isArray(data[i])){
@@ -268,7 +263,7 @@ function cfg_gen(data){
       arr.splice(1, 0, 'K'+k_next_count); //push k_next to arr
     }
 
-    if(i == "while_body"){
+    /*if(i == "while_body"){
       if(data[i] == null){
         arr.push("null");
       }else if(Array.isArray(data[i])){
@@ -294,7 +289,7 @@ function cfg_gen(data){
           }
         }
       }
-    }
+    }*/
 
     if(arr[3] == 'while'){
       k_count = k_count + 1;
@@ -455,7 +450,6 @@ function cfg_gen(data){
         tmp_count_track = 1;
         cfg_gen(data[i]);
       }else if(data[i]["type"] == "tuple_array"){
-        //arr.push(...array_tmp); //"..." is spread operator// array_tmp_val from tuple_array_parse()
         arr.push('tmp'+tmp_count);
         tmp_count = tmp_count + 1;
         tmp_count_track = 1;
@@ -513,7 +507,6 @@ function cfg_gen(data){
     //var tmp_x = arr[2];
     arr[1] = arr[2];
     arr.splice(2,1);
-    //console.log(arr);
   }
 
   
@@ -522,7 +515,6 @@ function cfg_gen(data){
   }
 
   if(arr[5] == 'if'){ //remove additional "tmp" var in if statements
-    //console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@"); //print for debug
     arr.splice(4,1);
   }
  
@@ -532,7 +524,6 @@ function cfg_gen(data){
     arr[5] = tmp;
   }
 
-  //console.log(arr);
   /*if(arr[4] == "=" || arr[4] == ":=" || arr[4] == ".()" || arr[4] == "as"){
     var tmp = arr[4];
     arr[4] = arr[5];
