@@ -104,6 +104,10 @@ catch(err) {
 
         expectedDesc = err.expected.length > 1 ? expectedDescs.slice(0, -1).join(", ") + " or " + expectedDescs[err.expected.length - 1] : expectedDescs[0]; 
         //console.error(expectedDescs); 
+       
+        if(expectedDescs.indexOf(undefined) >= 0){ //remove 'undefined' entry from expected array
+          expectedDescs.splice(descriptions.indexOf(undefined), 1);
+        }
 
         /*compare array elements*/
 

@@ -2,14 +2,8 @@ String.prototype.dup = function(count) {
   return new Array(count).join(this);
 };
 
-
-var failCount = 0;
-var errorArray = {};
 var i, j, k, ii; 
 var errorCount = 0;
-var tmpLine;
-var extractedError;
-var actualError;
 var errorList = [];
 var errorObj = [];
 var data = [];
@@ -19,7 +13,6 @@ var expectedArray = [];
 var parser = require('./prp_parser.js');
 var fs = require('fs');
 var path = require('path');
-//readline = require('readline');
 //var filename = process.argv[2];
 //var error = process.argv[3];
 //var filepath = path.join(__dirname, 'tests/');
@@ -57,8 +50,6 @@ for (ii = 0; ii < errorList.length; ii++) {
 }
 
 for (k = 0; k < data.length; k++) {
-  console.log(data[k]);
-  console.log("**********");
   try {
     parser.parse(data[k]);
   }
@@ -68,7 +59,6 @@ for (k = 0; k < data.length; k++) {
       //console.log(err.message);
       //console.log(data[k]);
       //console.log(err.describeExpected(err.expected);
-      //tmpLine = err.found;
       var expectedDescs = [];
       var expectedDesc = [];
       var descriptions = [];
@@ -85,6 +75,8 @@ for (k = 0; k < data.length; k++) {
       //console.log(descriptions);
       //console.log(err.SyntaxError.buildMessage);
       descriptions.sort();
+      //console.log(descriptions);
+
       if (descriptions.length > 0) {
         for (i = 1, j = 1; i < descriptions.length; i++) {
           if (descriptions[i - 1] !== descriptions[i]) {
@@ -93,6 +85,10 @@ for (k = 0; k < data.length; k++) {
           }
         }
         descriptions.length = j;
+      }
+
+      if(descriptions.indexOf(undefined) >= 0){ //remove 'undefined' entry from description array
+        descriptions.splice(descriptions.indexOf(undefined), 1);
       }
 
       //console.log(descriptions);
