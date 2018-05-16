@@ -1,4 +1,15 @@
 
+
++++++
+Step to update the repository default system prplearn rules
+
+prplearn clean
+for a in inputs/learn/*prp
+do
+  prplearn add $a
+done
+prplearn publish
+
 ++++ LEARN NEW RULES
 
  +Step 1: Regenerate the tests directory out of the inputs directory
