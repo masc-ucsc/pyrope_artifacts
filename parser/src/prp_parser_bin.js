@@ -126,4 +126,4 @@ catch(err) {
   }
 }
 
-console.log("END")
+console.log("END");
