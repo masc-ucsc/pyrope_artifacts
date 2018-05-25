@@ -12,15 +12,115 @@ var operators = ["overload","arithmetic_operator","logical_operator","relational
 var method_id_track = 0;
 var elif_next_track = 0;
 var elif_phi_mark = 0, tmp_if_phi = 0;
+var mark_read, read_condition;
 
 cfg_gen_setup = function(input){ //enable this to pass AST to cfg_gen_setup; also change tmp_count -> tmp_count_track
   for(var i = 0; i < input.length; i++){
+    mark_read = [];
     tmp_count_track = 0;
     if(input[i]["type"] != "comment"){
       cfg_gen(input[i]);
     }
+    if(mark_read.length > 0){
+      mark_variable_read(mark_read);
+    }
+    
   }
 }
+
+function mark_variable_read(mark_arr){
+  //console.log(mark_arr);
+  for(var i = 0; i < mark_arr.length; i++){
+    if(i < mark_arr.length && mark_arr[i][7][0] == "$"){
+      read_condition = [];
+      //console.log(mark_arr[i][7]);
+      recursive_variable_read(mark_arr, i, mark_arr[i][7], 7);
+    }
+    if(i < mark_arr.length && mark_arr[i][8][0] == "$"){
+      read_condition = [];
+      //console.log(mark_arr[i][8]);
+      recursive_variable_read(mark_arr, i, mark_arr[i][8], 8);
+    }
+    
+    
+  }
+}
+
+function recursive_variable_read(mark_arr, mark_index, mark_var, pos){
+  var i = mark_index;
+  var arr_range;
+  var tmp_read_condition = [];
+
+  if(mark_arr.length < 3){
+    arr_range = mark_arr.length - 1;
+  }else{
+    arr_range = mark_arr.length - 1; // FIXME: is that right? or length - 2 ??
+  }
+  //console.log(mark_var+" "+pos);
+
+  while(pos == 7 && i < arr_range){
+    if(mark_arr[i][6] == mark_arr[i+1][7]){
+      i = i + 1;   
+    }else if(mark_arr[i][6] == mark_arr[i+1][8]){
+      //console.log("HERE2 "+mark_arr[i+1][5]+" "+mark_arr[i+1][7]);
+      read_condition.push(mark_arr[i+1][5]);
+      read_condition.push(mark_arr[i+1][7]);
+      i = i + 1; 
+    }else{
+      pos = 0;
+      var tmp_i = i;
+      for(var ii = i + 2; ii < arr_range; ii++){
+        if(mark_arr[tmp_i][6] == mark_arr[ii][7] || mark_arr[tmp_i][6] == mark_arr[ii][8]){
+          i = ii;
+          pos = 7;
+        }
+      }
+    }
+        
+  }
+
+  while(pos == 8 && i < arr_range){
+    if(mark_arr[i][8] == mark_var){
+      //console.log("HERE4 "+mark_arr[i][5]+" "+mark_arr[i][7]);
+      read_condition.push(mark_arr[i][5]);
+      read_condition.push(mark_arr[i][7]);
+    }
+    if(mark_arr[i][6] == mark_arr[i+1][7]){
+      i = i + 1;
+    }else if(mark_arr[i][6] == mark_arr[i+1][8]){
+      //console.log("HERE6 "+mark_arr[i+1][5]+" "+mark_arr[i+1][7]);
+      read_condition.push(mark_arr[i+1][5]);
+      read_condition.push(mark_arr[i+1][7]);
+      i = i + 1;
+    }else{
+      pos = 0;
+    }
+  }
+
+  if(mark_arr[i][8] == mark_var && i == mark_arr.length - 1){
+    //console.log("HERE9 "+mark_arr[i][5]+" "+mark_arr[i][7]);
+    read_condition.push(mark_arr[i][5]);
+    read_condition.push(mark_arr[i][7]);
+  }
+
+  //next few line -> printing the read condition in CFG
+  read_condition.unshift(mark_var);
+
+  if(read_condition.length == 1){
+    console.log("RD "+read_condition[0]+" always");
+  }else{
+    for(var x = read_condition.length - 1; x > 0; x = x - 2){
+      if(read_condition[x-1] == "and"){
+        tmp_read_condition.push(read_condition[x]);
+      }else{
+        tmp_read_condition.push("!"+read_condition[x]);
+      }  
+    }
+    console.log("RD "+read_condition[0]+" on "+tmp_read_condition.join(' and '));
+  } 
+    
+}
+
 
 function cfg_gen(data){ 
   var arr = [];
@@ -531,6 +631,10 @@ function cfg_gen(data){
   }*/
 
   arr.splice(2,0,scope_count);  //insert scope_count in arr
+
+  if(arr[5] == "or" || arr[5] == "and"){
+    mark_read.push(arr);
+  }
 
   console.log(arr.join('\t'));
 }
