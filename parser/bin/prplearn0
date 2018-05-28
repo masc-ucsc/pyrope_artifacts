@@ -1,0 +1,10 @@
+#!/bin/bash
+
+dir="$(pwd)"
+if [ -f "$1" ]
+  then
+    node $dir/src/prp0_bin.js $1
+  else
+    echo "ERROR: prp0 needs a valid input file as command line argument"
+    exit 0
+fi

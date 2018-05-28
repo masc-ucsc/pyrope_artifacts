@@ -1,0 +1,17 @@
+#!/bin/bash
+
+dir="$(pwd)"
+prp1_tmp_count=$(ls $HOME/.prp/parser/prp1_tmp/ | wc -l)
+if [ $prp1_tmp_count -gt 0 ]
+then
+  rm $HOME/.prp/parser/prp1_tmp/*.prp #remove all old <file>_error.prp files
+fi
+
+if [ -f "$1" ]
+then
+  node $dir/src/prpreg0_bin.js $1
+else
+  echo "ERROR: prpreg0 needs a valid input file as command line argument"
+  exit 0
+fi
+

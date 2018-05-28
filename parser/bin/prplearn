@@ -3,5 +3,19 @@
 SCRIPT=`realpath $0`
 export PRP_PATH=`dirname $SCRIPT`"/.."
 dir="$(pwd)"
-#rm $dir/data/prplearn.json
-node $PRP_PATH/src/prplearn_bin.js
+if [ $1 == 'clean' ]
+then
+  rm $HOME/.prp/parser/data/prplearn.json
+elif [ $1 == 'add' ]
+then
+  if [ -f "$2" ]
+  then
+    $PRP_PATH/bin/prplearn0 $2
+    $PRP_PATH/bin/prplearn1 $2
+    $PRP_PATH/bin/prplearn2 $2
+    $PRP_PATH/bin/prplearn3
+  else
+    echo "ERROR: prplearn add needs a valid input file as command line argument"
+    exit 0
+  fi
+fi

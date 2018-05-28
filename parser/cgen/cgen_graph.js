@@ -105,6 +105,7 @@ function recursive_variable_read(mark_arr, mark_index, mark_var, pos){
 
   //next few line -> printing the read condition in CFG
   read_condition.unshift(mark_var);
+  //console.log(read_condition);
 
   if(read_condition.length == 1){
     console.log("RD "+read_condition[0]+" always");

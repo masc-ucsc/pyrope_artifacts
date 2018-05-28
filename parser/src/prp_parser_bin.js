@@ -14,8 +14,8 @@ var path = require('path');
 var _ = require('underscore');
 var filename = process.argv[2];
 var parser = require(path.join(prp_path,'src/prp_parser.js'));
-
-var jsonFile = fs.readFileSync(path.join(prp_path,"data/prplearn.json"));
+//var jsonFile = fs.readFileSync(path.join(prp_path,"data/prplearn.json"));
+var jsonFile = fs.readFileSync(process.env.HOME+"/.prp/parser/data/prplearn.json");
 var jsonContent = JSON.parse(jsonFile);
 
 // file or stdin chose as input

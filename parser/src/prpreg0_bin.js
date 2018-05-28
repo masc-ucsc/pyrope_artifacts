@@ -4,6 +4,9 @@ var tmpCount, count = 0;
 var fname = process.argv[2].split('/').pop();
 var parser = require('./prp_parser.js');
 var fs = require('fs');
+var path = require('path');
+var filepath = path.join(process.env.HOME+"/.prp/parser/prp1_tmp/");
+var errorlog_path = path.join(process.env.HOME+"/.prp/parser/data/errorLog");
 var error = [];
 var content = [];
 var tmpContent = [];
@@ -13,7 +16,7 @@ fs.readFileSync(process.argv[2]).toString().split('\n').forEach(function (line) 
   content.push(line);
 });
 
-fs.readFileSync("data/errorLog").toString().split('\n').forEach(function (line) {
+fs.readFileSync(errorlog_path).toString().split('\n').forEach(function (line) {
   error.push(line);
 });
 
@@ -42,7 +45,7 @@ for (index = 0; index < content.length; index++) {
         count = count + 1;
       }
       tmpContent.push("#" + content[index]);
-      var outputFile = "tmp_test/" + fname.slice(0, -4) + "_error" + errorCounter + ".prp";
+      var outputFile = filepath + fname.slice(0, -4) + "_error" + errorCounter + ".prp";
       var file = fs.createWriteStream(outputFile);
       file.write(tmpContent.join('\n'));
       tmpContent.pop(); 

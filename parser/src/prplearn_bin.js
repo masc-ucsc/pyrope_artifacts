@@ -2,7 +2,7 @@ String.prototype.dup = function(count) {
   return new Array(count).join(this);
 };
 
-var i, j, k, ii; 
+var i, j, k, x, ii; 
 var errorCount = 0;
 var errorList = [];
 var data = [];
@@ -10,8 +10,7 @@ var dataIndex = 0;
 var parser = require('./prp_parser.js');
 var fs = require('fs');
 var path = require('path');
-//var filepath = path.join(__dirname, 'tests/');
-var filepath = "tmp_test/";
+var filepath = path.join(process.env.HOME+"/.prp/parser/prp1_tmp/");
 var fileList = fs.readdirSync(filepath);
 //console.log(fileList);
 
@@ -28,7 +27,7 @@ for (i = 0; i < data.length; i++) {
   }
 }
 
-var jsonFile = fs.readFileSync("data/prplearn.json");
+var jsonFile = fs.readFileSync(process.env.HOME+"/.prp/parser/data/prplearn.json");
 var jsonData = JSON.parse(jsonFile);
 var jsonLength = jsonData.length;
 
@@ -38,6 +37,7 @@ for (ii = 0; ii < errorList.length; ii++) {
     userError: " "
   });
 }
+
 
 for (k = 0; k < data.length; k++) {
   try {
@@ -70,24 +70,37 @@ for (k = 0; k < data.length; k++) {
         descriptions.length = j;
       }
 
-      if(descriptions.indexOf(undefined) >= 0){ //remove 'undefined' entry from description array
+      if(descriptions.indexOf(undefined) >= 0) { //remove 'undefined' entry from description array
         descriptions.splice(descriptions.indexOf(undefined), 1);
       }
+      
+      //FIXME(conflicting error msg in json file) 
+      /*for(x = 0; x < jsonData.length; x++){
+        var tmp_arr = jsonData[x].expectedGrammar;
+        if(tmp_arr.toString() == descriptions.toString()){
+          console.log(errorList[errorCount]+' already exists');
+          descriptions = null;
+          //jsonData.splice(jsonData.length-1, 1)
+        }
+        break;
+      }*/
 
       //expectedDesc = err.expected.length > 1 ? expectedDescs.slice(0, -1).join(", ") + " or " + expectedDescs[err.expected.length - 1] : expectedDescs[0];
-      var objArray = {};
-      //objArray.expectedGrammar = expectedDescs;
-      objArray.expectedGrammar = descriptions;
-      objArray.userError = errorList[errorCount];
-      //jsonData[jsonLength].expectedGrammar = expectedDescs;
-      jsonData[jsonLength].expectedGrammar = descriptions;
-      jsonData[jsonLength].userError = errorList[errorCount];
-      jsonLength = jsonLength + 1;
-      errorCount = errorCount + 1;              
+      if(descriptions != null){
+        var objArray = {};
+        //objArray.expectedGrammar = expectedDescs;
+        objArray.expectedGrammar = descriptions;
+        objArray.userError = errorList[errorCount];
+        //jsonData[jsonLength].expectedGrammar = expectedDescs;
+        jsonData[jsonLength].expectedGrammar = descriptions;
+        jsonData[jsonLength].userError = errorList[errorCount];
+        jsonLength = jsonLength + 1;
+        errorCount = errorCount + 1;          
+      }
     } 
                         
   }
 
 }
 
-fs.writeFileSync('data/prplearn.json', JSON.stringify(jsonData), 'utf-8');
+fs.writeFileSync(process.env.HOME+"/.prp/parser/data/prplearn.json", JSON.stringify(jsonData), 'utf-8');
