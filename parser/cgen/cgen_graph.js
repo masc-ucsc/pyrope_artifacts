@@ -117,7 +117,14 @@ function recursive_variable_read(mark_arr, mark_index, mark_var, pos){
         tmp_read_condition.push("!"+read_condition[x]);
       }  
     }
-    console.log("RD "+read_condition[0]+" on "+tmp_read_condition.join(' and '));
+    var tmp_print_arr = [];
+    k_count++;
+    k_next_count++;
+    tmp_print_arr.push("K"+k_count);
+    tmp_print_arr.push("K"+k_next_count);
+    tmp_print_arr.push("RD "+read_condition[0]+" on "+tmp_read_condition.join(' and '));
+    console.log(tmp_print_arr.join('\t'));
+    //console.log("RD "+read_condition[0]+" on "+tmp_read_condition.join(' and '));
   } 
     
 }

@@ -8,14 +8,19 @@ then
   rm $HOME/.prp/parser/data/prplearn.json
 elif [ $1 == 'add' ]
 then
-  if [ -f "$2" ]
+  if [ -z "$2" ]
   then
-    $PRP_PATH/bin/prplearn0 $2
-    $PRP_PATH/bin/prplearn1 $2
-    $PRP_PATH/bin/prplearn2 $2
-    $PRP_PATH/bin/prplearn3
-  else
-    echo "ERROR: prplearn add needs a valid input file as command line argument"
+    echo "ERROR: prplearn add needs valid input file(s) as command line argument"
     exit 0
   fi
+  for x in $@; do
+    if [ $x != 'add' ]
+    then
+      $PRP_PATH/bin/prplearn0 $x
+      $PRP_PATH/bin/prplearn1 $x
+      $PRP_PATH/bin/prplearn2 $x
+      $PRP_PATH/bin/prplearn3
+      #echo $x
+    fi
+  done
 fi
