@@ -41,4 +41,7 @@ then
       #echo $1
     fi
   done
+elif [ $1 == 'publish' ]
+then
+  $PRP_PATH/bin/prplearn3 $1
 fi

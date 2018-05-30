@@ -11,8 +11,39 @@ var parser = require('./prp_parser.js');
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
+if(fs.existsSync(process.env.HOME+"/.prp/parser/data/prplearn.json") == false){
+  fs.writeFileSync(process.env.HOME+"/.prp/parser/data/prplearn.json", "[]");
+}
+if(fs.existsSync(process.env.HOME+"/pyrope/parser/data/prplearn.json") == false){
+  fs.writeFileSync(process.env.HOME+"/pyrope/parser/data/prplearn.json", "[]");
+}
 var filepath = path.join(process.env.HOME+"/.prp/parser/prp1_tmp/");
 var fileList = fs.readdirSync(filepath);
+
+if(process.argv[2] == "publish"){
+  publish_prplearn();
+  process.exit();
+}
+
+function publish_prplearn(){
+  var json_data_user = JSON.parse(fs.readFileSync(process.env.HOME+"/.prp/parser/data/prplearn.json"));
+  var json_data_system = JSON.parse(fs.readFileSync(process.env.HOME+"/pyrope/parser/data/prplearn.json")); 
+  for(var i = 0; i < json_data_user.length; i++){
+    var publish_match = json_data_system.some(function (tmp_obj, index){
+      var tmp_var = json_data_user[i].expectedGrammar.length == tmp_obj.expectedGrammar.length && (_.difference(json_data_user[i].expectedGrammar, tmp_obj.expectedGrammar).length == 0);
+      if(tmp_var){
+        json_data_system[index] = json_data_user[i];
+        fs.writeFileSync(process.env.HOME+"/pyrope/parser/data/prplearn.json", JSON.stringify(json_data_system), 'utf-8');
+      }
+      return tmp_var;
+    });
+    
+    if(!publish_match){
+      json_data_system.push(json_data_user[i]);
+      fs.writeFileSync(process.env.HOME+"/pyrope/parser/data/prplearn.json", JSON.stringify(json_data_system), 'utf-8');
+    }    
+  }
+}
 
 for (var item in fileList) {
   data[dataIndex] = fs.readFileSync(path.join(filepath, fileList[item])).toString();

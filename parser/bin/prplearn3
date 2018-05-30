@@ -7,7 +7,8 @@ dir="$(pwd)"
 if [ -z "$1" ]
 then
   node $PRP_PATH/src/prplearn_bin.js
-elif [ $1 == 'rm' ]
+elif [ $1 == 'rm' -o $1 == 'publish' ]
 then
   node $PRP_PATH/src/prplearn_bin.js $1
+
 fi

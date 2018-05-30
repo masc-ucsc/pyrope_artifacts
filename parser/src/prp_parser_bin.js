@@ -14,9 +14,14 @@ var path = require('path');
 var _ = require('underscore');
 var filename = process.argv[2];
 var parser = require(path.join(prp_path,'src/prp_parser.js'));
-//var jsonFile = fs.readFileSync(path.join(prp_path,"data/prplearn.json"));
-var jsonFile = fs.readFileSync(process.env.HOME+"/.prp/parser/data/prplearn.json");
-var jsonContent = JSON.parse(jsonFile);
+if(fs.existsSync(process.env.HOME+"/.prp/parser/data/prplearn.json") == false){
+  fs.writeFileSync(process.env.HOME+"/.prp/parser/data/prplearn.json", "[]");
+}
+if(fs.existsSync(process.env.HOME+"/pyrope/parser/data/prplearn.json") == false){
+  fs.writeFileSync(process.env.HOME+"/pyrope/parser/data/prplearn.json", "[]");
+}
+var json_content_user = JSON.parse(fs.readFileSync(process.env.HOME+"/.prp/parser/data/prplearn.json"));
+var json_content_system = JSON.parse(fs.readFileSync(process.env.HOME+"/pyrope/parser/data/prplearn.json"));
 
 // file or stdin chose as input
 if (process.argv[2] != "--stdin") {
@@ -93,9 +98,10 @@ catch(err) {
       expectedDescs.splice(descriptions.indexOf(undefined), 1);
     }
 
-    /*compare array elements*/
-    for (i = 0; i < jsonContent.length; i++) {
-      var is_same = jsonContent[i].expectedGrammar.length == expectedDescs.length && (_.difference(jsonContent[i].expectedGrammar, expectedDescs).length == 0);
+    /*compare array elements in user prplearn*/
+    var is_same;
+    for (i = 0; i < json_content_user.length; i++) {
+      is_same = json_content_user[i].expectedGrammar.length == expectedDescs.length && (_.difference(json_content_user[i].expectedGrammar, expectedDescs).length == 0);
       if (is_same) {
         x = err.location.start.offset;
         while (x != -1) {
@@ -105,17 +111,36 @@ catch(err) {
           }
           x = x - 1;
         } 
-        console.error(filename.split('/').pop()+':'+err.location.start.line+':'+err.location.start.column+': error: '+jsonContent[i].userError);
+        console.error(filename.split('/').pop()+':'+err.location.start.line+':'+err.location.start.column+': error: '+json_content_user[i].userError);
         console.error(data_backup[err.location.start.line-1]);
         //console.error(data.substr(errorLocation, err.location.end.column));
         console.error('-'.dup(err.location.start.column) + '^');
-        //console.error('Line '+err.location.start.line+', column '+err.location.start.column+': '+jsonContent[i].userError);
+        //console.error('Line '+err.location.start.line+', column '+err.location.start.column+': '+json_content_user[i].userError);
         process.exit(2);
         return;
       }
     }
-    //console.error('Error in input file: ');
-    //console.error(filename.split('/').pop());
+
+    /*compare array elements in system prplearn*/
+    for (var i = 0; i < json_content_system.length; i++) {
+      is_same = json_content_system[i].expectedGrammar.length == expectedDescs.length && (_.difference(json_content_system[i].expectedGrammar, expectedDescs).length == 0);
+      if (is_same) {
+        x = err.location.start.offset;
+        while (x != -1) {
+          if (data[x] == "\n") {
+            errorLocation = x + 1;
+            x = 0;
+          }
+          x = x - 1;
+        }
+        console.error(filename.split('/').pop()+':'+err.location.start.line+':'+err.location.start.column+': error: '+json_content_system[i].userError);
+        console.error(data_backup[err.location.start.line-1]);
+        console.error('-'.dup(err.location.start.column) + '^');
+        process.exit(2);
+        return;
+      }  
+    }
+
     console.error(filename.split('/').pop()+':'+err.location.start.line+':'+err.location.start.column+': error: '+err.message);
     console.error(data_backup[err.location.start.line-1]);
     console.error('-'.dup(err.location.start.column) + '^');
