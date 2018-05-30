@@ -117,18 +117,61 @@ function recursive_variable_read(mark_arr, mark_index, mark_var, pos){
         tmp_read_condition.push("!"+read_condition[x]);
       }  
     }
-    var tmp_print_arr = [];
-    k_count++;
-    k_next_count++;
-    tmp_print_arr.push("K"+k_count);
-    tmp_print_arr.push("K"+k_next_count);
-    tmp_print_arr.push("RD "+read_condition[0]+" on "+tmp_read_condition.join(' and '));
-    console.log(tmp_print_arr.join('\t'));
-    //console.log("RD "+read_condition[0]+" on "+tmp_read_condition.join(' and '));
-  } 
+    //console.log(tmp_read_condition);
     
+    if(tmp_read_condition.length == 1){
+      var tmp_print_arr = [];
+      k_count++;
+      k_next_count++;
+      tmp_print_arr.push("K"+k_count);
+      tmp_print_arr.push("K"+k_next_count);
+      tmp_print_arr.push(tmp_scope_count);
+      tmp_print_arr.push(start);
+      tmp_print_arr.push(end);
+      tmp_print_arr.push("RD "+read_condition[0]+" on "+tmp_read_condition.join(' and '));
+      console.log(tmp_print_arr.join('\t'));
+    }else{
+      pretty_print_predicates(tmp_read_condition, read_condition[0]);
+    }
+    
+  } 
+ 
 }
 
+function pretty_print_predicates(read_arr, read_var){
+
+  var tmp_read_arr = [];
+ 
+  k_count++;
+  k_next_count++;
+  tmp_read_arr.push("K"+k_count);
+  tmp_read_arr.push("K"+k_next_count);
+  tmp_read_arr.push(tmp_scope_count);
+  tmp_read_arr.push(start);
+  tmp_read_arr.push(end);
+  tmp_read_arr.push("and");
+  tmp_read_arr.push("tmp"+tmp_count);
+  tmp_count++;
+  tmp_read_arr.push(read_arr[0]);
+  tmp_read_arr.push(read_arr[1]);
+  console.log(tmp_read_arr.join('\t'));
+  read_arr.splice(0,2);
+  if(read_arr.length > 0){
+    read_arr.unshift("tmp"+(tmp_count - 1));
+    pretty_print_predicates(read_arr, read_var);
+  }else{
+    var tmp2_read_arr = [];
+    k_count++;
+    k_next_count++;
+    tmp2_read_arr.push("K"+k_count);
+    tmp2_read_arr.push("K"+k_next_count);
+    tmp2_read_arr.push(tmp_scope_count);
+    tmp2_read_arr.push(start);
+    tmp2_read_arr.push(end);
+    tmp2_read_arr.push("RD "+read_var+" on tmp"+(tmp_count - 1));
+    console.log(tmp2_read_arr.join('\t'));
+  }
+}
 
 function cfg_gen(data){ 
   var arr = [];
