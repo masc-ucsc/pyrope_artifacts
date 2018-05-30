@@ -2,7 +2,7 @@ String.prototype.dup = function(count) {
   return new Array(count).join(this);
 };
 
-var i, j, k, x, ii; 
+var i, j, k, ii; 
 var errorCount = 0;
 var errorList = [];
 var data = [];
@@ -10,9 +10,9 @@ var dataIndex = 0;
 var parser = require('./prp_parser.js');
 var fs = require('fs');
 var path = require('path');
+var _ = require('underscore');
 var filepath = path.join(process.env.HOME+"/.prp/parser/prp1_tmp/");
 var fileList = fs.readdirSync(filepath);
-//console.log(fileList);
 
 for (var item in fileList) {
   data[dataIndex] = fs.readFileSync(path.join(filepath, fileList[item])).toString();
@@ -86,16 +86,26 @@ for (k = 0; k < data.length; k++) {
       }*/
 
       //expectedDesc = err.expected.length > 1 ? expectedDescs.slice(0, -1).join(", ") + " or " + expectedDescs[err.expected.length - 1] : expectedDescs[0];
-      if(descriptions != null){
-        var objArray = {};
-        //objArray.expectedGrammar = expectedDescs;
-        objArray.expectedGrammar = descriptions;
-        objArray.userError = errorList[errorCount];
-        //jsonData[jsonLength].expectedGrammar = expectedDescs;
-        jsonData[jsonLength].expectedGrammar = descriptions;
-        jsonData[jsonLength].userError = errorList[errorCount];
-        jsonLength = jsonLength + 1;
-        errorCount = errorCount + 1;          
+      if(process.argv[2] != "rm"){
+        if(descriptions != null){
+          var objArray = {};
+          //objArray.expectedGrammar = expectedDescs;
+          objArray.expectedGrammar = descriptions;
+          objArray.userError = errorList[errorCount];
+          //jsonData[jsonLength].expectedGrammar = expectedDescs;
+          jsonData[jsonLength].expectedGrammar = descriptions;
+          jsonData[jsonLength].userError = errorList[errorCount];
+          jsonLength = jsonLength + 1;
+          errorCount = errorCount + 1;          
+        }
+      }else{  //handles "prplearm rm <filename>"
+        jsonData.splice(jsonData.length - 1, 1);
+        for(var x = 0; x < jsonData.length; x++){
+          var is_same = jsonData[x].expectedGrammar.length == descriptions.length && (_.difference(jsonData[x].expectedGrammar, descriptions).length == 0);
+          if(is_same){
+            jsonData.splice(x, 1);
+          }
+        }
       }
     } 
                         

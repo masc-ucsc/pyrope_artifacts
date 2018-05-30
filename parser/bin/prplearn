@@ -23,4 +23,22 @@ then
       #echo $x
     fi
   done
+elif [ $1 == 'rm' ]
+then
+  #echo $1
+  if [ -z "$2" ]
+  then
+    echo "ERROR: prplearn rm needs valid input file(s) as command line argument"
+    exit 0
+  fi
+  for x in $@; do
+    if [ $x != 'rm' ]
+    then
+      $PRP_PATH/bin/prplearn0 $x
+      $PRP_PATH/bin/prplearn1 $x
+      $PRP_PATH/bin/prplearn2 $x
+      $PRP_PATH/bin/prplearn3 $1
+      #echo $1
+    fi
+  done
 fi
