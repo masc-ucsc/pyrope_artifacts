@@ -526,6 +526,7 @@ fcall_explicit
         	type:"function_call",
            	function:func,
            	arguments:arg
+           	//func_body:scope
        	};
         if(chain.length > 0){
         	return chain.reduce(function(result, element) {
@@ -644,39 +645,25 @@ tuple_notation_no_bracket
    }
 
 tuple_notation
-	= LPAR head:bit_selection_notation tail:(_ bit_selection_notation)* RPAR by:(tuple_by_notation)? 
-    {
-    	var char = buildList(head, tail, 1);
-       	if(by instanceof Array){ //rule and ast for '(' expr ')'[[ ]] - bit sel statements
-            var by_tuple = {
-        		type:"tuple_list",
-        		elements:char,
-       		}
-    		return by.reduce(function(result, element) {
-       			return {
-         			type: "bit_select",
-         			bit_obj: result,
-         			bit_sel: element.bit_property,
-       			};
-     		}, by_tuple);
- 		}else{
-        	return{
-            	type:"tuple_list",
-        		elements:char,
-                skip_by:by
-            }
-        }
-    
-       	var char = buildList(head, tail, 1);
+	= LPAR head:bit_selection_notation tail:(_ bit_selection_notation)* RPAR by:tuple_by_notation? {
+ 	if (by) {
+   		var char = buildList(head, tail, 1);
        	return {
-        	type:"tuple_list",
-        	elements:char
-       	}
- 	
-	}
-    
+            type:"tuple_list",
+            elements:char,
+            skip_by:by
+        }
+  	}
+            
+ 	var char = buildList(head, tail, 1);
+   	return {
+    	type:"tuple_list",
+     	elements:char,
+  	}
+}
+
    / LPAR head:(rhs_expression_property/logical_expression) _
-   tail:(COMMA (rhs_expression_property/logical_expression) __)* RPAR by:(tuple_by_notation/bit_selection_bracket)?
+   tail:(COMMA (rhs_expression_property/logical_expression) __)* RPAR by:(tuple_by_notation/bit_selection_bracket)
    	{
     	var char = buildList(head, tail, 1);
        	if(by instanceof Array){ //rule and ast for '(' expr ')'[[ ]] - bit sel statements
@@ -715,27 +702,6 @@ tuple_notation
    / bit_selection_notation
    //range_notation
 
-tuple_notation_with_object
-	= LPAR head:bit_selection_notation tail:(_ bit_selection_notation)* RPAR
-    {
-    	var char = buildList(head, tail, 1);
-       	return {
-        	type:"tuple_list",
-        	elements:char
-       	}
- 	
-	}
-    
-   / LPAR head:(rhs_expression_property/logical_expression) _
-   tail:(COMMA (rhs_expression_property/logical_expression) __)* RPAR
-   	{
-    	var char = buildList(head, tail, 1);
-       	return {
-        	type:"tuple_list",
-        	elements:char
-       	}
-  	}
-   
 range_notation
         = head:(bit_selection_notation)? ".." tail:(additive_expression)? by:tuple_by_notation? {
 		if(by){
@@ -752,10 +718,10 @@ range_notation
        		l_bound:tail
      	}
    }
-   
+
 bit_selection_bracket
 	= tail:(LBRK LBRK property:(logical_expression/tuple_notation_no_bracket)? RBRK RBRK {return {bit_property:property}})*
-    
+   
 bit_selection_notation
 	= head:(tuple_dot_notation) tail:bit_selection_bracket {
      return tail.reduce(function(result, element) {
@@ -771,7 +737,7 @@ tuple_dot_dot
 	= tail:(DOT property:(tuple_array_notation) {return {dot_property:property}})*
 
 tuple_dot_notation
-	= head:(tuple_array_notation) tail:tuple_dot_dot {
+	= head:tuple_array_notation tail:tuple_dot_dot {
  		return tail.reduce(function(result, element) {
      		return {
         		type: "tuple_dot",
@@ -782,10 +748,10 @@ tuple_dot_notation
 	}
 
 tuple_array_bracket
-	=  tail:(LBRK property:(logical_expression/tuple_notation_no_bracket) RBRK {return {arr_property:property}})*
+	=  tail:(LBRK property:(logical_expression/range_notation/bit_selection_notation/tuple_notation_no_bracket) RBRK {return {arr_property:property}})*
     
 tuple_array_notation
-	=  head:(tuple_notation_with_object/lhs_var_name) tail:tuple_array_bracket {
+	=  head:(lhs_var_name) tail:tuple_array_bracket {
    		return tail.reduce(function(result, element) {
        		return {
          		type: "tuple_array",
