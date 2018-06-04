@@ -4,6 +4,13 @@ SCRIPT=`realpath $0`
 export PRP_PATH=`dirname $SCRIPT`"/.."
 dir="$(pwd)"
 #cmd_var="${1:?missing operand}"
+if [ $# -eq 0 ]
+then
+  echo "prplearn: missing operand"
+  echo "Try prplearn --help for more information"
+  exit 0
+fi
+
 if [ $1 == 'clean' ]
 then
   rm $HOME/.prp/parser/data/prplearn.json
@@ -47,9 +54,13 @@ then
   $PRP_PATH/bin/prplearn3 $1
 elif [ $1 == '--help' ]
 then
-  echo "Usage: prplearn OPTION [FILE]"
-  echo "add <file 1> <file 2> ..,     add new user defined error message to prp"
-else
-  echo "prplearn: missing operand"
-  echo "Try prplearn --help for more information"
+  echo "Usage: prplearn [OPTION]"
+  echo "PRP learns new user defined error messagges"
+  printf "\n"
+  echo "Options:"
+  echo "========"
+  echo "add [FILE(s)..]       add new user defined error message to prp from one or more files"
+  echo "clean                 deletes the local user prplearn.json"
+  echo "rm [FILE(s)..]        remove error messages associated with file(s) from local user prplear.json"
+  echo "publish               combines system-level and user-level prplearn.json"
 fi
