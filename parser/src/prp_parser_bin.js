@@ -24,11 +24,11 @@ if(fs.existsSync(process.env.HOME+"/.cache/prp/") == false){
 if(fs.existsSync(process.env.HOME+"/.cache/prp/parser/data/prplearn.json") == false){
   fs.writeFileSync(process.env.HOME+"/.cache/prp/parser/data/prplearn.json", "[]");
 }
-if(fs.existsSync(process.env.prp_path+"/pyrope/parser/data/prplearn.json") == false){
-  fs.writeFileSync(process.env.prp_path+"/pyrope/parser/data/prplearn.json", "[]");
+if(fs.existsSync(path.join(prp_path,"data/prplearn.json")) == false){
+  fs.writeFileSync(path.join(prp_path,"data/prplearn.json"), "[]");
 }
 var json_content_user = JSON.parse(fs.readFileSync(process.env.HOME+"/.cache/prp/parser/data/prplearn.json"));
-var json_content_system = JSON.parse(fs.readFileSync(process.env.prp_path+"/pyrope/parser/data/prplearn.json"));
+var json_content_system = JSON.parse(fs.readFileSync(path.join(prp_path,"data/prplearn.json")));
 
 // file or stdin chose as input
 if (process.argv[2] != "--stdin") {
