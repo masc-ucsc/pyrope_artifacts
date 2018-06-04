@@ -108,7 +108,17 @@ function recursive_variable_read(mark_arr, mark_index, mark_var, pos){
   //console.log(read_condition);
 
   if(read_condition.length == 1){
-    console.log("RD "+read_condition[0]+" always");
+    var tmp_print_arr = [];
+    k_count++;
+    k_next_count++;
+    tmp_print_arr.push("K"+k_count);
+    tmp_print_arr.push("K"+k_next_count);
+    tmp_print_arr.push(tmp_scope_count);
+    tmp_print_arr.push(start);
+    tmp_print_arr.push(end);
+    tmp_print_arr.push("RD "+read_condition[0]+" always");
+    console.log(tmp_print_arr.join('\t'));
+    //console.log("RD "+read_condition[0]+" always");
   }else{
     for(var x = read_condition.length - 1; x > 0; x = x - 2){
       if(read_condition[x-1] == "and"){
