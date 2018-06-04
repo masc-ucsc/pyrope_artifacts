@@ -1,10 +1,10 @@
 #!/bin/bash
 
 dir="$(pwd)"
-prp1_tmp_count=$(ls $HOME/.prp/parser/prp1_tmp/ | wc -l)
+prp1_tmp_count=$(ls $HOME/.cache/prp/parser/prp1_tmp/ | wc -l)
 if [ $prp1_tmp_count -gt 0 ]
 then
-  rm $HOME/.prp/parser/prp1_tmp/*.prp #remove all old <file>_error.prp files
+  rm $HOME/.cache/prp/parser/prp1_tmp/*.prp #remove all old <file>_error.prp files
 fi
 
 if [ -f "$1" ]

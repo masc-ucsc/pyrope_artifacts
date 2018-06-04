@@ -14,13 +14,20 @@ var path = require('path');
 var _ = require('underscore');
 var filename = process.argv[2];
 var parser = require(path.join(prp_path,'src/prp_parser.js'));
-if(fs.existsSync(process.env.HOME+"/.prp/parser/data/prplearn.json") == false){
-  fs.writeFileSync(process.env.HOME+"/.prp/parser/data/prplearn.json", "[]");
+if(fs.existsSync(process.env.HOME+"/.cache/prp/") == false){
+  fs.mkdirSync(process.env.HOME+"/.cache/prp/");
+  fs.mkdirSync(process.env.HOME+"/.cache/prp/parser/");
+  fs.mkdirSync(process.env.HOME+"/.cache/prp/parser/data");
+  fs.mkdirSync(process.env.HOME+"/.cache/prp/parser/prp0_tmp");
+  fs.mkdirSync(process.env.HOME+"/.cache/prp/parser/prp1_tmp");
+}
+if(fs.existsSync(process.env.HOME+"/.cache/prp/parser/data/prplearn.json") == false){
+  fs.writeFileSync(process.env.HOME+"/.cache/prp/parser/data/prplearn.json", "[]");
 }
 if(fs.existsSync(process.env.HOME+"/pyrope/parser/data/prplearn.json") == false){
   fs.writeFileSync(process.env.HOME+"/pyrope/parser/data/prplearn.json", "[]");
 }
-var json_content_user = JSON.parse(fs.readFileSync(process.env.HOME+"/.prp/parser/data/prplearn.json"));
+var json_content_user = JSON.parse(fs.readFileSync(process.env.HOME+"/.cache/prp/parser/data/prplearn.json"));
 var json_content_system = JSON.parse(fs.readFileSync(process.env.HOME+"/pyrope/parser/data/prplearn.json"));
 
 // file or stdin chose as input
