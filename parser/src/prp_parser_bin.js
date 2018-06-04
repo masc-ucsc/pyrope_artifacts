@@ -15,7 +15,7 @@ var _ = require('underscore');
 var filename = process.argv[2];
 var parser = require(path.join(prp_path,'src/prp_parser.js'));
 if(fs.existsSync(process.env.HOME+"/.cache/prp/") == false){
-  fs.mkdirSync(process.env.HOME+"/.cache/prp/");
+  fs.mkdirSync(process.env.HOME+"/.cache/prp/"); // FIXME: use path.join not +
   fs.mkdirSync(process.env.HOME+"/.cache/prp/parser/");
   fs.mkdirSync(process.env.HOME+"/.cache/prp/parser/data");
   fs.mkdirSync(process.env.HOME+"/.cache/prp/parser/prp0_tmp");
@@ -24,11 +24,11 @@ if(fs.existsSync(process.env.HOME+"/.cache/prp/") == false){
 if(fs.existsSync(process.env.HOME+"/.cache/prp/parser/data/prplearn.json") == false){
   fs.writeFileSync(process.env.HOME+"/.cache/prp/parser/data/prplearn.json", "[]");
 }
-if(fs.existsSync(process.env.HOME+"/pyrope/parser/data/prplearn.json") == false){
-  fs.writeFileSync(process.env.HOME+"/pyrope/parser/data/prplearn.json", "[]");
+if(fs.existsSync(process.env.prp_path+"/pyrope/parser/data/prplearn.json") == false){
+  fs.writeFileSync(process.env.prp_path+"/pyrope/parser/data/prplearn.json", "[]");
 }
 var json_content_user = JSON.parse(fs.readFileSync(process.env.HOME+"/.cache/prp/parser/data/prplearn.json"));
-var json_content_system = JSON.parse(fs.readFileSync(process.env.HOME+"/pyrope/parser/data/prplearn.json"));
+var json_content_system = JSON.parse(fs.readFileSync(process.env.prp_path+"/pyrope/parser/data/prplearn.json"));
 
 // file or stdin chose as input
 if (process.argv[2] != "--stdin") {

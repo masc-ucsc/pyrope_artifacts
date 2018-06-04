@@ -1,0 +1,8 @@
+
+a = "foo_" ++ 3
+b[a] = 7
+I b.foo_3 == 7
+
+b["field_" ++ 3] = 5
+I b.field_3 == 5
+
