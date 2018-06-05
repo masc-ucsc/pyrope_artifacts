@@ -1,6 +1,8 @@
 a = 1
 error lhs of an expression cannot be a constant
   22 = a + b
+error lhs of an expression cannot be a constant
+  22=a + b
 a = 1+2
 error the above line seems to be incomplete
   333

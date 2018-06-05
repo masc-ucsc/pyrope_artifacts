@@ -22,13 +22,18 @@ then
     exit 0
   fi
   for x in $@; do
-    if [ $x != 'add' ]
+    regex="*.prp"
+    if [ $x != 'add' ] && [[ $x == *.prp ]]
     then
       $PRP_PATH/bin/prplearn0 $x
       $PRP_PATH/bin/prplearn1 $x
       $PRP_PATH/bin/prplearn2 $x
-      $PRP_PATH/bin/prplearn3
-      #echo $x
+      if [ $2 != "-f" ]
+      then
+        $PRP_PATH/bin/prplearn3 $1
+      else
+        $PRP_PATH/bin/prplearn3 $1 $2
+      fi
     fi
   done
 elif [ $1 == 'rm' ]

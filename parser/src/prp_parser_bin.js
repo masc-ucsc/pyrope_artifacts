@@ -13,9 +13,17 @@ var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
 var filename = process.argv[2];
+var pattern = /[.]prp/g;
 var parser = require(path.join(prp_path,'src/prp_parser.js'));
+
+if(!pattern.test(path.basename(filename)) || !fs.existsSync(filename)){
+  console.log("Invalid input file for prp");
+  console.log("Provide a valid .prp file as input");
+  process.exit(0);
+}
+
 if(fs.existsSync(process.env.HOME+"/.cache/prp/") == false){
-  fs.mkdirSync(process.env.HOME+"/.cache/prp/"); // FIXME: use path.join not +
+  fs.mkdirSync(process.env.HOME+"/.cache/prp/"); 
   fs.mkdirSync(process.env.HOME+"/.cache/prp/parser/");
   fs.mkdirSync(process.env.HOME+"/.cache/prp/parser/data");
   fs.mkdirSync(process.env.HOME+"/.cache/prp/parser/prp0_tmp");
@@ -117,8 +125,9 @@ catch(err) {
             x = 0;
           }
           x = x - 1;
-        } 
-        console.error(filename.split('/').pop()+':'+err.location.start.line+':'+err.location.start.column+': error: '+json_content_user[i].userError);
+        }
+        //console.log(json_content_user[i].userError.slice(6));
+        console.error(filename.split('/').pop()+':'+err.location.start.line+':'+err.location.start.column+': error: '+json_content_user[i].userError.slice(6));
         console.error(data_backup[err.location.start.line-1]);
         //console.error(data.substr(errorLocation, err.location.end.column));
         console.error('-'.dup(err.location.start.column) + '^');
@@ -140,7 +149,7 @@ catch(err) {
           }
           x = x - 1;
         }
-        console.error(filename.split('/').pop()+':'+err.location.start.line+':'+err.location.start.column+': error: '+json_content_system[i].userError);
+        console.error(filename.split('/').pop()+':'+err.location.start.line+':'+err.location.start.column+': error: '+json_content_system[i].userError.slice(6));
         console.error(data_backup[err.location.start.line-1]);
         console.error('-'.dup(err.location.start.column) + '^');
         process.exit(2);
