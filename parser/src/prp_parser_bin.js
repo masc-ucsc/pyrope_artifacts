@@ -105,6 +105,9 @@ catch(err) {
       expectedDescs.splice(descriptions.indexOf(undefined), 1);
     }
 
+    var start_line = err.location.start.line;
+    var start_column = err.location.start.column;
+
     /*compare array elements in user prplearn*/
     var is_same;
     for (i = 0; i < json_content_user.length; i++) {
@@ -118,14 +121,18 @@ catch(err) {
           }
           x = x - 1;
         }
-        //console.log(json_content_user[i].userError.slice(6));
-        console.error(filename.split('/').pop()+':'+err.location.start.line+':'+err.location.start.column+': error: '+json_content_user[i].userError.slice(6));
-        console.error(data_backup[err.location.start.line-1]);
+
+        if(data_backup[start_line - 1] == ''){
+          start_line = start_line - 1;
+          start_column = err.location.start.offset;
+        }
+        console.error(filename.split('/').pop()+':'+start_line+':'+start_column+': error: '+json_content_user[i].userError.slice(6));
+        console.error(data_backup[start_line-1]);
         //console.error(data.substr(errorLocation, err.location.end.column));
-        console.error('-'.dup(err.location.start.column) + '^');
+        console.error('-'.dup(start_column) + '^');
         //console.error('Line '+err.location.start.line+', column '+err.location.start.column+': '+json_content_user[i].userError);
-        process.exit(2);
-        return;
+        process.exit(0);
+        //return;
       }
     }
 
@@ -141,21 +148,28 @@ catch(err) {
           }
           x = x - 1;
         }
-        console.error(filename.split('/').pop()+':'+err.location.start.line+':'+err.location.start.column+': error: '+json_content_system[i].userError.slice(6));
-        console.error(data_backup[err.location.start.line-1]);
-        console.error('-'.dup(err.location.start.column) + '^');
+
+        if(data_backup[start_line - 1] == ''){
+          start_line = start_line - 1;
+          start_column = err.location.start.offset;
+        }
+        console.error(filename.split('/').pop()+':'+start_line+':'+start_column+': error: '+json_content_system[i].userError.slice(6));
+        console.error(data_backup[start_line-1]);
+        console.error('-'.dup(start_column) + '^');
         process.exit(2);
-        return;
+        //return;
       }  
     }
 
-    console.error(filename.split('/').pop()+':'+err.location.start.line+':'+err.location.start.column+': error: '+err.message);
-    console.error(data_backup[err.location.start.line-1]);
-    console.error('-'.dup(err.location.start.column) + '^');
-    process.exit(2);
-    //console.error('Line '+err.location.start.line+', column '+err.location.start.column+': '+err.message);
-    //console.error("ALERT: no user defined error message available for this case");
-    return;
+    if(data_backup[start_line - 1] == ''){
+      start_line = start_line - 1;
+      start_column = err.location.start.offset;
+    }
+    console.error(filename.split('/').pop()+':'+start_line+':'+start_column+': error: '+err.message);
+    console.error(data_backup[start_line - 1]);
+    console.error('-'.dup(start_column) + '^');
+    process.exit(0);
+    //return;
   }
 }
 

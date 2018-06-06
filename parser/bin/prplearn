@@ -13,7 +13,12 @@ fi
 
 if [ $1 == 'clean' ]
 then
-  rm $HOME/.prp/parser/data/prplearn.json
+  if [ ! -f $HOME/.cache/prp/parser/data/prplearn.json ]
+  then
+    echo "User-level prplearn.json does not exist"
+    exit 0
+  fi
+  rm $HOME/.cache/prp/parser/data/prplearn.json
 elif [ $1 == 'add' ]
 then
   if [ -z "$2" ]
