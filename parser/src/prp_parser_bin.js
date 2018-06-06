@@ -3,6 +3,8 @@ String.prototype.dup = function(count) {
 };
 
 require('../cgen/cgen_graph.js');
+require('./common.js');
+
 var i, j, x;
 var errorLocation;
 var expectedDescs = [];
@@ -13,22 +15,12 @@ var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
 var filename = process.argv[2];
-var pattern = /[.]prp/g;
 var parser = require(path.join(prp_path,'src/prp_parser.js'));
 
-if(!pattern.test(path.basename(filename)) || !fs.existsSync(filename)){
-  console.log("Invalid input file for prp");
-  console.log("Provide a valid .prp file as input");
-  process.exit(0);
-}
 
-if(fs.existsSync(process.env.HOME+"/.cache/prp/") == false){
-  fs.mkdirSync(process.env.HOME+"/.cache/prp/"); 
-  fs.mkdirSync(process.env.HOME+"/.cache/prp/parser/");
-  fs.mkdirSync(process.env.HOME+"/.cache/prp/parser/data");
-  fs.mkdirSync(process.env.HOME+"/.cache/prp/parser/prp0_tmp");
-  fs.mkdirSync(process.env.HOME+"/.cache/prp/parser/prp1_tmp");
-}
+valid_input_file(filename);  //check if input file is valid
+create_directory(); //create local prp directory if it doesn't exist
+
 if(fs.existsSync(process.env.HOME+"/.cache/prp/parser/data/prplearn.json") == false){
   fs.writeFileSync(process.env.HOME+"/.cache/prp/parser/data/prplearn.json", "[]");
 }

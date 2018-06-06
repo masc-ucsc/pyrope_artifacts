@@ -1,3 +1,8 @@
+require('./common.js');
+
+create_directory();
+valid_input_file(process.argv[2]);
+
 var count = 0;
 var path = require('path');
 //var output_file_name = process.argv[2].slice(0, -4) + "_to_parse.prp";

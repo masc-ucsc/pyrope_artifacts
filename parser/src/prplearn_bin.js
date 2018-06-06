@@ -2,6 +2,8 @@ String.prototype.dup = function(count) {
   return new Array(count).join(this);
 };
 
+require('./common.js');
+
 var i, j, k, ii; 
 var errorCount = 0;
 var errorList = [];
@@ -13,13 +15,9 @@ var path = require('path');
 var _ = require('underscore');
 var readline = require('readline');
 var prp_path = process.env.PRP_PATH;
-if(fs.existsSync(process.env.HOME+"/.cache/prp/") == false){
-  fs.mkdirSync(process.env.HOME+"/.cache/prp/");
-  fs.mkdirSync(process.env.HOME+"/.cache/prp/parser/");
-  fs.mkdirSync(process.env.HOME+"/.cache/prp/parser/data");
-  fs.mkdirSync(process.env.HOME+"/.cache/prp/parser/prp0_tmp");
-  fs.mkdirSync(process.env.HOME+"/.cache/prp/parser/prp1_tmp");
-}
+
+create_directory();
+
 if(fs.existsSync(process.env.HOME+"/.cache/prp/parser/data/prplearn.json") == false){
   fs.writeFileSync(process.env.HOME+"/.cache/prp/parser/data/prplearn.json", "[]");
 }
