@@ -451,7 +451,7 @@ assignment_expression
   }     
 
 fcall_implicit
-        = !constant func:tuple_dot_notation _ head:scope_declaration{ //remove "!not_in_implicit" to support foo::{}
+        = !constant func:tuple_dot_notation _ head:scope_declaration { //remove "!not_in_implicit" to support foo::{}
         var arg = [];
         arg.push(head);
         return {
@@ -462,8 +462,8 @@ fcall_implicit
          	arguments:arg
        }
      }
-     / !constant func:tuple_dot_notation !not_in_implicit head:(white_space+ x:(rhs_expression_property/tuple_notation){return x})?
-   tail:(_ (rhs_expression_property/tuple_notation))*{
+     / !constant func:tuple_dot_notation !not_in_implicit head:(white_space+ x:(rhs_expression_property/range_notation/bit_selection_notation){return x})?
+   tail:(white_space+ (rhs_expression_property/range_notation/bit_selection_notation))*{
         var char = buildList(head, tail, 1);
         return {
         	start_pos:location().start.offset,
@@ -473,7 +473,7 @@ fcall_implicit
          	arguments:char
        }
      }
-
+     
 not_in_implicit
  = (_ assignment_operator)
    / (_ ".(")
@@ -1021,7 +1021,7 @@ boolean "true or false"
      }
 
 decimal_signed
-        = head:decimal_digit tail:(("s"/"u") (["?"0-9_]+ ("bits"/"bit"))?) {
+        = head:decimal_digit tail:(("s"/"u") ([0-9_]+ ("bits"/"bit"))?) {
     if (tail) {
     	if (tail[1]) {
         	var tmp =[];
@@ -1044,20 +1044,28 @@ decimal_signed
 }
 
 decimal_digit "integer greater than or equal to zero"
-	= head:("-")? tail:["?"0-9] tail2:["?"0-9_]* {              
-  	var tmp = "0d"
-   	if(head) {
-       	return {
-        	type:"number",
-         	value:head+tmp+tail+tail2.join(''),
-       	}
-   	}
+	= head:("-")? tail:[0-9] tail2:[0-9_]* {              
+  		var tmp = "0d"
+   		if(head) {
+       		return {
+        		type:"number",
+         		value:head+tmp+tail+tail2.join(''),
+       		}
+   		}
      
-   	return {
-     	type:"number",
-       	value:tmp+tail+tail2.join(''),
-   	}
-}
+   		return {
+     		type:"number",
+       		value:tmp+tail+tail2.join(''),
+   		}
+	}
+	/ head:"?" {
+    	var tmp = ["0d"];
+        tmp.push(head);
+        return {
+     		type:"number",
+       		value:tmp.join(''),
+   		}  	
+    }
 
 non_zero_digit "integer greater than zero"
         = head:["?"1-9_]+ {return head.join('')}
