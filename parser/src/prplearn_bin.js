@@ -18,10 +18,10 @@ var prp_path = process.env.PRP_PATH;
 
 create_directory();
 
-if(fs.existsSync(process.env.HOME+"/.cache/prp/parser/data/prplearn.json") == false){
+if(fs.existsSync(process.env.HOME+"/.cache/prp/parser/data/prplearn.json") == false) {
   fs.writeFileSync(process.env.HOME+"/.cache/prp/parser/data/prplearn.json", "[]");
 }
-if(fs.existsSync(path.join(prp_path,"data/prplearn.json")) == false){
+if(fs.existsSync(path.join(prp_path,"data/prplearn.json")) == false) {
   fs.writeFileSync(path.join(prp_path,"data/prplearn.json"), "[]");
 }
 
@@ -29,25 +29,25 @@ var filepath = path.join(process.env.HOME+"/.cache/prp/parser/prp1_tmp/");
 var fileList = fs.readdirSync(filepath);
 
 
-if(process.argv[2] == "publish"){
+if(process.argv[2] == "publish") {
   publish_prplearn();
   process.exit();
 }
 
-function publish_prplearn(){
+function publish_prplearn() {
   var json_data_user = JSON.parse(fs.readFileSync(process.env.HOME+"/.cache/prp/parser/data/prplearn.json"));
   var json_data_system = JSON.parse(fs.readFileSync(path.join(prp_path,"data/prplearn.json"))); 
-  for(var i = 0; i < json_data_user.length; i++){
-    var publish_match = json_data_system.some(function (tmp_obj, index){
+  for(var i = 0; i < json_data_user.length; i++) {
+    var publish_match = json_data_system.some(function (tmp_obj, index) {
       var tmp_var = json_data_user[i].expectedGrammar.length == tmp_obj.expectedGrammar.length && (_.difference(json_data_user[i].expectedGrammar, tmp_obj.expectedGrammar).length == 0);
-      if(tmp_var){
+      if(tmp_var) {
         json_data_system[index] = json_data_user[i];
         fs.writeFileSync(path.join(prp_path,"data/prplearn.json"), JSON.stringify(json_data_system), 'utf-8');
       }
       return tmp_var;
     });
     
-    if(!publish_match){
+    if(!publish_match) {
       json_data_system.push(json_data_user[i]);
       fs.writeFileSync(path.join(prp_path,"data/prplearn.json"), JSON.stringify(json_data_system), 'utf-8');
     }    
@@ -115,17 +115,18 @@ for (k = 0; k < data.length; k++) {
       }
       
       //FIXME(conflicting error msg in json file) 
-      if(process.argv[2] == "add"){
-        for(var x = 0; x < jsonData.length - 1; x++){
+      if(process.argv[2] == "add") {
+        for(var x = 0; x < jsonData.length - 1; x++) {
           var is_same = jsonData[x].expectedGrammar.length == descriptions.length && (_.difference(jsonData[x].expectedGrammar, descriptions).length == 0);
-          if(is_same && process.argv[3] != "-f"){
+          if(is_same && process.argv[3] != "-f") {
             console.log('"'+errorList[errorCount]+'"'+' already exists');
             console.log("Use prplearn add -f to force overwrite of existing error message"); 
             descriptions = null;
             errorCount = errorCount + 1;
             jsonData.splice(jsonData.length - 1, 1);
             break;
-          }else if(is_same && process.argv[3] == "-f"){
+          }
+          else if(is_same && process.argv[3] == "-f") {
             jsonData[x].expectedGrammar = descriptions;
             jsonData[x].userError = errorList[errorCount];
             errorCount = errorCount + 1;
@@ -137,19 +138,20 @@ for (k = 0; k < data.length; k++) {
       }
 
       //expectedDesc = err.expected.length > 1 ? expectedDescs.slice(0, -1).join(", ") + " or " + expectedDescs[err.expected.length - 1] : expectedDescs[0];
-      if(process.argv[2] != "rm"){
-        if(descriptions != null){
+      if(process.argv[2] != "rm") {
+        if(descriptions != null) {
           //jsonData[jsonLength].expectedGrammar = expectedDescs;
           jsonData[jsonLength].expectedGrammar = descriptions;
           jsonData[jsonLength].userError = errorList[errorCount];
           jsonLength = jsonLength + 1;
           errorCount = errorCount + 1;          
         }
-      }else{  //handles "prplearm rm <filename>"
+      }
+      else {  //handles "prplearm rm <filename>"
         jsonData.splice(jsonData.length - 1, 1);
-        for(var x = 0; x < jsonData.length; x++){
+        for(var x = 0; x < jsonData.length; x++) {
           var is_same = jsonData[x].expectedGrammar.length == descriptions.length && (_.difference(jsonData[x].expectedGrammar, descriptions).length == 0);
-          if(is_same){
+          if(is_same) {
             jsonData.splice(x, 1);
           }
         }

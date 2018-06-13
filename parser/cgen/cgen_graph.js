@@ -424,34 +424,6 @@ function cfg_gen(data){
       arr.splice(1, 0, 'K'+k_next_count); //push k_next to arr
     }
 
-    /*if(i == "while_body"){
-      if(data[i] == null){
-        arr.push("null");
-      }else if(Array.isArray(data[i])){
-        k_count++;      //k_count for "while"
-        k_next_count++;
-        arr.unshift('K'+k_count); //push k_id to arr
-        arr.push('K'+(k_count+2)); //push while target k_id to arr
-        k_count++;
-        k_next_count++;
-
-        for(var j = data[i].length - 1; j >= 0; j--){
-          if(typeof(data[i][j])=="object" && data[i][j]["type"] == "comment"){ //remove comments from AST
-            data[i].splice(j, 1);
-          }
-        }
-
-        for(var j = 0; j < data[i].length; j++){
-          if(j == data[i].length - 1){
-            method_id_track = 1;
-          }
-          if(typeof(data[i][j])=="object" && data[i][j] != null && data[i][j]["type"] != "comment"){
-            cfg_gen(data[i][j]);
-          }
-        }
-      }
-    }*/
-
     if(arr[3] == 'while'){
       k_count = k_count + 1;
       k_next_count = k_next_count + 1;

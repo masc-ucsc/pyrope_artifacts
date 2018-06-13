@@ -21,10 +21,10 @@ var parser = require(path.join(prp_path,'src/prp_parser.js'));
 valid_input_file(filename);  //check if input file is valid
 create_directory(); //create local prp directory if it doesn't exist
 
-if(fs.existsSync(process.env.HOME+"/.cache/prp/parser/data/prplearn.json") == false){
+if(fs.existsSync(process.env.HOME+"/.cache/prp/parser/data/prplearn.json") == false) {
   fs.writeFileSync(process.env.HOME+"/.cache/prp/parser/data/prplearn.json", "[]");
 }
-if(fs.existsSync(path.join(prp_path,"data/prplearn.json")) == false){
+if(fs.existsSync(path.join(prp_path,"data/prplearn.json")) == false) {
   fs.writeFileSync(path.join(prp_path,"data/prplearn.json"), "[]");
 }
 var json_content_user = JSON.parse(fs.readFileSync(process.env.HOME+"/.cache/prp/parser/data/prplearn.json"));
@@ -110,6 +110,22 @@ catch(err) {
 
     /*compare array elements in user prplearn*/
     var is_same;
+
+    /*console.log(data_backup);
+    console.log(err.location.start.line);
+    console.log(err.location.end.line);
+    console.log(err.location.start.column);
+    console.log(err.location.end.column);
+    console.log(err.location.start.offset);
+    console.log(err.location.end.offset);
+    console.log(data[err.location.start.offset]);*/
+
+
+    /*if(data[err.location.start.offset] != data_backup[start_line - 1][err.location.start.column]){
+      start_line = start_line - 1;
+      start_column = err.location.start.column;
+    }*/
+
     for (i = 0; i < json_content_user.length; i++) {
       is_same = json_content_user[i].expectedGrammar.length == expectedDescs.length && (_.difference(json_content_user[i].expectedGrammar, expectedDescs).length == 0);
       if (is_same) {
@@ -122,10 +138,6 @@ catch(err) {
           x = x - 1;
         }
 
-        if(data_backup[start_line - 1] == ''){
-          start_line = start_line - 1;
-          start_column = err.location.start.offset;
-        }
         console.error(filename.split('/').pop()+':'+start_line+':'+start_column+': error: '+json_content_user[i].userError.slice(6));
         console.error(data_backup[start_line-1]);
         //console.error(data.substr(errorLocation, err.location.end.column));
@@ -149,10 +161,6 @@ catch(err) {
           x = x - 1;
         }
 
-        if(data_backup[start_line - 1] == ''){
-          start_line = start_line - 1;
-          start_column = err.location.start.offset;
-        }
         console.error(filename.split('/').pop()+':'+start_line+':'+start_column+': error: '+json_content_system[i].userError.slice(6));
         console.error(data_backup[start_line-1]);
         console.error('-'.dup(start_column) + '^');
@@ -161,10 +169,6 @@ catch(err) {
       }  
     }
 
-    if(data_backup[start_line - 1] == ''){
-      start_line = start_line - 1;
-      start_column = err.location.start.offset;
-    }
     console.error(filename.split('/').pop()+':'+start_line+':'+start_column+': error: '+err.message);
     console.error(data_backup[start_line - 1]);
     console.error('-'.dup(start_column) + '^');
