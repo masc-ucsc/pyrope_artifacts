@@ -1,0 +1,53 @@
+
+###{
+def dispatch_if(operator, x, y):
+    if operator == 'add':
+        return x + y
+    elif operator == 'sub':
+        return x - y
+    elif operator == 'mul':
+        return x * y
+    elif operator == 'div':
+        return x / y
+    else:
+        return None
+
+
+def dispatch_dict(operator, x, y):
+    return {
+        'add': lambda: x + y,
+        'sub': lambda: x - y,
+        'mul': lambda: x * y,
+        'div': lambda: x / y,
+    }.get(operator, lambda: None)()
+
+
+>>> dispatch_if('mul', 2, 8)
+16
+
+>>> dispatch_dict('mul', 2, 8)
+16
+###}
+
+dispatch_if = :(operator x y):{
+  if $operator == 'add' {
+    return x + y
+  }elif $operator == 'sub' {
+    return x - y
+  }elif $operator == 'mul' {
+    return x * y
+  }elif $operator == 'div' {
+    return x / y
+  }else{
+    I false
+  }
+}
+
+dispatch_dict = :(operator x y):{
+  s.add = ::{ $0 + $1 }
+  s.sub = ::{ $0 - $1 }
+  s.mul = ::{ $0 * $1 }
+  s.div = ::{ $0 / $1 }
+  return s[operator].(x,y)
+}
+

@@ -1,0 +1,9 @@
+{
+  "name": "PyropeTutorial",
+  "version": "0.1.0",
+  "description": "Pyrope Tutorial Infrastructure",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "backslide": "^2.3.0"
+  }
+}
