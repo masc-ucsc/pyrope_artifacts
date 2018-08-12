@@ -514,7 +514,7 @@ fcall_implicit_no_arg
    	}
 
 fcall_explicit
-        = !constant func:tuple_dot_notation DOT arg:fcall_arg_notation scope:scope_declaration? chain:(DOT x:fcall_explicit{return x})* {
+        = !constant func:tuple_dot_notation DOT arg:fcall_arg_notation scope:scope_declaration? chain:(DOT x:(fcall_explicit/tuple_dot_notation){return x})* {
         if(arg == null && scope){
         	arg = [];
         }

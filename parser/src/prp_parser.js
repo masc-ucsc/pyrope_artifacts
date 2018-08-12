@@ -3593,6 +3593,9 @@ function peg$parse(input, options) {
               s8 = peg$parseDOT();
               if (s8 !== peg$FAILED) {
                 s9 = peg$parsefcall_explicit();
+                if (s9 === peg$FAILED) {
+                  s9 = peg$parsetuple_dot_notation();
+                }
                 if (s9 !== peg$FAILED) {
                   peg$savedPos = s7;
                   s8 = peg$c55(s2, s4, s5, s9);
@@ -3611,6 +3614,9 @@ function peg$parse(input, options) {
                 s8 = peg$parseDOT();
                 if (s8 !== peg$FAILED) {
                   s9 = peg$parsefcall_explicit();
+                  if (s9 === peg$FAILED) {
+                    s9 = peg$parsetuple_dot_notation();
+                  }
                   if (s9 !== peg$FAILED) {
                     peg$savedPos = s7;
                     s8 = peg$c55(s2, s4, s5, s9);
