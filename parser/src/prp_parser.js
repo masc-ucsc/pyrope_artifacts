@@ -356,13 +356,13 @@ function peg$parse(input, options) {
       peg$c29 = function(idx, x) {return x},
       peg$c30 = function(idx, sc, x, y, z) {return prettyPrintScope(x,y,z)},
       peg$c31 = function(idx, sc, body) {
-          	if((sc instanceof Array))sc=null
+          	if((sc instanceof Array) && sc.length == 0)sc=null
           	if(body!=null){
               	if(sc && sc.length!=4){
               		body.unshift(sc)
                   	sc=null
               	} else if(sc && sc.length==4){
-              		body.unshift(sc[3])
+              		//body.unshift(sc[3])
                   	sc=sc[1]
               	}
               } else if(body==null) {
@@ -370,11 +370,10 @@ function peg$parse(input, options) {
                   	body=[sc]
                       sc=null
               	} else if(sc && sc.length==4){
-                  	body=[sc[3]]
-                      sc=sc[1]                
+                  	body = null //[sc[3]]
+                      sc = sc[1]                
               	}
               }
-              
           	return {
               	start_pos:location().start.offset,
               	end_pos:location().end.offset,
@@ -392,22 +391,23 @@ function peg$parse(input, options) {
       peg$c33 = function(cond, x) {return x},
       peg$c34 = function(cond, sc, x, y, z) {return prettyPrintScope(x,y,z)},
       peg$c35 = function(cond, sc, body) {
-          	if((sc instanceof Array))sc=null
+          	//return 
+          	if((sc instanceof Array) && sc.length==0)sc=null
           	if(body!=null){
               	if(sc && sc.length!=4){
               		body.unshift(sc)
                   	sc=null
               	} else if(sc && sc.length==4){
-              		body.unshift(sc[3])
+              		//body.unshift(sc[3])
                   	sc=sc[1]
               	}
-              } else if(body==null) {
+             	}else if(body==null) {
               	if(sc && sc.length!=4){
                   	body=[sc]
                       sc=null
               	} else if(sc && sc.length==4){
-                  	body=[sc[3]]
-                      sc=sc[1]                
+                  	body = null //[sc[3]]
+                      sc = sc[1]                
               	}
               }
               

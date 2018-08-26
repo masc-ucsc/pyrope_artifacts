@@ -323,13 +323,13 @@ for_statement
   	= FOR idx:for_index sc:((_ x:"::" LBRACE (EOS/__))/_ LBRACE x:(EOS/__) {return x}) 
     body:(x:code_blocks? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)}) RBRACE 
     {
-    	if((sc instanceof Array))sc=null
+    	if((sc instanceof Array) && sc.length == 0)sc=null
     	if(body!=null){
         	if(sc && sc.length!=4){
         		body.unshift(sc)
             	sc=null
         	} else if(sc && sc.length==4){
-        		body.unshift(sc[3])
+        		//body.unshift(sc[3])
             	sc=sc[1]
         	}
         } else if(body==null) {
@@ -337,11 +337,10 @@ for_statement
             	body=[sc]
                 sc=null
         	} else if(sc && sc.length==4){
-            	body=[sc[3]]
-                sc=sc[1]                
+            	body = null //[sc[3]]
+                sc = sc[1]                
         	}
         }
-        
     	return {
         	start_pos:location().start.offset,
         	end_pos:location().end.offset,
@@ -368,22 +367,23 @@ while_statement
    = WHILE cond:logical_expression sc:((_ x:"::" LBRACE (EOS/__))/_ LBRACE x:(EOS/__) {return x}) 
    	body:(x:code_blocks? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)}) RBRACE 
     {
-    	if((sc instanceof Array))sc=null
+    	//return 
+    	if((sc instanceof Array) && sc.length==0)sc=null
     	if(body!=null){
         	if(sc && sc.length!=4){
         		body.unshift(sc)
             	sc=null
         	} else if(sc && sc.length==4){
-        		body.unshift(sc[3])
+        		//body.unshift(sc[3])
             	sc=sc[1]
         	}
-        } else if(body==null) {
+       	}else if(body==null) {
         	if(sc && sc.length!=4){
             	body=[sc]
                 sc=null
         	} else if(sc && sc.length==4){
-            	body=[sc[3]]
-                sc=sc[1]                
+            	body = null //[sc[3]]
+                sc = sc[1]                
         	}
         }
         
