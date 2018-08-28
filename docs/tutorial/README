@@ -2,6 +2,7 @@
 
 # Export html
 
+yarn install
 ./node_modules/backslide/bin/bs export
 
 # Export PDF Docker option

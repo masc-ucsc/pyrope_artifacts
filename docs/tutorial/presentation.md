@@ -1958,11 +1958,13 @@ $prp --run rndtest
 
 ```coffeescript
 # code/reset1.prp
-@a as __bits:3 __init:13
+@a as __bits:3 
+@a.__init = 13
 
 @b as __bits:3 __reset:false # disable reset
 
-@mem0 as __bits:4 __init:3 __size:16
+@mem0 as __bits:4 __size:16
+@mem0.__init = ::{ 3 }
 
 @mem1 as __bits:4 __reset:false __size:16
 
@@ -1975,6 +1977,23 @@ $prp --run rndtest
   __parent[@_reset_pos] = @_reset_pos
   @_reset_pos += 1
 }
+```
+
+---
+# Multiple Clocks
+
+* Each flop or fluid stage an have its own clock
+
+```coffeescript
+# code/clk1.prp
+
+@clk_flop = $inp
+# implicit @clk_flop as __clk:$clk
+@clk2_flop as __clk:$clk2
+@clk2_flop = @clk_flop
+
+%out = @clk2_flop
+%out as __fluid:true __clk:$clk3  # 3rd clock for output
 ```
 
 ---
