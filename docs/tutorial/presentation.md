@@ -1789,19 +1789,36 @@ prev_val = @cycle
 @b[0] = @cycle
 
 I @a[0] == @cycle
-I @a[0].__flop == prev_val
-I @b[0] == @b[0].__flop == prev_val
+I @a[0].__last == prev_val
+I @b[0] == @b[0].__last == prev_val
 
 %out = @a[0] + @b.0
 ```
 ]
 
 .column[
-* Memory forward unless \__flop used
+* Memory forward unless \__last used
 * Reset to zero by default
 * Enforces the rd/wr ports if indicated
 * Moves logic to get addresses at posedge
 ]
+---
+class: split-50
+
+# Flop/Latches/SRAM parameters
+
+```coffeescript
+# code/mem5.prp
+ __bits:int       Number of bits in register
+ __reset:bool     Reset register (true default)
+ __posedge:bool   Posedge or negedge (true default)
+ __fflop:bool     Flip-flop or latch based (true default)
+ __last:bool      Last value or flop output
+ __size:int       Number of entries in a SRAM-like flop
+ __clk_pin:name   Wire signal to control clk pin
+ __reset_pin:name Wire signal to control reset pi
+```
+
 ---
 class: split-50
 
@@ -1988,12 +2005,12 @@ $prp --run rndtest
 # code/clk1.prp
 
 @clk_flop = $inp
-# implicit @clk_flop as __clk:$clk
-@clk2_flop as __clk:$clk2
+# implicit @clk_flop as __clk_pin:$clk
+@clk2_flop as __clk_pin:$clk2
 @clk2_flop = @clk_flop
 
 %out = @clk2_flop
-%out as __fluid:true __clk:$clk3  # 3rd clock for output
+%out as __fluid:true __clk_pin:$clk3  # 3rd clock for output
 ```
 
 ---
