@@ -1639,6 +1639,9 @@ t = 0
 for a:(1..3) ::{t = a} # local scope
 I t == 0
 
+for a:(1..3) ::{ if a>1 { break } ; t = a }
+I t == 1
+
 if t==0 ::{__parent.x = 3}
 I x == 3
 ```
@@ -2127,10 +2130,9 @@ class: split-50
 # $i!! = false # do not clear flop
 
 # %o? = false  # do not generate output
-# %o!          # is retry set?
 # %o! = true   # compile error
 # %o! = false  # compile error
-# %o?          # is valid set?
+# %o?          # is valid set? (there was a write)
 # %o!          # is retry set?
 # %o!!         # is clear set?
 # %o!! = true  # clear flop
