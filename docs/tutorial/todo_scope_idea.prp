@@ -1,0 +1,46 @@
+
+nested0 = ::{
+  %foo = 2
+  nested3 = ::{
+    %foo = 4
+    %foo as bits:3
+  }
+  nested4 = ::{
+    %foo = 5
+    nested3 = ::{
+      %foo = 6
+      %foo as bits:4
+    }
+  }
+}
+
+nested1 = ::{
+  %foo = 3
+
+  nested2 = ::{
+    # Only matches outputs (%) or inputs ($) or registers (@) in other functions
+    %parent  = $/../.foo + 1
+    %grandpa = $/../../.foo + 1
+
+    %dyplomatic = $/nested0/nested3/.foo
+    # a = $/xx/yy/.zz
+    # Looks for hierarchies all over that match /xx/yy/.zz
+    # if a as a type "as", it also forces match in bits/sign/fields
+
+    %multi = $/nested3/.foo  # multiple match
+
+    %single as bits:3
+    %single = $/nested3/.foo # Single hit
+  }
+}
+
+%foo = 1
+a = nested1.nested2
+I a.parent == (3+1)
+I a.grandpa == (1+1)
+I a.dyplomatic == (4)
+I (a.multi[0] + a.multi[1]) == (4 + 6)
+I a.single == 4
+
+
+

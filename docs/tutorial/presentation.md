@@ -110,7 +110,7 @@ myHDL, Verilog, System Verilog
 # HDLs can not synthesize objects well
 
 ```scala
-# no methods in input/outputs
+// no methods in input/outputs
 a = input.get_value
 ```
 
@@ -182,7 +182,7 @@ class: split-40r
 .lcolumn[
 ### Pyrope
 ```coffeescript
-# code/counter.prp file
+// code/counter.prp file
 if $enable {
   @total := @total + 1
 }
@@ -223,16 +223,16 @@ endmodule
 .lbcolumn[
 ### Pyrope unit test
 ```coffeescript
-# code/counter_test.prp file
-b as counter __stage:true # pipeline type
+// code/counter_test.prp file
+b as counter __stage:true // pipeline type
 b.total as __bits:4
 b.enable = 0
-I b.total == 0       # assertion
-yield                # advance clock
+I b.total == 0       // assertion
+yield                // advance clock
 I b.total == 0
 b.enable = 1
 I b.total == 0
-yield                # advance clock
+yield                // advance clock
 I b.total == 1
 ```
 ]
@@ -246,7 +246,7 @@ class: split-40
 .column[
 ### Pyrope
 ```coffeescript
-# code/counter.prp file
+// code/counter.prp file
 if $enable {
   @total := @total + 1
 }
@@ -254,17 +254,17 @@ if $enable {
 
 ### Pyrope unit test
 ```coffeescript
-# code/counter_test.prp file
-*b as counter        #__stage:true
+// code/counter_test.prp file
+*b as counter        //__stage:true
 b.total as __bits:4
 b.enable = 0
 I b.total == 0
 yield
 I b.total == 0
 b.enable = 1
-*I b.total == 1      # before it was 0
+*I b.total == 1      // before it was 0
 yield
-*I b.total == 2      # before it was 1
+*I b.total == 2      // before it was 1
 ```
 ]
 
@@ -309,7 +309,7 @@ class: split-50
 .column[
 ### Pyrope
 ```coffeescript
-# code/test1.prp file
+// code/test1.prp file
 mytest = ::{
   puts "Hello World"
   I 1 == 0+1
@@ -351,16 +351,16 @@ task: Quick Dive to Pyrope
 # A Ripple Carry Adder
 
 ```coffeescript
-# libs/adder/code/rca.prp file
+// libs/adder/code/rca.prp file
 fa = :(a b cin):{
   tmp   = $a  ^ $b
   %sum  = tmp ^ $cin
   %cout = (tmp & $cin) | ($a & $b)
 }
 
-carry = $cin                         # 0 if RCA without carry in
-for i:(0..a.__bits) {                # iterate #bits
-  tmp = fa a[[i]] b[[i]] carry       # function call to fa
+carry = $cin                         // 0 if RCA without carry in
+for i:(0..a.__bits) {                // iterate #bits
+  tmp = fa a[[i]] b[[i]] carry       // function call to fa
   %sum[[i]] = tmp.sum
   carry     = tmp.cout
 }
@@ -368,7 +368,7 @@ for i:(0..a.__bits) {                # iterate #bits
 
 test2 = ::{
   c = rca a:32 b:4 cin:0
-  puts "sum is {0:b} {0}" c.sum      # print sum in binary and decimal
+  puts "sum is {0:b} {0}" c.sum      // print sum in binary and decimal
 }
 ```
 
@@ -377,7 +377,7 @@ task: Quick Dive to Pyrope
 # A Compact Ripple Carry Adder
 
 ```coffeescript
-# libs/adder/code/rca2.prp file
+// libs/adder/code/rca2.prp file
 c = $cin
 for i:(0..$a.__bits) {
   %sum[[i]] = $a[[i]] ^ $b[[i]] ^ c
@@ -404,14 +404,14 @@ task: Quick Dive to Pyrope
 # A Carry Lookahead Adder
 
 ```coffeescript
-# libs/adder/code/cla.prp file
+// libs/adder/code/cla.prp file
 %sum = rca.(a:$a b:$b cin:0).sum
 
-g = $a & $b # Generate
-p = $a ^ $b # Propagate
+g = $a & $b // Generate
+p = $a ^ $b // Propagate
 
-# 4 bit: c = g[[3]] | g[[2]] & p[[3]] | g[[1]] & p[[3]] & p[[2]] |...
-c = $cin & &.(p)  # &.(p) is and reduction fcall with p as argument
+// 4 bit: c = g[[3]] | g[[2]] & p[[3]] | g[[1]] & p[[3]] & p[[2]] |...
+c = $cin & &.(p)  // &.(p) is and reduction fcall with p as argument
 for i:(0..a.__bits) {
   _tmp = g[[i]]
   for j:(i..(a.__bits-1)) {
@@ -436,20 +436,20 @@ task: Quick Dive to Pyrope
 # Specializing the adders
 
 ```coffeescript
-# libs/adder/code/scla.prp file
-cla = :(a b) when a.__bits==8:{            # specialize cla when bits == 8
-  s1 = cla a[[0..3]] b[[0..3]] cin:0       # cla for 4 bits
-  s2 = cla a[[4..7]] b[[4..7]] cin:s1.cout # pass fast s1.cout as cin
-  $sum = (s2.sum s1.sum)[[]]               # bit concatenation
+// libs/adder/code/scla.prp file
+cla = :(a b) when a.__bits==8:{            // specialize cla when bits == 8
+  s1 = cla a[[0..3]] b[[0..3]] cin:0       // cla for 4 bits
+  s2 = cla a[[4..7]] b[[4..7]] cin:s1.cout // pass fast s1.cout as cin
+  $sum = (s2.sum s1.sum)[[]]               // bit concatenation
 }
 
-cla = :(a b) when a.__bits==12:{           # specialize cla when bits == 12
-  s1 = cla a[[0...6]] b[[0...6]] cin:0     # ... vs .. ranges like in Ruby
+cla = :(a b) when a.__bits==12:{           // specialize cla when bits == 12
+  s1 = cla a[[0...6]] b[[0...6]] cin:0     // ... vs .. ranges like in Ruby
   s2 = cla a[[6..11]] b[[6..11]] cin:s1.cout
   $sum = (s2.sum s1.sum)[[]]
 }
 
-cla = :(a b):{                             # default CLA (not CLA, just RCA)
+cla = :(a b):{                             // default CLA (not CLA, just RCA)
   $sum = rca.(a b cin:0).sum
 }
 
@@ -469,11 +469,11 @@ task: Quick Dive to Pyrope
 # Customizing the counter
 
 ```coffeescript
-# code/counter.prp file
-*..+.. as __root.libs.adder.scla.cla      # Overload + operator
+// code/counter.prp file
+*..+.. as __root.libs.adder.scla.cla      // Overload + operator
 if $enable {
   @total := @total + 1
-  I 3 ..+.. 4 == 7 == 3 + 4              # + is an alias for ..+..
+  I 3 ..+.. 4 == 7 == 3 + 4              // + is an alias for ..+..
 }
 ```
 
@@ -489,7 +489,7 @@ task: Quick Dive to Pyrope
 # 2 Pipeline stage adder
 
 ```coffeescript
-# code/add4.prp file
+// code/add4.prp file
 ..+.. as __root.libs.adder.scla.cla
 s1 as __root.libs.adder.rca
 
@@ -547,7 +547,7 @@ endmodule
 .column[
 ### Pyrope
 ```coffeescript
-# code/vsverilog.prp file
+// code/vsverilog.prp file
 ($a $b) as __bits:2
 %c = $a + $b
 ```
@@ -652,7 +652,7 @@ endmodule: mkTb
 .column[
 ### Pyrope
 ```coffeescript
-# code/vsbsv.prp file
+// code/vsbsv.prp file
 @cycles = @cycles + 1
 x = 10
 a = x
@@ -671,11 +671,6 @@ puts "{}: rule, a={}" cycle a
 * More compact syntax
 * More traditional language, no rules
 ]
-
-<!-- --
-.overlay[]
-.center[.boxit[Hi there,bla la]]
-                                                                           -->
 
 ---
 class: split-40
@@ -707,12 +702,12 @@ print(verilog.convert(my_blinker, ios={led}))
 .column[
 ### Pyrope
 ```coffeescript
-# code/vsmigen.prp file
+// code/vsmigen.prp file
 if @counter {
-  @counter -= 1 # @counter-- does not work
+  @counter -= 1 // @counter-- does not work
 }else{
   @counter = $maxperiod
-  @led = ~@led # Not %, @ is always valid
+  @led = ~@led // Not %, @ is always valid
 }
 
 test = ::{
@@ -758,9 +753,9 @@ def fibonacci(n, req, bitwidth):
 .column[
 ### Pyrope
 ```coffeescript
-# code/vspyrtl.prp file
+// code/vspyrtl.prp file
 (@a @b @i) as __bits:$bitwidth
-if $n? {  # new request
+if $n? {  // new request
   (@a @b @i) = (0 0 n)
 }else{
   (@a @b @i) = (@b,@a+@b, @i-1)
@@ -772,7 +767,7 @@ test = ::{
   seq = (0 1 1 2 3 5 8 13 21 34)
   for n:(0..9) {
     b = vspyrtl bitwidth:6 n:n
-    waitfor b.result  # multiple clocks
+    waitfor b.result  // multiple clocks
     I b.result == seq[n]
   }
 }
@@ -811,8 +806,8 @@ module de.tuhh.ict.Timing {
 .column[
 ### Pyrope
 ```coffeescript
-# code/vspshdl.prp file
-# % is the output vector
+// code/vspshdl.prp file
+// % is the output vector
 % = (a:1 b:2 c:3 d:4)
 %a = %b
 %b = %c
@@ -841,7 +836,7 @@ upCounter enable = s
 .column[
 ### Pyrope
 ```coffeescript
-# code/vsclash.prp file
+// code/vsclash.prp file
 @upCounter as __bits:8
 if $enable {
  @upCounter += 1
@@ -889,7 +884,7 @@ collector out.resolved on "gen" {
 .column[
 ### Pyrope
 ```coffeescript
-# code/vsliberty.prp file
+// code/vsliberty.prp file
 gen  = ::{
   @data = @data + 1
 }
@@ -943,14 +938,14 @@ a..field1 = 1
 .column[
 ### Pyrope
 ```coffeescript
-# code/vsdart.prp file
+// code/vsdart.prp file
 person.fromJson = ::{
   puts "in Person"
 }
 
 employee = person
 employee.fromJson = ::{
-  super $ # Notice, no fromJson
+  super $ // Notice, no fromJson
   puts "in Employee"
 }
 
@@ -985,7 +980,7 @@ let result = switch (isBig, animal) {
 .column[
 ### Pyrope
 ```coffeescript
-# code/vsreason1.prp file
+// code/vsreason1.prp file
 unique if isBig and animal is Dog {
   result = 1
 }elif isBig and animal is Car {
@@ -1024,14 +1019,14 @@ let twelve = addFive 7;
 .column[
 ### Pyrope
 ```coffeescript
-# code/vsreason.prp file
+// code/vsreason.prp file
 increment = :(x):{$x + 1 }
 double    = :(x):{$x + $x}
 
 eleven = increment.(double.(5))
 
 add = :(x y):{$x + $y}
-addFive = \add  # add reference, no call
+addFive = \add  // add reference, no call
 addFive = ::{ super x:5 y:$y }
 eleven  = \addFive y:6
 twelve  = \addFive y:7
@@ -1071,7 +1066,7 @@ total = [x*x for x in range(10) if x % 2]
 .column[
 ### Pyrope
 ```coffeescript
-# code/vspython.prp file
+// code/vspython.prp file
 objectTest.get_value = ::{
   return __parent.myvalue
 }
@@ -1121,7 +1116,7 @@ for(let pair of myMap) {
 .column[
 ### Pyrope
 ```coffeescript
-# code/vsjs1.prp file
+// code/vsjs1.prp file
 a = 0
 a.__read = ::{
   __parent += 1
@@ -1167,7 +1162,7 @@ C = A * B
 ### Pyrope
 ```coffeescript
 x = 1..10
-y = 10..0 ..by.. 2 # (10 8 6 4 2 0)
+y = 10..0 ..by.. 2 // (10 8 6 4 2 0)
 A = ((1 2) (3 4))
 
 sum = 0
@@ -1175,11 +1170,11 @@ for i:(1..x.__length) {
   sum = sum + abs.(x.(i))
 }
 
-x3=(1..3) ** 2  # compile error
+x3=(1..3) ** 2  // compile error
 I (2 4 6) == (1..3) * 2
 A = (1 0 3)
 B = (2 3 7)
-C = A ** B      # OK, matching sizes
+C = A ** B      // OK, matching sizes
 I C == (2 0 21)
 D = A * B
 I C == ((2 0 6) (3 0 9) (7 0 21))
@@ -1204,11 +1199,11 @@ eat x for x in [1, 2, 3] when x isnt 2
 
 r361 = square 3 + square 4
 r25  = square(3) + square 4
-# r361 == 361 and r25 == 25
+// r361 == 361 and r25 == 25
 
-# Minimum number of parenthesis
+// Minimum number of parenthesis
 y = pow 10, floor log10 x
-# Equivalent to
+// Equivalent to
 y = pow(10, floor(log10(x)))
 
 ```
@@ -1224,12 +1219,12 @@ for food:(1 2 3) {
   if food !=2 { eat food }
 }
 
-r=square.(3 + square.(4))# 361
-r=square.(3) + square.(4)# 25
+r=square.(3 + square.(4))// 361
+r=square.(3) + square.(4)// 25
 
-# Minimum number of parenthesis
+// Minimum number of parenthesis
 y = pow.(10 floor.(log10.(x)))
-# Simpler syntax with pipes
+// Simpler syntax with pipes
 y = log2 x |> floor |> pow 10
 ```
 * No iterators after statement
@@ -1252,7 +1247,7 @@ class: split-50
 .column[
 ### ifs
 ```coffeescript
-# code/controlflow1.prp
+// code/controlflow1.prp
 
 if cond1 {
   I cond1
@@ -1273,23 +1268,23 @@ unique if cond5 {
 }elif cond6 {
   I !cond5 and  cond6
 }
-I cond5 or cond6 # Unique implies full too
+I cond5 or cond6 // Unique implies full too
 ```
 ]
 
 .column[
 ### iterators
 ```coffeescript
-# code/controlflow2.prp
+// code/controlflow2.prp
 total = 0
 for a:(1..3) { total += a }
 I total == (1+2+3)
 
-total = 0 # compact double nested loop
+total = 0 // compact double nested loop
 for a:(1..3) b:(1 2) { total += a }
 I total == (1+2+3 + 1+2+3)
 
-# Powerful library. Simple reduce example
+// Powerful library. Simple reduce example
 reduce = ::{
   t = $0
   for a:$[1..] {
@@ -1310,28 +1305,28 @@ class: split-50
 .column[
 ### Basic ops
 ```coffeescript
-# code/elementvstuple1.prp
-# operators read left and right side
+// code/elementvstuple1.prp
+// operators read left and right side
 
-a = (1 2 3) + 4      # element op
+a = (1 2 3) + 4      // element op
 I a == (5 6 7)
 
-a = (1 2 3) ++ (4 5) # tuple concat
+a = (1 2 3) ++ (4 5) // tuple concat
 I a == (1 2 3 4 5)
 
-a = (1 2 3) ..+.. 4  # element op
+a = (1 2 3) ..+.. 4  // element op
 I a == (5 6 7)
 
-# ..XX.. means operator XX
-# .. are optional for non-alphanumeric operators
+// ..XX.. means operator XX
+// .. are optional for non-alphanumeric operators
 ```
 ]
 
 .column[
 ### custom operators
 ```coffeescript
-# code/elementvstuple2.prp
-..dox.. = :(a,b):{  #.. .. is optional
+// code/elementvstuple2.prp
+..dox.. = :(a,b):{  // .. is optional
   t = ()
   for a:$0 b:$1 ::{
     t ++= a+b
@@ -1343,11 +1338,11 @@ I (1 3) ..dox.. (2 1) == (3 2 5 4)
 
 sub1 = ::{
   t = ()
-  b = $1[0]   # first element in rhs
+  b = $1[0]   // first element in rhs
   for a:$0 {t ++= a+b}
   return t
 }
-# .. required in call to be operator
+// .. required in call to be operator
 I (3 2) ..sub1.. 1 == (2 1)
 I (3 2) ..sub1.. (2 3) == (1 0)
 ```
@@ -1376,8 +1371,8 @@ class: split-50
 
 .column[
 ```coffeescript
-# code/precedence1.prp
-# Typically expected results
+// code/precedence1.prp
+// Typically expected results
 I (true or !false) == (true or (!false))
 I (3*5+5) == ((3*5) + 5)
 
@@ -1388,10 +1383,10 @@ I a == b
 c = fcall 1 2
 I c == fcall.(1 2)
 
-#bar = true or false and true # compile error
-#x = 3 ++ 4 -- 3              # compile error
+//bar = true or false and true // compile error
+//x = 3 ++ 4 -- 3              // compile error
 
-c = a == 3 == b              # OK
+c = a == 3 == b              // OK
 I c == (a==3 and 3==b)
 ```
 ]
@@ -1403,20 +1398,20 @@ class: split-50
 .column[
 ### explicit newline
 ```coffeescript
-# code/precedence2.prp
+// code/precedence2.prp
 bar = x == 3
    or x == 3 and !(x!=3)
    or false
 
 bar = false or
-      true         # compile error, ops after newline
+      true         // compile error, ops after newline
 
 I (true or false==false) == (true or (false==false))
 
 d = 1
    ,3
 d = 1,
-    3          # compile error, ',' after newline
+    3          // compile error, ',' after newline
 
 bar = 3
     * 1 + 4
@@ -1428,23 +1423,23 @@ I bar == 3 * (1+4) * (3-1)
 .column[
 ### explicit ;
 ```coffeescript
-# code/precedence3.prp
-x = 3 ++ 4 -- 3     # compile error, precedence?
-x = 3 ; ++ 4 -- 3   # OK, 3 ++ (4 -- 3)
+// code/precedence3.prp
+x = 3 ++ 4 -- 3     // compile error, precedence?
+x = 3 ; ++ 4 -- 3   // OK, 3 ++ (4 -- 3)
 
-b = !a or d         # OK, ! higher precedence
-b = !a or c == d    # OK, == breaks expression
+b = !a or d         // OK, ! higher precedence
+b = !a or c == d    // OK, == breaks expression
 I b == !a or (c == d)
 
-bar = true or false and true # compile error
+bar = true or false and true // compile error
 bar = true ; or true and false ; or true
 I bar == true or (true and false) or true
 
 I (1,3) == (1 3)
 d = 1 3
 I d == 1 3
-I d == ;( ; 1 ;, 2;+1)   # Ugly but legal syntax
-f = 1 +;3                # Ugly illegal syntax
+I d == ;( ; 1 ;, 2;+1)   // Ugly but legal syntax
+f = 1 +;3                // Ugly illegal syntax
 ```
 ]
 
@@ -1454,30 +1449,30 @@ class: split-50
 
 .column[
 ```coffeescript
-# code/singleline.prp
-if true { x = 3 }        # OK
+// code/singleline.prp
+if true { x = 3 }        // OK
 if true {
-x = 3 }                  # OK
-#if true
-#{ x = 3 }               # parse error, no newline
+x = 3 }                  // OK
+//if true
+//{ x = 3 }               // parse error, no newline
 
-if true ::{ puts __parent.x} # new scope in block
-if true { puts x }       # OK too
+if true ::{ puts __parent.x} // new scope in block
+if true { puts x }       // OK too
 
 if true ::{ a = 3 ; puts a }
 
-# parse error, no space between :: {
-#if true :: {puts false}
+// parse error, no space between :: {
+//if true :: {puts false}
 
 c = 0
 d = 0
 if false ::{ c = 1 ; d = 2 }
-I d == 0 and c == 0      # :: is a new scope
+I d == 0 and c == 0      // :: is a new scope
 
 for a:(1..3) {puts a}
-I a == 3                 # compile error
+I a == 3                 // compile error
 
-# ; is same as a newline
+// ; is same as a newline
 ```
 ]
 
@@ -1487,7 +1482,7 @@ class: split-50
 
 .column[
 ```coffeescript
-# code/codeblock.prp file
+// code/codeblock.prp file
 each as ::{
   I $.__block is def
   for a:$ { $.__block a }
@@ -1505,10 +1500,10 @@ map as ::{
   return t
 }
 
-a = ::{ 2+1 }  # OK implicit return
+a = ::{ 2+1 }  // OK implicit return
 
-# parse error, only last can be implicit return
-#a = ::{ 1+1 ; 2+1 }
+// parse error, only last can be implicit return
+//a = ::{ 1+1 ; 2+1 }
 
 s = (1 2 3) |> map ::{$+1} |> map ::{$*$}
 I s == (4 9 16)
@@ -1517,11 +1512,11 @@ I s == (4 9 16)
 --
 .column[
 ```coffeescript
-# code/reduce.prp file
+// code/reduce.prp file
 reduce = ::{
   if $.__size <= 1{ return $ }
 
-  redop = \$.__block # code block reference
+  redop = \$.__block // code block reference
   tmp = $
 
   while true {
@@ -1531,9 +1526,9 @@ reduce = ::{
     }
     if tmp2.__size <=1 { return tmp2 }
     tmp = tmp2
-    if tmp2.__size[[0]] {     # odd number
-      tmp = tmp2[[..-2]]      # all but last two
-      tmp ++= redop tmp2[-2..]# reduce last two
+    if tmp2.__size[[0]] {     // odd number
+      tmp = tmp2[[..-2]]      // all but last two
+      tmp ++= redop tmp2[-2..]// reduce last two
     }
   }
   I false
@@ -1551,20 +1546,20 @@ class: split-50
 .column[
 ### Method contructs
 ```coffeescript
-# code/scope1.prp
+// code/scope1.prp
 a = 1
 b = ::{
-  d = 3    # b local scope
-  %out = a # compile error
+  d = 3    // b local scope
+  %out = a // compile error
 }
 x = b
 I a == 1
 c = ::{
-  a = 2    # local variable
+  a = 2    // local variable
   d = 4
   %out = a
 }
-I d==4     # compile error, d not defined
+I d==4     // compile error, d not defined
 I c.out == 2
 ```
 ]
@@ -1574,7 +1569,7 @@ I c.out == 2
 .column[
 ### Control flow constructs
 ```coffeescript
-# code/scope2.prp
+// code/scope2.prp
 a = 1
 if a == 1 {
   a = 2
@@ -1582,16 +1577,16 @@ if a == 1 {
   _f = 4
 }
 I a == 2 and b == 3
-I _f == 4  # compile error, undefined
+I _f == 4  // compile error, undefined
 
-total = 0  # needed, because read in loop
+total = 0  // needed, because read in loop
 for _i:(1..3) { total += _i }
 
 I total == 1+2+3
-I _i == 3  # compile error, undefined
+I _i == 3  // compile error, undefined
 
 @val = 3
-# root is always relative to the current file
+// root is always relative to the current file
 I __root.scope2.val == 3
 ```
 ]
@@ -1603,15 +1598,15 @@ class: split-50
 .column[
 ### Accessing outside scope
 ```coffeescript
-# code/scope3.prp
+// code/scope3.prp
 a = 1
 if a == 1 ::{
-  a = 2               # compile error
-  __parent.a = 3      # OK
-  __root.scope3.a = 5 # OK, same
-  f = 3               # local scope
+  a = 2               // compile error
+  __parent.a = 3      // OK
+  __root.scope3.a = 5 // OK, same
+  f = 3               // local scope
 }
-I f == 3              # compile error, undefined
+I f == 3              // compile error, undefined
 I a == 5
 
 b = ::{
@@ -1630,13 +1625,13 @@ I d == 3
 .column[
 ### Code regions in ifs/fors
 ```coffeescript
-# code/scope4.prp
+// code/scope4.prp
 t = 0
 for a:(1..3) { t += a;; }
 I t == 1+2+3
 
 t = 0
-for a:(1..3) ::{t = a} # local scope
+for a:(1..3) ::{t = a} // local scope
 I t == 0
 
 for a:(1..3) ::{ if a>1 { break } ; t = a }
@@ -1653,19 +1648,19 @@ class: split-50
 
 .column[
 ```coffeescript
-# code/impvsexp1.prp file
-a = (1,2+3,3)            # tuple
-a = f.(1,2,f2.(3))       # function call
+// code/impvsexp1.prp file
+a = (1,2+3,3)            // tuple
+a = f.(1,2,f2.(3))       // function call
 b = (1
-    ,2-3)                # 2 lines
+    ,2-3)                // 2 lines
 a = f.(1
-      ,2-4*fcall.(3-1))  # 2 lines function call
+      ,2-4*fcall.(3-1))  // 2 lines function call
 ```
 
 * Commas can be avoided if the elements are single line and have no expressions.
 
 ```coffeescript
-# code/impvsexp2.prp file
+// code/impvsexp2.prp file
 a = (1 2 3)
 a = f.(1 2 3)
 b = (1+23*fcall.(2+4))
@@ -1676,15 +1671,15 @@ b = (1+23*fcall.(2+4))
 * In function calls, when commas can be avoided, parenthesis are optional after a newline, an assignment, or a pipe operator.
 
 ```coffeescript
-# code/impvsexp3.prp file
-a = (1 2 3)              # required, tuple
-f 1 2 3                  # after newline
+// code/impvsexp3.prp file
+a = (1 2 3)              // required, tuple
+f 1 2 3                  // after newline
 
-a = 3 |> f 2 3 |> f 1    # after pipe
-if f.(2 1 3) {           # must be explicit
+a = 3 |> f 2 3 |> f 1    // after pipe
+if f.(2 1 3) {           // must be explicit
   I true
 }
-I (1 2 3) == (1 2 3)     # must be explicit
+I (1 2 3) == (1 2 3)     // must be explicit
 ```
 ]
 
@@ -1692,25 +1687,25 @@ I (1 2 3) == (1 2 3)     # must be explicit
 # Function call arguments
 
 ```coffeescript
-# code/fcalls.prp file
+// code/fcalls.prp file
 square = :(x):{$ * $}
-#r=square 3 + square 4      # parse error, complex argument
-#r=square(3 + square.(4))   # parse error, space required for arguments
-#r=square (3 + square (4))  # parse error, missing explicit argument
-r=square square 4           # compile error, square has 1 argument, 2 passed
-r=square (3 + (square  4))  # compile error, two args, but first reqs argument
-r=square (3 + square.(4))   # OK, 361 = (3+4^2)^2 ; ^ is exp, not power
-r=square.(3 + square.(4))   # OK, 361
-r=square.(3) + square.(4)   # OK, 25
+//r=square 3 + square 4     // parse error, complex argument
+//r=square(3 + square.(4))  // parse error, space required for arguments
+//r=square (3 + square (4)) // parse error, missing explicit argument
+r=square square 4           // compile error, square has 1 argument, 2 passed
+r=square (3 + (square  4))  // compile error, two args, but first reqs argument
+r=square (3 + square.(4))   // OK, 361 = (3+4^2)^2 ; ^ is exp, not power
+r=square.(3 + square.(4))   // OK, 361
+r=square.(3) + square.(4)   // OK, 25
 pass  = ::{
   if $.__size == 1 { return 7 }
   if $.__size == 2 { return 9 }
   11
 }
-puts 3 square 4 5           # compile error, missing required square arg
-puts 3 square.(4) 5         # OK, prints "3 16 5"
-puts 3 pass 4 5             # OK, prints "3 11 5"
-puts 3 pass.(4) 5           # OK, prints "3 7 5"
+puts 3 square 4 5           // compile error, missing required square arg
+puts 3 square.(4) 5         // OK, prints "3 16 5"
+puts 3 pass 4 5             // OK, prints "3 11 5"
+puts 3 pass.(4) 5           // OK, prints "3 7 5"
 ```
 
 
@@ -1722,22 +1717,22 @@ class: split-50
 .column[
 ### Basic tuples
 ```coffeescript
-# code/tuples1.prp
-a = (b:1 c:2)  # ordered, named
+// code/tuples1.prp
+a = (b:1 c:2)  // ordered, named
 I a.b == 1 and a.c == 2
 I a.0 == 1 and a.2 == 2
 
-b =(3,false)   # ordered, unnamed
+b =(3,false)   // ordered, unnamed
 I b.0 == 3 b[1] == false
 
-c1 as (__bits:1, __bits:3) # final ordered unnamed
+c1 as (__bits:1, __bits:3) // final ordered unnamed
 c as c1
-c as (b:, c:)  # final ordered named
+c as (b:, c:)  // final ordered named
 c = (true 2)
-c = (false 33) # compile error
-c.bar = 3      # compile error
+c = (false 33) // compile error
+c.bar = 3      // compile error
 
-d as (a:3 5)   # final, ordered, unnamed
+d as (a:3 5)   // final, ordered, unnamed
 I d.a == 3 and d[1] == 5
 
 g = (1 2 3)
@@ -1749,13 +1744,13 @@ g ++= (2 5)
 .column[
 ### Complex tuples
 ```coffeescript
-e.0 = 3        # unamed, ordered
+e.0 = 3        // unamed, ordered
 I e.0 == 3 and e == 3
 
 s as __set:true
 s = (1  2  3  3)
 I s == (1 2 3)
-s = s ++ 4  # add to tuple
+s = s ++ 4  // add to tuple
 s = s ++ (1 4 5)
 I s == (1 2 3 4 5)
 
@@ -1779,9 +1774,9 @@ class: split-50
 .column[
 ### Clear SRAMs
 ```coffeescript
-# code/mem1.prp
+// code/mem1.prp
 @a as __bits:3 __size:1024 __rdports:1
-@b as @a __fwd:false  # without cycle fowarding
+@b as @a __fwd:false  // without cycle fowarding
 @cycle as __bits:8
 
 I @a[0] == @cycle
@@ -1811,7 +1806,7 @@ class: split-50
 # Flop/Latches/SRAM parameters
 
 ```coffeescript
-# code/mem5.prp
+// code/mem5.prp
  __bits:int       Number of bits in register
  __reset:bool     Reset register (true default)
  __posedge:bool   Posedge or negedge (true default)
@@ -1830,15 +1825,15 @@ class: split-50
 .column[
 ### Enforce SRAM constraints
 ```coffeescript
-# code/mem2.prp
-# Enforce #rd and wr ports in SRAM
+// code/mem2.prp
+// Enforce #rd and wr ports in SRAM
 @a as __bits:8 __size:1024 __rdports:1 __wrports:1
 @cycle as __bits:8
 
 @cycle += 13
 
 
-# ADDR must be stable at posedge. Push logic
+// ADDR must be stable at posedge. Push logic
 @a[@cycle] = @cycle-1
 
 %out = @a[~@cycle]
@@ -1848,8 +1843,8 @@ class: split-50
 .column[
 ### Becomes
 ```coffeescript
-# code/mem3.prp
-# Enforce #rd and wr ports in SRAM
+// code/mem3.prp
+// Enforce #rd and wr ports in SRAM
 @a as __bits:8 __size:1024 __wrports:1
 @cycle     as __bits:8
 
@@ -1872,16 +1867,16 @@ class: split-50
 .column[
 ### Enforce SRAM constraints
 ```coffeescript
-# code/mem4.prp
-# Enforce #rd and wr ports in SRAM
+// code/mem4.prp
+// Enforce #rd and wr ports in SRAM
 @a as __bits:8 __size:1024 __rdports:1 __wrports:1
-*@a as __posedge:false # posedge by default
+*@a as __posedge:false // posedge by default
 @cycle as __bits:8
 
 @cycle += 13
 
 
-# SRAM can use pos/neg edge
+// SRAM can use pos/neg edge
 @a[@cycle] = @cycle-1
 
 %out = @a[~@cycle]
@@ -1896,7 +1891,7 @@ class: split-50
 .column[
 ### Basic
 ```coffeescript
-# code/ranges1.prp
+// code/ranges1.prp
 I (1 2 3) == 1...4 == 1..3
 
 I (0..7 ..by.. 2) == (0 2 4 6)
@@ -1905,22 +1900,22 @@ I 0..15 ..by.. (2 3) == (0 2 5 7 10 12 15)
 I (1..2) ..union.. 3 == (1..3)
 I (1..10) ..intersect.. (2..20) == (2..10)
 
-# Ranges can be open
+// Ranges can be open
 I (3..) ..intersect.. (1..5) == (3..5)
 I (..)  ..intersect.. (1..2) == (1..2)
 I (..4) ..union..     (2..3) == (..4)
 I (2..) == (2..-1)
 I (..3) == (-1..3)
 
-# Ranges can be converted to values
-# I (1..3)[[]]  # compile error
+// Ranges can be converted to values
+// I (1..3)[[]]  // compile error
 ```
 ]
 
 .column[
 ### Complex
 ```coffeescript
-# code/ranges2.prp
+// code/ranges2.prp
 numbers = (1...10)
 start  = numbers[0..2]
 middle = numbers[3...-2]
@@ -1937,7 +1932,7 @@ val = 0b00_01_10_11
 I val[[0..1]] == 0b11
 I val[[..-2]] == 0b01_10_11
 I val[[-2..]] == 0b00
-I val[[-1]]   == 0b1  # MSB
+I val[[-1]]   == 0b1  // MSB
 
 I (1..3) * 2 = (2 4 6)
 I (1..3) + 2 == (3..5)
@@ -1951,20 +1946,20 @@ I (1 2 4) ++ 3 == (1..4)
 rnd and rnd_bias interface. Seed controller by environment variable.
 
 ```coffeescript
-# code/rndtest.prp
-a = __rnd 1..3          # rnd between 1 2 3
+// code/rndtest.prp
+a = __rnd 1..3          // rnd between 1 2 3
 b as __bits:12
-a = b.__rnd             # rnd from 0 to 4095
-b.__rnd_bias =   (1 0)  # weight 1 for value 0
-b.__rnd_bias ++= (2 3)  # weight 2 for value 3
-b.__rnd_bias ++= (2 4)  # weight 2 for value 4
-b.__rnd_bias ++= (5 9)  # 0 10%, 3 20%, 4 20%, and 9 50% chance
+a = b.__rnd             // rnd from 0 to 4095
+b.__rnd_bias =   (1 0)  // weight 1 for value 0
+b.__rnd_bias ++= (2 3)  // weight 2 for value 3
+b.__rnd_bias ++= (2 4)  // weight 2 for value 4
+b.__rnd_bias ++= (5 9)  // 0 10%, 3 20%, 4 20%, and 9 50% chance
 
 c as __bits:8
-c.__rnd_bias   = (1 0)      # weight 1 for value 0
-c.__rnd_bias ++= (2 255)    # weight 2 for value 255
-c.__rnd_bias ++= (7 1..254) # weigth 7 for the rest
-puts c.__rnd                # 10% chance 0, 20% chance 255, 70% other
+c.__rnd_bias   = (1 0)      // weight 1 for value 0
+c.__rnd_bias ++= (2 255)    // weight 2 for value 255
+c.__rnd_bias ++= (7 1..254) // weigth 7 for the rest
+puts c.__rnd                // 10% chance 0, 20% chance 255, 70% other
 ```
 
 ```bash
@@ -1977,11 +1972,11 @@ $prp --run rndtest
 # Resets
 
 ```coffeescript
-# code/reset1.prp
+// code/reset1.prp
 @a as __bits:3 
 @a.__init = 13
 
-@b as __bits:3 __reset:false # disable reset
+@b as __bits:3 __reset:false // disable reset
 
 @mem0 as __bits:4 __size:16
 @mem0.__init = ::{ 3 }
@@ -1990,9 +1985,9 @@ $prp --run rndtest
 
 @mem2 as __bits:2 __size:32
 
-# custom reset
+// custom reset
 @mem2.__init = ::{
-  # Called during reset or after clear (!!)
+  // Called during reset or after clear (!!)
   @_reset_pos as __bits:log2.(__parent.__size) __reset:false
   __parent[@_reset_pos] = @_reset_pos
   @_reset_pos += 1
@@ -2005,51 +2000,51 @@ $prp --run rndtest
 * Each flop or fluid stage an have its own clock
 
 ```coffeescript
-# code/clk1.prp
+// code/clk1.prp
 
 @clk_flop = $inp
-# implicit @clk_flop as __clk_pin:$clk
+// implicit @clk_flop as __clk_pin:$clk
 @clk2_flop as __clk_pin:$clk2
 @clk2_flop = @clk_flop
 
 %out = @clk2_flop
-%out as __fluid:true __clk_pin:$clk3  # 3rd clock for output
+%out as __fluid:true __clk_pin:$clk3  // 3rd clock for output
 ```
 
 ---
 # Constants
 
 ```coffeescript
-# code/constants.prp
+// code/constants.prp
 
-a = 3                     # implicit __bits:2 __sign:false
-a = 3u                    # explicit __sign:false, implicit __bits:2
-a = 3u4bits               # explicit __sign:false, __bits:4
+a = 3                     // implicit __bits:2 __sign:false
+a = 3u                    // explicit __sign:false, implicit __bits:2
+a = 3u4bits               // explicit __sign:false, __bits:4
 
-b = 0xFF_f__fs32bits      # explicit __bits:32 __sign:true
+b = 0xFF_f__fs32bits      // explicit __bits:32 __sign:true
 
 c = 0b_111_010_111u32bits
-c = 0b_111_010_111u2bits  # compile error
+c = 0b_111_010_111u2bits  // compile error
 
-c = 0xFF[[0..2]]          # explicit drop bits
+c = 0xFF[[0..2]]          // explicit drop bits
 ```
 
 ---
 # Compile time assertions and checks
 
 ```coffeescript
-# code/assertions.prp
+// code/assertions.prp
 
 a = 3
-C b = a  # b and a must be known at Compile time
+C b = a  // b and a must be known at Compile time
 
-C if a==3 { # compile time if condition
-  I true    # runtime assertion
-  %d = $0+a # no constant
+C if a==3 { // compile time if condition
+  I true    // runtime assertion
+  %d = $0+a // no constant
 }
 
-C I a == b  # Compile time assertion
-I %d != a   # runtime assertion
+C I a == b  // Compile time assertion
+I %d != a   // runtime assertion
 
 ```
 
@@ -2060,54 +2055,54 @@ class: split-50
 .column[
 ### Explicit vs implicit
 ```coffeescript
-# code/precission1.prp
-a = 3       # implicit, __range:3u2bits
-a = a + 1   # OK
+// code/precission1.prp
+a = 3       // implicit, __range:3u2bits
+a = a + 1   // OK
 
-b = 3u2bits # explicit, __bits:2 __range:3u2bits
-b = b - 1   # OK, __range:2u2bits
-b = b + 2   # compile error, __bits explicit 2
+b = 3u2bits // explicit, __bits:2 __range:3u2bits
+b = b - 1   // OK, __range:2u2bits
+b = b + 2   // compile error, __bits explicit 2
 I b == 2
-b := b + 2  # OK (drop bits)
-I b == 0    # 4u2bits -> 0b100[[0..1]] == 0
+b := b + 2  // OK (drop bits)
+I b == 0    // 4u2bits -> 0b100[[0..1]] == 0
 
-# implicit unless all values explicit
-c = 3 - 1u1bits # implicit, __bits:2 __range:2u2bits
+// implicit unless all values explicit
+c = 3 - 1u1bits // implicit, __bits:2 __range:2u2bits
 
-@d as __range:(0 1 7) # allowed values
-@d = 1      # OK
+@d as __range:(0 1 7) // allowed values
+@d = 1      // OK
 @d += 1
-@d += 1     # compile error
+@d += 1     // compile error
 
-I 0b11_1100 == (a 0b1100)[[]] # bit concatenation
+I 0b11_1100 == (a 0b1100)[[]] // bit concatenation
 ```
 ]
 
 .column[
 ### Conditions
 ```coffeescript
-# code/precission2.prp
+// code/precission2.prp
 a as __range:(1..6)
 a = 5
 c = 5
 if xx {
-  a = a + 1  # OK
+  a = a + 1  // OK
   c = c + 1
 }else{
-  a = a - 4  # OK
+  a = a - 4  // OK
   c = c - 4
 }
-a = a + 1  # compile error, may be out range
-I c.__range == (1,6) # all possible values
+a = a + 1  // compile error, may be out range
+I c.__range == (1,6) // all possible values
 c = c + 2
 I c.__range == (3,8) and c.__bits == 4
-c = c ^ (c>>1)  # Not predictable
+c = c ^ (c>>1)  // Not predictable
 I c.__range == (0..15) and c.__bits == 4
-c = 300   # OK because c was explicit
+c = 300   // OK because c was explicit
 
-d = 50u2bits  # compile error
+d = 50u2bits  // compile error
 e = 3u2bits
-e := 50       # OK, drop upper bits
+e := 50       // OK, drop upper bits
 e = e - 1
 ```
 ]
@@ -2119,50 +2114,50 @@ class: split-50
 .column[
 ### Fluid syntax
 ```coffeescript
-# $i? = false  # do not consume
-# $i? = true   # consume
-# $i! = true   # trigger retry to input
-# $i! = false  # do not retry input, consume if valid
-# $i?          # is valid set?
-# $i!          # is retry set?
-# $i!!         # is clear set?
-# $i!! = true  # clear flop
-# $i!! = false # do not clear flop
+// $i? = false  // do not consume
+// $i? = true   // consume
+// $i! = true   // trigger retry to input
+// $i! = false  // do not retry input, consume if valid
+// $i?          // is valid set?
+// $i!          // is retry set?
+// $i!!         // is clear set?
+// $i!! = true  // clear flop
+// $i!! = false // do not clear flop
 
-# %o? = false  # do not generate output
-# %o! = true   # compile error
-# %o! = false  # compile error
-# %o?          # is valid set? (there was a write)
-# %o!          # is retry set?
-# %o!!         # is clear set?
-# %o!! = true  # clear flop
-# %o!! = false # do not clear flop
+// %o? = false  // do not generate output
+// %o! = true   // compile error
+// %o! = false  // compile error
+// %o?          // is valid set? (there was a write)
+// %o!          // is retry set?
+// %o!!         // is clear set?
+// %o!! = true  // clear flop
+// %o!! = false // do not clear flop
 
-# yield        # stop and start from here cycle
-# waitfor      # block execution until input is ready
+// yield        // stop and start from here cycle
+// waitfor      // block execution until input is ready
 ```
 ]
 
 .column[
 ### Dealing with valids
 ```coffeescript
-# code/fluid1.prp file
-a as $c         # alias, no restart
+// code/fluid1.prp file
+a as $c         // alias, no restart
 try ::{
   I __parent.a == $a
   if __parent.a == 3 { %sum = __parent.a }
 }
 try ::{
   if %sum2! {
-    %sum3 = $a  # sum2 busy, try sum3
+    %sum3 = $a  // sum2 busy, try sum3
   }else{
     %sum2 = $a
   }
 }
 try ::{
   if $a? {
-    $d? = false # do not consume b
-    $e!! = true # clear input e
+    $d? = false // do not consume b
+    $e!! = true // clear input e
   }
 }
 ```
@@ -2174,26 +2169,26 @@ class: split-50
 
 .column[
 ```coffeescript
-# code/fluid2.prp file
-if a? and a.counter>0 {   # Option 1
+// code/fluid2.prp file
+if a? and a.counter>0 {   // Option 1
   @total += a.counter
 }
-try ::{                   # Option 2 (same behavor)
+try ::{                   // Option 2 (same behavor)
   if a.counter>0 {
     @total += a.counter
   }
 }
-if a?.counter>0 {         # Option 3 (same)
+if a?.counter>0 {         // Option 3 (same)
   @total += a.counter
 }
-@total += a?.counter      # Option 4 (same)
+@total += a?.counter      // Option 4 (same)
 ```
 ```coffeescript
-# code/fluid3.prp file
+// code/fluid3.prp file
 puts "prints every cycle"
 try ::{
   puts "odd cycles"
-  yield         # Yield applies to scope ::{}
+  yield         // Yield applies to scope ::{}
   puts "even cycles"
 }
 puts "prints every cycle"
@@ -2202,7 +2197,7 @@ puts "prints every cycle"
 
 .column[
 ```coffeescript
-# code/fluid4.prp file
+// code/fluid4.prp file
 everyother = ::{
   if @conta {
     yield
@@ -2230,22 +2225,22 @@ class: split-50
 
 .column[
 ```coffeescript
-# code/fluid5.prp file
-%o1 = $in1?.0       # pass input, no restart
+// code/fluid5.prp file
+%o1 = $in1?.0       // pass input, no restart
 
-%o2 = $in2?.field   # pass field, no restart
+%o2 = $in2?.field   // pass field, no restart
 
-%o3 = $in3?.a + 30  # use field, no restart
+%o3 = $in3?.a + 30  // use field, no restart
 
 try ::{
-  %o3 = $in3.a + 30 # same as last
+  %o3 = $in3.a + 30 // same as last
 }
 ```
 ]
 
 .column[
 ```coffeescript
-# code/fluid6.prp file
+// code/fluid6.prp file
 ```
 ]
 
@@ -2256,25 +2251,25 @@ class: split-50
 .column[
 ### Non Fluid Examples
 ```coffeescript
-# code/fluid7.prp file
+// code/fluid7.prp file
 sadd = ::{ %sum = $a + $b }
 sinc = ::{ % = $ + 1 }
 combinational = ::{
   % = ssum.(a:sinc.($a), b:sinc.($b))
 }
 
-one_stage_flop_out  = ::{ # The output is flopped
+one_stage_flop_out  = ::{ // The output is flopped
   % = ssum.(a:sinc.($a), b:sinc.($b))
   % as __stage:true
 }
 
-one_stage_comb_out = ::{  # Not flopped output
+one_stage_comb_out = ::{  // Not flopped output
   a1 as sinc
   a2 as ssum __stage:true
   % = a2.(a:a1.($a), b:a1.($b))
 }
 
-two_stage_comb_out = ::{  # Not flopped output
+two_stage_comb_out = ::{  // Not flopped output
   a1 as sinc __stage:true
   a2 as ssum __stage:true
   % = a2.(a:a1.($a), b:a1.($b))
@@ -2285,15 +2280,15 @@ two_stage_comb_out = ::{  # Not flopped output
 .column[
 ### Fluid Examples
 ```coffeescript
-# code/fluid8.prp file
+// code/fluid8.prp file
 
 combinational = ::{
   % = ssum.(a:sinc.($a), b:sinc.($b))
 }
 incsum = combinational.(a:$a,b:$b)
-incsum as __fluid:true    # instance is fluid
+incsum as __fluid:true    // instance is fluid
 
-one_stage_fluid  = ::{    # Same as incsum
+one_stage_fluid  = ::{    // Same as incsum
   % = ssum.(a:sinc.($a), b:sinc.($b))
   % as __fluid:true
 }
@@ -2305,7 +2300,7 @@ mixed_weird_fluid = ::{
 }
 
 allfluid = mixed_weird_fluid
-allfuild as __fluid:true  # both out1 and out2
+allfuild as __fluid:true  // both out1 and out2
 ```
 ]
 
@@ -2361,17 +2356,17 @@ opt4_2stages = ::{
 
 ### Base syntax
 ```coffeescript
-# code/assign1.prp
-a = b         # potential restart in fluid
-a as c        # alias a as c, no real read for fluid
+// code/assign1.prp
+a = b         // potential restart in fluid
+a as c        // alias a as c, no real read for fluid
 
-b = __bits:3  # explicit bits
-b = 3         # OK
-b = __bits:10 # OK to redefine
-b = 100       # OK
+b = __bits:3  // explicit bits
+b = 3         // OK
+b = __bits:10 // OK to redefine
+b = 100       // OK
 
-d as __bits:3 # explicit bits
-d = __bits:4  # compile error, fixed with as
+d as __bits:3 // explicit bits
+d = __bits:4  // compile error, fixed with as
 ```
 
 ---
@@ -2381,18 +2376,18 @@ class: split-50
 .column[
 ### both out1 and out2 happens or nothing happens
 ```coffeescript
-# code/assign2.prp
-_tmp1 = $a  # read that can trigger restart
+// code/assign2.prp
+_tmp1 = $a  // read that can trigger restart
 _tmp2 = $b
 try ::{
-  %out1 = _tmp1 + 1 # guarantee no restart (reread)
+  %out1 = _tmp1 + 1 // guarantee no restart (reread)
 }
 try ::{
   %out2 = _tmp2 + 1
 }
 ```
 ```coffeescript
-# code/assign3.prp
+// code/assign3.prp
 try ::{
   %out1 = $a + 1
   %out2 = $b + 1
@@ -2403,7 +2398,7 @@ try ::{
 .column[
 ### out1 and out2 can happen independently
 ```coffeescript
-# code/assign4.prp
+// code/assign4.prp
 try ::{
   %out1 = $a + 1
 }
@@ -2412,14 +2407,14 @@ try ::{
 }
 ```
 ```coffeescript
-# code/assign5.prp
-_tmp1 as $a # alias, no restart trigger
-_tmp2 = \$b # pass reference, no restart
+// code/assign5.prp
+_tmp1 as $a // alias, no restart trigger
+_tmp2 = \$b // pass reference, no restart
 try ::{
-  %out1 = _tmp1 + 1  # can trigger resart
+  %out1 = _tmp1 + 1  // can trigger resart
 }
 try ::{
-  %out2 = _tmp2 + 1  # can trigger restart
+  %out2 = _tmp2 + 1  // can trigger restart
 }
 ```
 ]
@@ -2431,7 +2426,7 @@ class: split-50
 .column[
 ### prototype inheritance
 ```coffeescript
-# code/objects1.prp
+// code/objects1.prp
 obj1.oneortwo = ::{return 1}
 obj2.oneortwo = ::{return 2}
 obj1.oneortwo2 = 1
@@ -2446,8 +2441,8 @@ if $input[[0..1]] == 0 {
   I tmp.oneortwo  == 2
   I tmp.oneortwo2 == 2
 }else{
-  # Calling undefined method is __init value
-  # NEVER runtime error
+  // Calling undefined method is __init value
+  // NEVER runtime error
   I tmp.oneortwo  == 0
   I tmp.oneortwo2 == 0
 }
@@ -2459,14 +2454,14 @@ I tmp.oneortwo ..in.. (1 2 0)
 .column[
 ### overload
 ```coffeescript
-# code/objects1.prp
+// code/objects1.prp
 parent.dox = ::{return 1+$0}
 
-child = parent  # inherit
+child = parent  // inherit
 I child.__obj == parent.__obj
 child.dox = ::{
   _tmp = super $
-  __parent.val = 3  # new field in child
+  __parent.val = 3  // new field in child
   return tmp + 3
 }
 I child.__obj != parent.__obj
@@ -2492,7 +2487,7 @@ class: split-50
 .column[
 ### dealing with objects
 ```coffeescript
-# code/objects1.prp
+// code/objects1.prp
 obj1.foo as __bits:3
 obj2.bar as __bits:2
 I obj1 isnt obj2
@@ -2502,7 +2497,7 @@ obj1.foo  = 1
 obj1c.foo = 3
 I obj1 is obj1c
 
-obj3 as obj1 or obj2 # Union type
+obj3 as obj1 or obj2 // Union type
 if 3.__rnd == 2 {
   obj3 = obj1
   obj3.foo = 1
@@ -2524,15 +2519,15 @@ class: split-50
 .column[
 ### binary matching
 ```coffeescript
-# code/objects1.prp
+// code/objects1.prp
 a = 0x73
 I a == 0b111011
 I a == 0b?11?11
 
 c as __bits:4
-I c.popcount <= 1 # Only 1 bit can be set
+I c.popcount <= 1 // Only 1 bit can be set
 
-unique if c == 0b???1 { # ? only in binaries
+unique if c == 0b???1 { // ? only in binaries
   onehot = 1
 }elif c == 0b??1? {
   onehot = 2
@@ -2552,24 +2547,24 @@ class: split-50
 .column[
 ### Debug statements have no impact
 ```coffeescript
-# code/debug1.prp
+// code/debug1.prp
 a = 3
-I a == 3    # runtime check
-C I a == 3   # compile time check
+I a == 3    // runtime check
+C I a == 3  // compile time check
 
-N a != 3    # N (never) is I !(xxx)
-C if true { # condition known at compile time
+N a != 3    // N (never) is I !(xxx)
+C if true { // condition known at compile time
   c = 3
 }
-C c = 3+4   # C is known at compile time
+C c = 3+4   // C is known at compile time
 ```
 ]
 
 .column[
 ### Strings have no compute impact, kow at compile time
 ```coffeescript
-# code/debug2.prp
-if c == 3 { # Error unless c is know at compile
+// code/debug2.prp
+if c == 3 { // Error unless c is know at compile
   b = "potato"
 }else{
   b = "carrot"
