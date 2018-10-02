@@ -2,7 +2,7 @@ var tmp_count = 0;
 var tmp_count_track = 0;
 var start = 0, end = 0;
 var k_count = 0, k_next_count = 1;
-var scope_count = 0, tmp_scope_count = 0;
+var scope_count = 0, scope_out_count = 0, tmp_scope_count = 0;
 var scope_pos_track = 0; 
 var false_count_track = -2;
 var elif_condition_track = 0;
@@ -13,6 +13,7 @@ var method_id_track = 0;
 var elif_next_track = 0;
 var elif_phi_mark = 0, tmp_if_phi = 0;
 var mark_read, read_condition;
+var if_scope_set = false, for_scope_set = false, while_scope_set = false;
 
 cfg_gen_setup = function(input){ //enable this to pass AST to cfg_gen_setup; also change tmp_count -> tmp_count_track
   for(var i = 0; i < input.length; i++){
@@ -113,7 +114,7 @@ function recursive_variable_read(mark_arr, mark_index, mark_var, pos){
     k_next_count++;
     tmp_print_arr.push("K"+k_count);
     tmp_print_arr.push("K"+k_next_count);
-    tmp_print_arr.push(tmp_scope_count);
+    tmp_print_arr.push(mark_arr[i][2]); //scope_count value
     tmp_print_arr.push(start);
     tmp_print_arr.push(end);
     tmp_print_arr.push("RD "+read_condition[0]+" always");
@@ -135,7 +136,7 @@ function recursive_variable_read(mark_arr, mark_index, mark_var, pos){
       k_next_count++;
       tmp_print_arr.push("K"+k_count);
       tmp_print_arr.push("K"+k_next_count);
-      tmp_print_arr.push(tmp_scope_count);
+      tmp_print_arr.push(mark_arr[i][2]); //scope_count_value
       tmp_print_arr.push(start);
       tmp_print_arr.push(end);
       tmp_print_arr.push("RD "+read_condition[0]+" on "+tmp_read_condition.join(' and '));
@@ -156,7 +157,7 @@ function pretty_print_predicates(read_arr, read_var){
   k_next_count++;
   tmp_read_arr.push("K"+k_count);
   tmp_read_arr.push("K"+k_next_count);
-  tmp_read_arr.push(tmp_scope_count);
+  tmp_read_arr.push(mark_arr[i][2]); //scope_count_value
   tmp_read_arr.push(start);
   tmp_read_arr.push(end);
   tmp_read_arr.push("and");
@@ -175,7 +176,7 @@ function pretty_print_predicates(read_arr, read_var){
     k_next_count++;
     tmp2_read_arr.push("K"+k_count);
     tmp2_read_arr.push("K"+k_next_count);
-    tmp2_read_arr.push(tmp_scope_count);
+    tmp2_read_arr.push(mark_arr[i][2]); //scope_count_value
     tmp2_read_arr.push(start);
     tmp2_read_arr.push(end);
     tmp2_read_arr.push("RD "+read_var+" on tmp"+(tmp_count - 1));
@@ -311,11 +312,13 @@ function cfg_gen(data){
       }
 
     }    
+    //console.log(i);
 
     if(i == "scope_body"){
       if(data[i] == null){
         arr.splice(arr.length-1,0,"null");
       }else if(Array.isArray(data[i])){
+        var local_scope_count = -1;
         k_count++;      //k_count for "while"
         k_next_count++;
         arr.unshift('K'+k_count); //push k_id to arr        
@@ -330,18 +333,27 @@ function cfg_gen(data){
         }
         
         //the three lines below handle scope_count field in arr
-        scope_count = tmp_scope_count;    
+        //scope_count = tmp_scope_count;
         scope_count++;
         tmp_scope_count = scope_count;
+        local_scope_count = scope_count;
+
         for(var j = 0; j < data[i].length; j++){
           if(j == data[i].length - 1){
             method_id_track = 1;
           }
+          tmp_scope_count = local_scope_count;
           if(typeof(data[i][j])=="object" && data[i][j] != null && data[i][j]["type"] != "comment"){
             cfg_gen(data[i][j]);
           }
         }
-        scope_count = 0;
+        scope_out_count++;
+        if(scope_count > local_scope_count) {
+          tmp_scope_count = scope_count - scope_out_count;
+        }else {
+          tmp_scope_count = local_scope_count - 1;
+        }
+
       }
     }   
 
@@ -349,6 +361,7 @@ function cfg_gen(data){
       if(data[i] == null){
         arr.splice(arr.length,0,"null");
       }else if(Array.isArray(data[i])){
+        var local_scope_count = -1;
         arr.splice(scope_pos_track+3,0,'K'+(k_count+2)); //push k_count of scope_alt body in cfg
         k_count++;
         k_next_count++;
@@ -360,18 +373,26 @@ function cfg_gen(data){
         }
 
         //the three lines below handle scope_count field in arr
-        scope_count = tmp_scope_count;
+        //scope_count = tmp_scope_count;
         scope_count++;
         tmp_scope_count = scope_count;
+        local_scope_count = scope_count;
         for(var j = 0; j < data[i].length; j++){
           if(j == data[i].length - 1){
             method_id_track = 1;
           }
+          tmp_scope_count = local_scope_count;
           if(typeof(data[i][j])=="object" && data[i][j] != null && data[i][j]["type"] != "comment"){
             cfg_gen(data[i][j]);
           }
         }
-        scope_count = 0;
+        scope_out_count++;
+        if(scope_count > local_scope_count) {
+          tmp_scope_count = scope_count - scope_out_count;
+        }else {
+          tmp_scope_count = local_scope_count - 1;
+        }
+
       }
     }
 
@@ -394,8 +415,9 @@ function cfg_gen(data){
       if(data[i] == null){
         arr.push("null");
       }else if(Array.isArray(data[i])){
+        var local_scope_count = -1;
         k_count++; 
-        k_next_count++; 
+        k_next_count++;
         arr.unshift('K'+k_count); //push k_id to arr
         arr.push('K'+(k_count+2));  //push "for" target k_id to arr
         k_count++;
@@ -407,24 +429,44 @@ function cfg_gen(data){
           }
         }
 
+        if(data['scope'] == "::"){
+          scope_count++;
+          tmp_scope_count = scope_count;
+          local_scope_count = scope_count;
+        }
+        
         for(var j = 0; j < data[i].length; j++){
           if(j == data[i].length - 1){
             method_id_track = 1;
           }
+          tmp_scope_count = local_scope_count;
           if(typeof(data[i][j])=="object" && data[i][j] != null && data[i][j]["type"] != "comment"){            
             cfg_gen(data[i][j]);
+          }
+        }
+        if(data['scope'] == "::"){
+          scope_out_count++;
+          if(scope_count > local_scope_count) {
+            tmp_scope_count = scope_count - scope_out_count;
+          }else {
+            tmp_scope_count = local_scope_count - 1;
           }
         }
       }
     }
 
-    if(arr[3] == 'for'){
+    //remove unwanted "tmp" var from arr of "while" and "for"
+    if((arr[4] == "while" || arr[4] == "for") && arr[3].match(/tmp/)){
+      arr.splice(3,1);
+    }
+
+    if(arr[3] == 'for' && arr.length == 6){
       k_count = k_count + 1;
       k_next_count = k_next_count + 1;
       arr.splice(1, 0, 'K'+k_next_count); //push k_next to arr
     }
 
-    if(arr[3] == 'while'){
+    if(arr[3] == 'while' && arr.length == 6){
       k_count = k_count + 1;
       k_next_count = k_next_count + 1;
       arr.splice(1, 0, 'K'+k_next_count); //push k_next to arr
@@ -466,6 +508,7 @@ function cfg_gen(data){
             cfg_gen(data[i][j]); 
           }
         }
+        
       } 
     }
 
@@ -482,7 +525,7 @@ function cfg_gen(data){
             data[i].splice(j, 1);
           }
         }
-
+        
         for(var j = 0; j < data[i].length; j++){
           if(j == data[i].length - 1){
             method_id_track = 1;
@@ -490,7 +533,8 @@ function cfg_gen(data){
           if(typeof(data[i][j])=="object" && data[i][j] != null && data[i][j]["type"] != "comment"){            
             cfg_gen(data[i][j]);
           } 
-        } 
+        }
+
       }else if(typeof(data[i])=="object"){
         elif_next_track = 1;
         arr.push('K'+(k_count+2)); //push elif target k_id to arr
@@ -629,6 +673,7 @@ function cfg_gen(data){
   
   }
 
+
   if(arr[0][0] != 'K'){  
     k_count++;
     k_next_count++;
@@ -663,7 +708,7 @@ function cfg_gen(data){
     arr[5] = tmp;
   }*/
 
-  arr.splice(2,0,scope_count);  //insert scope_count in arr
+  arr.splice(2, 0, tmp_scope_count);  //insert scope_count in arr
 
   if(arr[5] == "or" || arr[5] == "and"){
     mark_read.push(arr);

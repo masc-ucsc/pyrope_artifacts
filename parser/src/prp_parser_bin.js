@@ -111,14 +111,16 @@ catch(err) {
     /*compare array elements in user prplearn*/
     var is_same;
 
-    /*console.log(data_backup);
+    /* FIXME: error line num to next line if line empty
+     * console.log(data_backup);
     console.log(err.location.start.line);
     console.log(err.location.end.line);
     console.log(err.location.start.column);
     console.log(err.location.end.column);
     console.log(err.location.start.offset);
     console.log(err.location.end.offset);
-    console.log(data[err.location.start.offset]);*/
+    console.log(data[err.location.start.offset]);
+    */
 
 
     /*if(data[err.location.start.offset] != data_backup[start_line - 1][err.location.start.column]){
