@@ -1068,7 +1068,6 @@ total = [x*x for x in range(10) if x % 2]
 ```coffeescript
 // code/vspython.prp file
 objectTest.get_value = ::{
-  I @/vspython.objectTest/.myvalue == @this.myvalue
   return @this.myvalue
 }
 objectTest.set_value = :($a):{
@@ -1589,16 +1588,18 @@ I total == 1+2+3
 I _i == 3  // compile error, undefined
 
 @val = 3
-// weird, but allowed
-I @/scope2/.val == 1  # always the last value
+@val_link punch @/scope2/.var
+I @val_link.__id == @val.__id
+I @val_link == 3
 @val = 1
+I @val_link == 1
 ```
 ]
 
 ---
 # Dealing with references
 
-* Pyrope allows reference. This shows how the code is build with them
+* Pyrope allows reference. This shows how the code is generated before optimization
 
 .center[![Right-aligned image](generate1.png)]
 
@@ -1615,18 +1616,16 @@ n2 = ::{
 }
 n3 = ::{
   // Punch a wire through n2/n1 hierarchy
-  %o2 = %/n2.n1/.o + 1
-  %o4 = @/n1/.r + 1
+  $p1 punch %/n2.n1/.o
+  %o2 = $1 + 1
+  @p2 punch @/n1/.r
+  %o4 = @p2 + 1
 }
-I %/n2.n1/.o.__id == %/scope5.n2.n1/o._id
-I %/n1/.o.__id == %/scope5.n2.n1/o._id
+$i1 punch %/n2.n1/.o
+$i2 punch %/scope5.n2.n1/.o
+I $i1.__id == $i2.__id
 I n3.o2 == 2
 I n3.o4 == 4
-a = @/n3/.o2  // reference to n3.o2 reg, not copy
-b = n3.o2     // copy of n3.o2 reg
-c = \n3.o2    // reference to n3.o2 reg, not copy
-I a.__id == c.__id
-I a.__id != b.__id
 ```
 ]
 
@@ -1645,12 +1644,12 @@ nested1_5b = ::{
     @cycle += @incr
   }
 }
-id = 1
-for i:@/nested2/ {
-  i.incr = id
-  id += 1
+@n2_links punch @/nested2/
+for i:@n2_links {
+  i.incr = i.__index + 1
 }
-I @/nested2/.id == (1 2)
+I @n2_links[0].id == 1
+I @n2_links[1].id == 2
 ```
 ]
 ---
@@ -2510,7 +2509,8 @@ I child.__obj == parent.__obj
 child.dox = ::{
   _tmp = super $
   @this.v1 = 3  // add new field in child
-  $/objects1.child/.v2 = 5
+  %p1 punch $/objects1.child/.v2
+  %p1 = 5
   return tmp + 7
 }
 puts $v2
