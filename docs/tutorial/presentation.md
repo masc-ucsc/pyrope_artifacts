@@ -470,10 +470,10 @@ task: Quick Dive to Pyrope
 
 ```coffeescript
 // code/counter.prp file
-*..+.. as __root.libs.adder.scla.cla      // Overload + operator
+*..+.. as /libs/adder/scla/.cla      // Overload + operator
 if $enable {
   @total := @total + 1
-  I 3 ..+.. 4 == 7 == 3 + 4              // + is an alias for ..+..
+  I 3 ..+.. 4 == 7 == 3 + 4          // + is an alias for ..+..
 }
 ```
 
@@ -490,8 +490,8 @@ task: Quick Dive to Pyrope
 
 ```coffeescript
 // code/add4.prp file
-..+.. as __root.libs.adder.scla.cla
-s1 as __root.libs.adder.rca
+..+.. as /libs/adder/scla/.cla
+s1 as /libs/adder/.rca
 
 (%sum sum1 sum2) as __stage:true
 
@@ -1068,11 +1068,12 @@ total = [x*x for x in range(10) if x % 2]
 ```coffeescript
 // code/vspython.prp file
 objectTest.get_value = ::{
-  return __parent.myvalue
+  I @/vspython.objectTest/.myvalue == @this.myvalue
+  return @this.myvalue
 }
-objectTest.set_value = :(a):{
-  __parent.myvalue = $a
-  return __parent
+objectTest.set_value = :($a):{
+  @this.myvalue = $a
+  return this
 }
 
 a = objecttest.set_value 1
@@ -1119,9 +1120,9 @@ for(let pair of myMap) {
 // code/vsjs1.prp file
 a = 0
 a.__read = ::{
-  __parent += 1
+  this += 1
 }
-equality = a == 1 and a == 2 and a == 3
+equality = (a == 1) and (a == 2) and (a == 3)
 I equality
 
 for a:myMap ::{
@@ -1386,7 +1387,7 @@ I c == fcall.(1 2)
 //bar = true or false and true // compile error
 //x = 3 ++ 4 -- 3              // compile error
 
-c = a == 3 == b              // OK
+c = a == 3 == b                // OK
 I c == (a==3 and 3==b)
 ```
 ]
@@ -1450,14 +1451,14 @@ class: split-50
 .column[
 ```coffeescript
 // code/singleline.prp
-if true { x = 3 }        // OK
+if true { x = 3 }       // OK
 if true {
-x = 3 }                  // OK
+x = 3 }                 // OK
 //if true
-//{ x = 3 }               // parse error, no newline
+//{ x = 3 }             // parse error, no newline
 
-if true ::{ puts __parent.x} // new scope in block
-if true { puts x }       // OK too
+if true ::{ puts x}     // error scope in block
+if true { puts x }      // OK
 
 if true ::{ a = 3 ; puts a }
 
@@ -1466,8 +1467,10 @@ if true ::{ a = 3 ; puts a }
 
 c = 0
 d = 0
-if false ::{ c = 1 ; d = 2 }
+if true ::{ c = 1 ; d = 2 }
 I d == 0 and c == 0      // :: is a new scope
+if true ::{ %c = 1 ; %d = 2 }
+I d == 2 and c == 1
 
 for a:(1..3) {puts a}
 I a == 3                 // compile error
@@ -1550,7 +1553,7 @@ class: split-50
 a = 1
 b = ::{
   d = 3    // b local scope
-  %out = a // compile error
+  %out = a // compile error, undefined a
 }
 x = b
 I a == 1
@@ -1579,21 +1582,80 @@ if a == 1 {
 I a == 2 and b == 3
 I _f == 4  // compile error, undefined
 
-total = 0  // needed, because read in loop
+total = 0  // needed
 for _i:(1..3) { total += _i }
 
 I total == 1+2+3
 I _i == 3  // compile error, undefined
 
 @val = 3
-// root is always relative to the current file
-I __root.scope2.val == 3
+// weird, but allowed
+I @/scope2/.val == 1  # always the last value
+@val = 1
 ```
 ]
 
 ---
+# Dealing with references
+
+* Pyrope allows reference. This shows how the code is build with them
+
+.center[![Right-aligned image](generate1.png)]
+
+---
 class: split-50
 # Scope outside code regions
+
+.column[
+### Allow to "punch" wires through stages
+```coffeescript
+// code/scope5.prp
+n2 = ::{
+  n1 = ::{ %o = 1 ; @r = 3 }
+}
+n3 = ::{
+  // Punch a wire through n2/n1 hierarchy
+  %o2 = %/n2.n1/.o + 1
+  %o4 = @/n1/.r + 1
+}
+I %/n2.n1/.o.__id == %/scope5.n2.n1/o._id
+I %/n1/.o.__id == %/scope5.n2.n1/o._id
+I n3.o2 == 2
+I n3.o4 == 4
+a = @/n3/.o2  // reference to n3.o2 reg, not copy
+b = n3.o2     // copy of n3.o2 reg
+c = \n3.o2    // reference to n3.o2 reg, not copy
+I a.__id == c.__id
+I a.__id != b.__id
+```
+]
+
+.column[
+### Multiple matches
+```coffeescript
+// code/scope6.prp
+nested1_3b = ::{
+  nested2 = ::{
+    @cycle as __bits:3
+    @cycle += @incr
+  }
+nested1_5b = ::{
+  nested2 = ::{
+    @cycle as __bits:5
+    @cycle += @incr
+  }
+}
+id = 1
+for i:@/nested2/ {
+  i.incr = id
+  id += 1
+}
+I @/nested2/.id == (1 2)
+```
+]
+---
+class: split-50
+# Scope outside code regions II
 
 .column[
 ### Accessing outside scope
@@ -1601,24 +1663,13 @@ class: split-50
 // code/scope3.prp
 a = 1
 if a == 1 ::{
-  a = 2               // compile error
-  __parent.a = 3      // OK
-  __root.scope3.a = 5 // OK, same
-  f = 3               // local scope
+  a = 2           // compile error, no a in local
+  %this.a = 3     // compile error, no %a in parent
+  this.a = 3      // compile error, only %,$,% for this
+  f = 3           // local scope
 }
-I f == 3              // compile error, undefined
-I a == 5
-
-b = ::{
-  % = __parent.a
-}
-
-c.a = 5
-c = b.()
-b.a = 3
-I c == 5
-d = b.()
-I d == 3
+I f == 3          // compile error, undefined
+I a == 1
 ```
 ]
 
@@ -1627,17 +1678,18 @@ I d == 3
 ```coffeescript
 // code/scope4.prp
 t = 0
-for a:(1..3) { t += a;; }
+for a:(1..3) { t += a }
 I t == 1+2+3
 
 t = 0
 for a:(1..3) ::{t = a} // local scope
 I t == 0
 
-for a:(1..3) ::{ if a>1 { break } ; t = a }
+for a:(1..3) ::{ if a>1 { break } ; %t = a }
 I t == 1
 
-if t==0 ::{__parent.x = 3}
+if t==1 :(%x):{ %x += 1 }   // compile error
+if t==1 :($x,%x):{ %x = 3 } // OK
 I x == 3
 ```
 ]
@@ -1973,7 +2025,7 @@ $prp --run rndtest
 
 ```coffeescript
 // code/reset1.prp
-@a as __bits:3 
+@a as __bits:3
 @a.__init = 13
 
 @b as __bits:3 __reset:false // disable reset
@@ -1988,8 +2040,8 @@ $prp --run rndtest
 // custom reset
 @mem2.__init = ::{
   // Called during reset or after clear (!!)
-  @_reset_pos as __bits:log2.(__parent.__size) __reset:false
-  __parent[@_reset_pos] = @_reset_pos
+  @_reset_pos as __bits:log2.(@this.__size) __reset:false
+  @this[@_reset_pos] = @_reset_pos
   @_reset_pos += 1
 }
 ```
@@ -2143,18 +2195,14 @@ class: split-50
 ```coffeescript
 // code/fluid1.prp file
 a as $c         // alias, no restart
-try ::{
-  I __parent.a == $a
-  if __parent.a == 3 { %sum = __parent.a }
-}
-try ::{
+try {
   if %sum2! {
     %sum3 = $a  // sum2 busy, try sum3
   }else{
     %sum2 = $a
   }
 }
-try ::{
+try {
   if $a? {
     $d? = false // do not consume b
     $e!! = true // clear input e
@@ -2173,7 +2221,7 @@ class: split-50
 if a? and a.counter>0 {   // Option 1
   @total += a.counter
 }
-try ::{                   // Option 2 (same behavor)
+try {                   // Option 2 (same behavor)
   if a.counter>0 {
     @total += a.counter
   }
@@ -2186,7 +2234,7 @@ if a?.counter>0 {         // Option 3 (same)
 ```coffeescript
 // code/fluid3.prp file
 puts "prints every cycle"
-try ::{
+try {
   puts "odd cycles"
   yield         // Yield applies to scope ::{}
   puts "even cycles"
@@ -2209,10 +2257,10 @@ everyother = ::{
 @total_all   += 1
 @total_yield += everyother.()
 I @total_all == @total_yield
-try ::{
+try {
    @total2_all += 1
 }
-try ::{
+try {
    @total2_yield += everyother.()
    I @total2_all == 2 then @total2_yield == 1
 }
@@ -2232,7 +2280,7 @@ class: split-50
 
 %o3 = $in3?.a + 30  // use field, no restart
 
-try ::{
+try {
   %o3 = $in3.a + 30 // same as last
 }
 ```
@@ -2379,16 +2427,16 @@ class: split-50
 // code/assign2.prp
 _tmp1 = $a  // read that can trigger restart
 _tmp2 = $b
-try ::{
+try {
   %out1 = _tmp1 + 1 // guarantee no restart (reread)
 }
-try ::{
+try {
   %out2 = _tmp2 + 1
 }
 ```
 ```coffeescript
 // code/assign3.prp
-try ::{
+try {
   %out1 = $a + 1
   %out2 = $b + 1
 }
@@ -2399,10 +2447,10 @@ try ::{
 ### out1 and out2 can happen independently
 ```coffeescript
 // code/assign4.prp
-try ::{
+try {
   %out1 = $a + 1
 }
-try ::{
+try {
   %out2 = $b + 1
 }
 ```
@@ -2410,10 +2458,10 @@ try ::{
 // code/assign5.prp
 _tmp1 as $a // alias, no restart trigger
 _tmp2 = \$b // pass reference, no restart
-try ::{
+try {
   %out1 = _tmp1 + 1  // can trigger resart
 }
-try ::{
+try {
   %out2 = _tmp2 + 1  // can trigger restart
 }
 ```
@@ -2461,20 +2509,24 @@ child = parent  // inherit
 I child.__obj == parent.__obj
 child.dox = ::{
   _tmp = super $
-  __parent.val = 3  // new field in child
-  return tmp + 3
+  @this.v1 = 3  // add new field in child
+  $/objects1.child/.v2 = 5
+  return tmp + 7
 }
+puts $v2
 I child.__obj != parent.__obj
 
-I child.val == 0
+I child.v1 == 0
+I child.v2 == 0
 t = child.dox 4
-I t == (1+4+3)
-I child.val == 3
+I t == (1+4+7)
+I child.v1 == 3
+I child.v2 == 5
 
 grandson = child
 grandson.dox = :when $0>20:{100}
 t = grandson.dox 4
-I t == (1+4+3)
+I t == (1+4+7)
 t = grandson.dox 30
 I t == 100
 ```
