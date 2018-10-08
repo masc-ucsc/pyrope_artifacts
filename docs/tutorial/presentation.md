@@ -2087,14 +2087,14 @@ c = 0xFF[[0..2]]          // explicit drop bits
 // code/assertions.prp
 
 a = 3
-C b = a  // b and a must be known at Compile time
+#b = a  // b and a must be known at Compile time
 
-C if a==3 { // compile time if condition
+#if a==3 {  // compile time if condition
   I true    // runtime assertion
   %d = $0+a // no constant
 }
 
-C I a == b  // Compile time assertion
+#I a == b   // Compile time assertion
 I %d != a   // runtime assertion
 
 ```
@@ -2601,14 +2601,14 @@ class: split-50
 ```coffeescript
 // code/debug1.prp
 a = 3
-I a == 3    // runtime check
-C I a == 3  // compile time check
+I a == 3   // runtime check
+#I a == 3  // compile time check
 
-N a != 3    // N (never) is I !(xxx)
-C if true { // condition known at compile time
+N a != 3   // N (never) is I !(xxx)
+#if true { // condition known at compile time
   c = 3
 }
-C c = 3+4   // C is known at compile time
+#c = 3+4   // c is known at compile time
 ```
 ]
 
