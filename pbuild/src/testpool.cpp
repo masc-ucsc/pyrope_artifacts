@@ -4,20 +4,36 @@
 #include <chrono>
 #include <iostream>
 
+
+int control = 1023;
+
+std::atomic<int> total;
+void mywork(int a) {
+  int t = 1;
+#if 0
+  if ((a&3)==0) {
+    for(int i=0;i<control;i+=2)
+      t++;
+    if (t&1)
+      a++;
+  }
+#endif
+  total+=a;
+}
+
 int main() {
-  using nbsdx::concurrent::ThreadPool;
 
-  ThreadPool<2> pool; // Defaults to 10 threads.
-  int           JOB_COUNT = 10;
+  total = 0;
 
-  for(int i = 0; i < JOB_COUNT; ++i)
-    pool.AddJob([]() {
-      std::cout << "." << std::endl;
-      std::this_thread::sleep_for(std::chrono::seconds(1));
-    });
+  ThreadPool pool;
+  int        JOB_COUNT = 80000000;
 
-  pool.JoinAll();
-  std::cout << "Expected runtime: seconds." << std::endl;
+  for(int i = 0; i < JOB_COUNT; ++i) {
+    pool.add(mywork,1);
+  }
+
+  pool.wait_all();
+  std::cout << "finished total:" << total << std::endl;
 }
 
 // g++ --std=c++14 testpool.cpp -I ../subs/ThreadPool/ -lpthread
