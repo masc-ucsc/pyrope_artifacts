@@ -36,9 +36,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include <atomic>
-#include <assert.h>
 
 template<typename T>
 class spsc {
@@ -72,22 +72,20 @@ public:
     return false;
   }
 
-  bool
-    dequeue( T& output) {
-      const size_t tail = _tail.load(std::memory_order_relaxed);
+  bool dequeue( T& output) {
+    const size_t tail = _tail.load(std::memory_order_relaxed);
 
-      if (((_head.load(std::memory_order_acquire) - tail) & _mask) >= 1) {
-        output = _buffer[_tail & _mask];
-        _tail.store(tail + 1, std::memory_order_release);
-        return true;
-      }
-      return false;
+    if (((_head.load(std::memory_order_acquire) - tail) & _mask) >= 1) {
+      output = _buffer[_tail & _mask];
+      _tail.store(tail + 1, std::memory_order_release);
+      return true;
     }
+    return false;
+  }
 
 
 private:
 
-  typedef typename std::aligned_storage<sizeof(T), std::alignment_of<T>::value>::type aligned_t;
   typedef char cache_line_pad_t[64];
 
   cache_line_pad_t    _pad0;

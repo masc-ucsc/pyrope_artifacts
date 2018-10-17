@@ -12,37 +12,71 @@
 #include <condition_variable>
 #include <type_traits>
 
-#include "spsc.hpp"
+#include "mpmc.hpp"
 
 template<class Func,class ... Args>
 inline auto forward_as_lambda(Func &&func,Args &&...args) {
-  using namespace std;
-  return [f=forward<decltype(func)>(func),tup=tuple<conditional_t<std::is_lvalue_reference_v<Args>,Args,remove_reference_t<Args>>...>(forward<decltype(args)>(args)...)]() mutable{
-    return apply(move(f),move(tup));
+  return [f=std::forward<decltype(func)>(func)
+    ,tup=std::tuple<std::conditional_t<std::is_lvalue_reference_v<Args>,Args,std::remove_reference_t<Args>>...>(std::forward<decltype(args)>(args)...)
+  ]() mutable {
+    return std::apply(std::move(f),std::move(tup));
+  };
+
+#if 0
+  return std::apply(
+      std::forward<decltype(func)>(func),
+      std::tuple<std::conditional_t<std::is_lvalue_reference_v<Args>,Args,std::remove_reference_t<Args>>...>(std::forward<decltype(args)>(args)...)
+      );
+#endif
+}
+
+#if 1
+template<class Func, class T, class ... Args>
+inline auto forward_as_lambda2(Func &&func, T &&first, Args &&...args) {
+  return [f=std::forward<decltype(func)>(func)
+    ,tt=std::forward<decltype(first)>(first)
+    ,tup=std::tuple<std::conditional_t<std::is_lvalue_reference_v<Args>,Args,std::remove_reference_t<Args>>...>(std::forward<decltype(args)>(args)...)
+  ]() mutable {
+    return std::apply(std::move(f)
+        ,std::tuple_cat(std::forward_as_tuple(tt), std::move(tup))
+       );
   };
 }
+#endif
+
+#if 0
+template<class Func,class ... Args>
+inline auto forward_as_lambda(Func &&func,Args &&...args) {
+  return [f=std::forward<decltype(func)>(func),tup=std::tuple<std::conditional_t<std::is_lvalue_reference_v<Args>,Args,std::remove_reference_t<Args>>...>(std::forward<decltype(args)>(args)...)]() mutable {
+    return std::apply(std::move(f),std::move(tup));
+  };
+}
+
+template<typename F, typename T, typename U>
+decltype(auto) apply_invoke(F&& func, T&& first, U&& tuple) {
+    return std::apply(std::forward<F>(func), std::tuple_cat(std::forward_as_tuple(std::forward<T>(first)), std::forward<U>(tuple)));
+}
+#endif
+
 
 class ThreadPool {
 
   std::vector<std::thread> threads;
-  spsc<std::function<void(void)>> queue;
+  mpmc<std::function<void(void)>> queue;
 
-  std::atomic_int         jobs_left;
-  std::atomic_bool        finishing;
+  std::atomic<int>        jobs_left;
+  std::atomic<bool>       finishing;
 
   size_t thread_count;
 
   std::condition_variable job_available_var;
   std::mutex              queue_mutex;
 
-  /**
-   *  Take the next job in the queue and run it.
-   *  Notify the main thread that a job has completed.
-   */
   void task() {
-    while( !finishing || jobs_left>0 ) {
-      next_job()();
-      --jobs_left;
+    while( !finishing) {
+      while( !queue.empty() ) {
+        next_job()();
+      }
     }
   }
 
@@ -54,10 +88,10 @@ class ThreadPool {
     job_available_var.wait( job_lock, [this]() ->bool { return !queue.empty() || finishing; } );
 
     bool has_work = queue.dequeue(res);
-    if (has_work)
+    if (has_work) {
+      jobs_left--;
       return res;
-
-    assert(finishing);
+    }
 
     return []{}; // Nothing to do
   }
@@ -67,8 +101,8 @@ class ThreadPool {
       job();
       return;
     }
-    queue.emplace_back( job );
-    ++jobs_left;
+    jobs_left++;
+    queue.enqueue( job );
     job_available_var.notify_one();
   }
 
@@ -76,8 +110,8 @@ class ThreadPool {
   ThreadPool(int _thread_count=0)
     : queue(64)
       , jobs_left( 0 )
-      , finishing( false )
-  {
+      , finishing( false ) {
+
     thread_count = _thread_count;
     int lim = (std::thread::hardware_concurrency()-1)/2;
 
@@ -94,20 +128,6 @@ class ThreadPool {
 
   ~ThreadPool() {
     wait_all();
-  }
-
-  inline unsigned size() const {
-    return thread_count;
-  }
-
-  template<class Func,class ... Args>
-    void add(Func &&func,Args &&...args) {
-      return add_(forward_as_lambda(std::forward<decltype(func)>(func),std::forward<decltype(args)>(args)...));
-    }
-
-  void wait_all() {
-    if( jobs_left == 0 )
-      return;
 
     finishing = true;
     job_available_var.notify_all();
@@ -115,6 +135,36 @@ class ThreadPool {
     for( auto &x : threads )
       if( x.joinable() )
         x.join();
+  }
+
+  inline unsigned size() const {
+    return thread_count;
+  }
+
+  template<class Func,class ... Args>
+    void add(Func &&func, Args &&...args) {
+      return add_(forward_as_lambda(std::forward<decltype(func)>(func),std::forward<decltype(args)>(args)...));
+    }
+#if 1
+  template<class Func,class T, class ... Args>
+    void add(Func &&func, T *first, Args &&...args) {
+      return add_(forward_as_lambda2(
+             std::forward<decltype(func)>(func)
+            ,std::forward<decltype(first)>(first)
+            ,std::forward<decltype(args)>(args)...));
+    }
+#endif
+
+  void wait_all() {
+    while(!queue.empty()) {
+      std::function<void(void)> res;
+      bool has_work = queue.dequeue(res);
+      if (has_work) {
+        jobs_left--;
+        res();
+      }
+    }
+    assert(jobs_left==0);
   }
 };
 
