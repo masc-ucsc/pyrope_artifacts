@@ -1,0 +1,93 @@
+
+try {
+  a = $input
+}else{
+  a = 3
+}
+
+if $input? {
+  a = $input
+}else{
+  a = 3
+}
+
+try {
+  a = $input + $inp2
+  c = $input!=0 or $inp3
+}else{
+  a = 3
+}
+
+if $input? and $inp2? and ($input!=0 or $inp3?) {
+  a = $input + $inp2
+  c = $input!=0 or $inp3
+}else{
+  a = 3
+}
+
+try = ::{
+   if bla bla {
+     %a = 3
+   }
+}
+
+test1 = ::{
+  %a = 3
+}
+
+a = 0
+x = test1
+I x.a==3 and a==0
+
+//---------------
+// We discarded long time ago, weird "= foo ". Uncommon in other lang
+test1 = ::{
+  %a = 3
+}
+
+a = 0
+= test1
+I a==3
+
+//--------------
+test1 = ::{
+  %a = 3
+}
+
+a = 0
+test1
+I a==3
+
+-------
+map as ::{
+  t = ()
+  fun = $.__block
+  for a:$ {
+    t ++= fun a
+  }
+  return t
+}
+a = ::{ 2+1 }  // OK implicit return
+// parse error, only last can be implicit return
+//a = ::{ 1+1 ; 2+1 }
+s = (1 2 3) |> map ::{$+1} |> map ::{$*$}
+I s == (4 9 16)
+
+-------
+map as ::{
+  t = ()
+  fun = $.__block
+  for a:$ {
+    t ++= fun a
+  }
+  return t
+}
+a = ::{ 2+1 }  // OK implicit return
+// parse error, only last can be implicit return
+//a = ::{ 1+1 ; 2+1 }
+s = (x 2 3) |> map ::{$+1} |> map ::{$*$}
+I s == ((x+1)*(x+1) 9 16)
+
+// TODO: This is a compile error (# inputs is unknown at compile time)
+s = $x ** (1 2 3) |> map ::{$+1} |> map ::{$*$}
+
