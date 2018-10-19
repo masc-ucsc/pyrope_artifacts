@@ -1090,7 +1090,7 @@ keyword "keywords"
    / n:"default"
    // n:"try"
    // n:"catch"
-   / n:"C"
+   // n:"C"
    / n:"I"
    / n:"N"
    / n:"in"
@@ -1161,14 +1161,14 @@ line_terminator_sequence //end of line
  / "\u2029"
 
 multi_line_comment_no_line_terminator
-        = "###" (!("###"/ line_terminator) .)* "###"
+        = "/*" (!("*/"/ line_terminator) .)* "*/"
 
 comment "comment"
         = head:multi_line_comment            //multi-line comment
    / head:single_line_comment 
 
 single_line_comment
-        = "#" (!line_terminator .)* {//return "comment"
+        = "//" (!line_terminator .)* {//return "comment"
    		return {
         	type:"comment",
             start_pos:location().start.offset,
@@ -1178,7 +1178,7 @@ single_line_comment
    }
 
 multi_line_comment
-        = "###" (!"###" .)* "###" {//return "comment"
+        = "/*" (!"*/" .)* "*/" {//return "comment"
    		return {
         	type:"comment",
             start_pos:location().start.offset,
@@ -1245,7 +1245,8 @@ ELSE         = "else"         white_space*
 FOR         = "for"         white_space+
 WHILE           = "while"               white_space+
 WHEN         = "when"         white_space+
-COMPILE_CHECK    = "C"         white_space+
+//COMPILE_CHECK    = "C"         white_space+
+COMPILE_CHECK    = "#"         white_space+
 ASSERTION        = "I"         white_space+
 NEGATION         = "N"         white_space+
 END                             = "end"         white_space*
