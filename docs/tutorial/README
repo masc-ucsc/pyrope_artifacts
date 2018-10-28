@@ -4,6 +4,7 @@
 
 yarn install
 ./node_modules/backslide/bin/bs export
+cp *png dist/
 
 # Export PDF Docker option
 
