@@ -114,12 +114,46 @@ code_blocks
   }
 
 code_block_int
-        = x:__ head:(if_statement/for_statement/while_statement/assignment_expression/function_pipe/fcall_implicit/fcall_explicit
+        = x:__ head:(if_statement/for_statement/while_statement/try_statement/assignment_expression/function_pipe/fcall_implicit/fcall_explicit
         /return_statement/compile_check_statement/negation_statement/tail:assertion_statement {return tail})   {
         	x.push(head)
             return x
         	//return head
         }
+
+try_statement
+	= TRY cond:logical_expression sc:((_ x:"::" LBRACE (EOS/__))/_ LBRACE x:(EOS/__) {return x}) 
+   	body:(x:code_blocks? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)}) RBRACE ELSE:(__ x:scope_else{return x})?
+    {
+    	if((sc instanceof Array) && sc.length==0)sc=null
+    	if(body!=null){
+        	if(sc && sc.length!=4){
+        		body.unshift(sc)
+            	sc=null
+        	} else if(sc && sc.length==4){
+        		//body.unshift(sc[3])
+            	sc=sc[1]
+        	}
+       	}else if(body==null) {
+        	if(sc && sc.length!=4){
+            	body=[sc]
+                sc=null
+        	} else if(sc && sc.length==4){
+            	body = null //[sc[3]]
+                sc = sc[1]                
+        	}
+        }
+        
+ 		return {
+        	start_pos:location().start.offset,
+        	end_pos:location().end.offset,
+     		type:"try",
+            try_condition:cond,
+            scope:sc,
+           	try_body:body,
+            try_else:ELSE
+    	}
+    }
     
 scope_declaration
 	= args:scope LBRACE sc:((EOS/__) __) body:(x:scope_body? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)})
@@ -364,7 +398,7 @@ for_index
    }
 
 while_statement
-   = WHILE cond:logical_expression sc:((_ x:"::" LBRACE (EOS/__))/_ LBRACE x:(EOS/__) {return x}) 
+   = p:WHILE cond:logical_expression sc:((_ x:"::" LBRACE (EOS/__))/_ LBRACE x:(EOS/__) {return x}) 
    	body:(x:code_blocks? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)}) RBRACE 
     {
     	//return 
@@ -396,7 +430,7 @@ while_statement
            	while_body:body
     	}
    	}
-
+    
 return_statement
 	= RETURN head:logical_expression {
     	return{
@@ -1244,6 +1278,7 @@ ELIF         = "elif"         white_space+
 ELSE         = "else"         white_space*
 FOR         = "for"         white_space+
 WHILE           = "while"               white_space+
+TRY         = "try"      white_space+
 WHEN         = "when"         white_space+
 //COMPILE_CHECK    = "C"         white_space+
 COMPILE_CHECK    = "#"         white_space+
