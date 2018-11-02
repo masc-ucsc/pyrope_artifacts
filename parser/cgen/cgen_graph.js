@@ -205,7 +205,7 @@ function cfg_gen(data){
     arr.push(end);
     arr.push(convertToNumberingScheme(tmp_count-1));
   }
-
+  
   //for loop traverses AST(in json format)
   for(var i in data){    
     if(i == "start_pos" && tmp_count_track == 0) {
@@ -353,7 +353,7 @@ function cfg_gen(data){
           }
         }
         scope_out_count++;
-        if(scope_count > local_scope_count) {
+        if(scope_count >= local_scope_count) {
           tmp_scope_count = scope_count - scope_out_count;
         }else {
           tmp_scope_count = local_scope_count - 1;
@@ -392,7 +392,7 @@ function cfg_gen(data){
           }
         }
         scope_out_count++;
-        if(scope_count > local_scope_count) {
+        if(scope_count >= local_scope_count) {
           tmp_scope_count = scope_count - scope_out_count;
         }else {
           tmp_scope_count = local_scope_count - 1;
@@ -415,7 +415,7 @@ function cfg_gen(data){
         cfg_gen(data[i][j]);
       }
     }    
-     
+    
     if(i == "for_body" || i == "while_body"){
       if(data[i] == null){
         arr.push("null");
@@ -439,10 +439,13 @@ function cfg_gen(data){
           tmp_scope_count = scope_count;
           local_scope_count = scope_count;
         }
-        
+
         for(var j = 0; j < data[i].length; j++){
           if(j == data[i].length - 1){
             method_id_track = 1;
+            //FIXME
+            //while x::{while y::{z = 1}} gives wrong CFG
+            //comment out above line to fix it
           }
 
           tmp_scope_count = local_scope_count;
@@ -453,9 +456,10 @@ function cfg_gen(data){
             cfg_gen(data[i][j]);
           }
         }
+
         if(data['scope'] == "::"){
           scope_out_count++;
-          if(scope_count > local_scope_count) {
+          if(scope_count >= local_scope_count) {
             tmp_scope_count = scope_count - scope_out_count;
           }else {
             tmp_scope_count = local_scope_count - 1;
@@ -682,13 +686,13 @@ function cfg_gen(data){
   
   }
 
-
   if(arr[0][0] != 'K'){  
     k_count++;
     k_next_count++;
     arr.unshift('K'+k_next_count);
     arr.unshift('K'+k_count);
   }
+
 
   if(arr[2] == "null"){  //this loop handles k_next = null for last element in a block
     //var tmp_x = arr[2];
@@ -709,6 +713,11 @@ function cfg_gen(data){
     var tmp = arr[4];
     arr[4] = arr[5];
     arr[5] = tmp;
+  }
+
+  if(arr[4] == ".()" && arr[5].match(/___/)){ 
+    //remove extra "tmp" variable in .() cfg within fcall/while blocks
+    arr.splice(5,1);
   }
 
   /*if(arr[4] == "=" || arr[4] == ":=" || arr[4] == ".()" || arr[4] == "as"){
