@@ -114,7 +114,7 @@ code_blocks
   }
 
 code_block_int
-        = x:__ head:(if_statement/for_statement/while_statement/try_statement/assignment_expression/function_pipe/fcall_implicit/fcall_explicit
+        = x:__ head:(if_statement/for_statement/while_statement/try_statement/punch_format/assignment_expression/function_pipe/fcall_implicit/fcall_explicit
         /return_statement/compile_check_statement/negation_statement/tail:assertion_statement {return tail})   {
         	x.push(head)
             return x
@@ -598,7 +598,55 @@ function_pipe
             }
         },head);
     }
-         
+
+punch_format
+	= PUNCH ip:identifier white_space+ sym:("@"/"%") op:punch_rhs {
+    	op.unshift(sym);
+    	return{
+        	start_pos:location().start.offset,
+        	end_pos:location().end.offset,
+            type:"punch",
+            punch_inp:ip,
+            punch_op:op
+        } 
+    }
+
+punch_rhs 
+	= first:"/" x:(a:identifier b:(DOT identifier)*)? "/" y:(DOT identifier)+ {
+    	var arr = [], arr2 = [], foo = [];
+        if(x != null){
+    		var tmp1 = buildList(x[0],x[1],1);
+        	for(var i = 0; i < tmp1.length; i++){
+        		arr.push(tmp1[i]["value"]);
+        	}
+        }
+        for(var j = 0; j < y.length; j++){
+        	arr2.push(y[j][1]["value"]);
+        }
+        arr2 = arr2.join(".");
+        arr = arr.join(".");
+        foo.push(arr);
+        foo.push(arr2);
+        return foo
+    }
+    / first:"/" x:(a:identifier b:(DOT identifier)*)? "/" y:(DOT identifier)* {
+    	var arr = [], arr2 = [], foo = [];
+        if(x != null){
+    		var tmp1 = buildList(x[0],x[1],1);
+        	for(var i = 0; i < tmp1.length; i++){
+        		arr.push(tmp1[i]["value"]);
+        	}
+        }
+        for(var j = 0; j < y.length; j++){
+        	arr2.push(y[j][1]["value"]);
+        }
+        arr2 = arr2.join(".");
+        arr = arr.join(".");
+        foo.push(arr);
+        foo.push(arr2);
+        return foo
+    }
+    
 logical_expression
         =  head:relational_expression tail:(__ (OR/AND) _ relational_expression)* {
      return buildBinaryExpression(head, tail);
@@ -1122,8 +1170,8 @@ keyword "keywords"
    / n:"union"
    / n:"until"
    / n:"default"
-   // n:"try"
-   // n:"catch"
+   / n:"try"
+   / n:"PUNCH"
    // n:"C"
    / n:"I"
    / n:"N"
@@ -1288,3 +1336,4 @@ END                             = "end"         white_space*
 RETURN                             = "return" _
 SLASH                   = "/" white_space*
 PIPE                    = "|"
+PUNCH 			= "punch" white_space+

@@ -240,6 +240,23 @@ function cfg_gen(data){
       arr.push("try");
     }
 
+    if(i == "punch_inp" && data[i] != null){
+      arr.push("punch");
+      arr.push(data[i]["value"]);
+      arr.push(data["punch_op"][0] + convertToNumberingScheme(tmp_count));
+      tmp_count = tmp_count + 1;
+      tmp_count_track = 1;
+      data[i] = null;
+      cfg_gen(data);
+    }
+
+    if(i == "punch_op" && data[i] != null){
+      arr.push("//");
+      arr.push(data[i][1]);
+      arr.push(data[i][2]);
+      data[i] = null;
+    }
+
     if(i == "pipe_arg"){
       arr.push(".()");
       if(data["pipe_func"]["arguments"][0] == null){
@@ -317,7 +334,6 @@ function cfg_gen(data){
       }
 
     }    
-    //console.log(i);
 
     if(i == "scope_body"){
       if(data[i] == null){
