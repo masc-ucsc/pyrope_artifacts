@@ -733,7 +733,8 @@ function cfg_gen(data){
 
   if(arr[4] == ".()" && arr[5].match(/___/)){ 
     //remove extra "tmp" variable in .() cfg within fcall/while blocks
-    arr.splice(5,1);
+    //FIXME: remove this if not needed
+    //arr.splice(5,1);
   }
 
   /*if(arr[4] == "=" || arr[4] == ":=" || arr[4] == ".()" || arr[4] == "as"){
