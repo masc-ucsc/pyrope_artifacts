@@ -423,6 +423,109 @@ function cfg_gen(data){
       arr.splice(1, 0, 'K'+k_next_count); //push k_next to arr
     }
 
+    if(i == "try_body"){
+      if(data[i] == null){
+        arr.splice(arr.length-1,0,"null");
+      }else if(Array.isArray(data[i])){
+        var local_scope_count = -1;
+        k_count++;      //k_count for "while"
+        k_next_count++;
+        arr.unshift('K'+k_count); //push k_id to arr        
+        arr.push('K'+(k_count+2)); //push k_count of try body
+        k_count++;
+        k_next_count++;
+
+        for(var j = data[i].length - 1; j >= 0; j--){
+          if(typeof(data[i][j])=="object" && data[i][j]["type"] == "comment"){ //remove comments from AST
+            data[i].splice(j, 1);
+          }
+        }
+        
+        //the three lines below handle scope_count field in arr
+        //scope_count = tmp_scope_count;
+        if(data['try_scope'] == "::"){
+          scope_count++;
+          tmp_scope_count = scope_count;
+          local_scope_count = scope_count;
+        }
+
+        for(var j = 0; j < data[i].length; j++){
+          if(j == data[i].length - 1){
+            method_id_track = 1;
+          }
+          tmp_scope_count = local_scope_count;
+          if(local_scope_count < 0){
+            tmp_scope_count = scope_count;
+          }
+          if(typeof(data[i][j])=="object" && data[i][j] != null && data[i][j]["type"] != "comment"){
+            cfg_gen(data[i][j]);
+          }
+        }
+        if(data['try_scope'] == "::"){
+          scope_out_count++;
+          if(scope_count >= local_scope_count) {
+            tmp_scope_count = scope_count - scope_out_count;
+          }else {
+            tmp_scope_count = local_scope_count - 1;
+          }
+        }
+
+      }
+    } 
+
+    if(i == "try_else"){
+      if(data[i] == null){
+        arr.splice(arr.length,0,"null");
+      }else if(Array.isArray(data[i])){
+        var local_scope_count = -1;
+        arr.push('K'+(k_count+2)); //push k_count of try_else body in cfg
+        k_count++;
+        k_next_count++;
+
+        for(var j = data[i].length - 1; j >= 0; j--){
+          if(typeof(data[i][j])=="object" && data[i][j]["type"] == "comment"){ //remove comments from AST
+            data[i].splice(j, 1);
+          }
+        }
+
+        //the three lines below handle scope_count field in arr
+        //scope_count = tmp_scope_count;
+        if(data['try_scope'] == "::"){
+          scope_count++;
+          tmp_scope_count = scope_count;
+          local_scope_count = scope_count;
+        }
+        for(var j = 0; j < data[i].length; j++){
+          if(j == data[i].length - 1){
+            method_id_track = 1;
+          }
+          tmp_scope_count = local_scope_count;
+          if(local_scope_count < 0){
+            tmp_scope_count = scope_count;
+          }
+          if(typeof(data[i][j])=="object" && data[i][j] != null && data[i][j]["type"] != "comment"){
+            cfg_gen(data[i][j]);
+          }
+        }
+
+        if(data['try_scope'] == "::"){
+          scope_out_count++;
+          if(scope_count >= local_scope_count) {
+            tmp_scope_count = scope_count - scope_out_count;
+          }else {
+            tmp_scope_count = local_scope_count - 1;
+          }
+        }
+
+      }
+    }
+
+    if(arr[4] == "try" && i == "try_else"){
+      k_count = k_count + 1;
+      k_next_count = k_next_count + 1;
+      arr[1] = 'K'+k_next_count; //push k_next to arr
+    }
+
     if(i == "for_index"){
       for(var j = 0; j < data[i].length; j++){
         arr.push(convertToNumberingScheme(tmp_count));
@@ -489,7 +592,7 @@ function cfg_gen(data){
       arr.splice(3,1);
     }
 
-    if(arr[3] == 'for' && arr.length == 6){
+    if((arr[3] == 'for' || arr[3] == 'try') && arr.length == 6){
       k_count = k_count + 1;
       k_next_count = k_next_count + 1;
       arr.splice(1, 0, 'K'+k_next_count); //push k_next to arr

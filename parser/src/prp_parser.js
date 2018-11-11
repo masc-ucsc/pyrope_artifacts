@@ -199,11 +199,11 @@ function peg$parse(input, options) {
        		return {
               	start_pos:location().start.offset,
               	end_pos:location().end.offset,
-           		type:"try",
-                  try_condition:cond,
-                  scope:sc,
-                 	try_body:body,
-                  try_else:ELSE
+           		  type:"try",
+                try_condition:cond,
+                try_scope:sc,
+                try_body:body,
+                try_else:ELSE
           	}
           },
       peg$c11 = function(args, sc, x, y, z) {return prettyPrintScope(x,y,z)},
@@ -1073,8 +1073,8 @@ function peg$parse(input, options) {
       peg$c208 = peg$literalExpectation("default", false),
       peg$c209 = "try",
       peg$c210 = peg$literalExpectation("try", false),
-      peg$c211 = "PUNCH",
-      peg$c212 = peg$literalExpectation("PUNCH", false),
+      peg$c211 = "punch",
+      peg$c212 = peg$literalExpectation("punch", false),
       peg$c213 = "I",
       peg$c214 = peg$literalExpectation("I", false),
       peg$c215 = "N",
@@ -1210,8 +1210,6 @@ function peg$parse(input, options) {
       peg$c330 = peg$literalExpectation("%=", false),
       peg$c331 = "unique if",
       peg$c332 = peg$literalExpectation("unique if", false),
-      peg$c333 = "punch",
-      peg$c334 = peg$literalExpectation("punch", false),
 
       peg$currPos          = 0,
       peg$savedPos         = 0,
@@ -10146,12 +10144,12 @@ function peg$parse(input, options) {
     var s0, s1, s2, s3;
 
     s0 = peg$currPos;
-    if (input.substr(peg$currPos, 5) === peg$c333) {
-      s1 = peg$c333;
+    if (input.substr(peg$currPos, 5) === peg$c211) {
+      s1 = peg$c211;
       peg$currPos += 5;
     } else {
       s1 = peg$FAILED;
-      if (peg$silentFails === 0) { peg$fail(peg$c334); }
+      if (peg$silentFails === 0) { peg$fail(peg$c212); }
     }
     if (s1 !== peg$FAILED) {
       s2 = [];

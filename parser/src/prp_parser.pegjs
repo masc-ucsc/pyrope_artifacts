@@ -147,11 +147,11 @@ try_statement
  		return {
         	start_pos:location().start.offset,
         	end_pos:location().end.offset,
-     		type:"try",
-            try_condition:cond,
-            scope:sc,
-           	try_body:body,
-            try_else:ELSE
+     		  type:"try",
+          try_condition:cond,
+          try_scope:sc,
+          try_body:body,
+          try_else:ELSE
     	}
     }
     
@@ -1171,7 +1171,7 @@ keyword "keywords"
    / n:"until"
    / n:"default"
    / n:"try"
-   / n:"PUNCH"
+   / n:"punch"
    // n:"C"
    / n:"I"
    / n:"N"
