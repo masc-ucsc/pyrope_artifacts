@@ -352,7 +352,7 @@ task: Quick Dive to Pyrope
 
 ```coffeescript
 // libs/adder/code/rca.prp file
-fa = :(a b cin):{
+fa = :($a $b $cin %sum %cout):{      // method with explicit arguments
   tmp   = $a  ^ $b
   %sum  = tmp ^ $cin
   %cout = (tmp & $cin) | ($a & $b)
@@ -437,20 +437,22 @@ task: Quick Dive to Pyrope
 
 ```coffeescript
 // libs/adder/code/scla.prp file
-cla = :(a b) when a.__bits==8:{            // specialize cla when bits == 8
-  s1 = cla a[[0..3]] b[[0..3]] cin:0       // cla for 4 bits
-  s2 = cla a[[4..7]] b[[4..7]] cin:s1.cout // pass fast s1.cout as cin
-  $sum = (s2.sum s1.sum)[[]]               // bit concatenation
+cla = :($a $b) when $a.__bits==8:{           // specialize when bits == 8
+  s1 = cla $a[[0..3]] $b[[0..3]] cin:0       // cla for 4 bits
+  t = generate.($a[[0..3]] $b[[0..3]])       // generate carry method
+  s2 = cla $a[[4..7]] $b[[4..7]] cin:t       // CLA with fast cin
+  %sum = (s2.sum s1.sum)[[]]                 // bit concatenation
 }
 
-cla = :(a b) when a.__bits==12:{           // specialize cla when bits == 12
-  s1 = cla a[[0...6]] b[[0...6]] cin:0     // ... vs .. ranges like in Ruby
-  s2 = cla a[[6..11]] b[[6..11]] cin:s1.cout
-  $sum = (s2.sum s1.sum)[[]]
+cla = :($a $b) when $a.__bits==12:{          // specialize when bits == 12
+  s1 = cla $a[[0...6]] $b[[0...6]] cin:0     // ... vs .. Ruby style ranges
+  t = generate.($a[[0..6]] $b[[0..6]])       // generate carry method
+  s2 = cla $a[[6..11]] $b[[6..11]] cin:t
+  %sum = (s2.sum s1.sum)[[]]
 }
 
-cla = :(a b):{                             // default CLA (not CLA, just RCA)
-  $sum = rca.(a b cin:0).sum
+cla = :($a $b):{                             // default CLA (not CLA, just RCA)
+  return rca.($a $b cin:0)
 }
 
 test = ::{
@@ -1020,12 +1022,12 @@ let twelve = addFive 7;
 ### Pyrope
 ```coffeescript
 // code/vsreason.prp file
-increment = :(x):{$x + 1 }
-double    = :(x):{$x + $x}
+increment = :($x):{$x + 1 }
+double    = :($x):{$x + $x}
 
 eleven = increment.(double.(5))
 
-add = :(x y):{$x + $y}
+add = :($x $y):{$x + $y}
 addFive = \add  // add reference, no call
 addFive = ::{ super x:5 y:$y }
 eleven  = \addFive y:6
@@ -1212,8 +1214,8 @@ y = pow(10, floor(log10(x)))
 .column[
 ### Pyrope
 ```coffeescript
-square = :(x):{$ * $}
-eat    = :(x):{puts square.($)}
+square = :($x):{$ * $}
+eat    = :($x):{puts square.($)}
 
 for food:(1 2 3) {
   if food !=2 { eat food }
@@ -1326,7 +1328,7 @@ I a == (5 6 7)
 ### custom operators
 ```coffeescript
 // code/elementvstuple2.prp
-..dox.. = :(a,b):{  // .. is optional
+..dox.. = :($a,$b):{  // .. is optional
   t = ()
   for a:$0 b:$1 ::{
     t ++= a+b
@@ -1688,7 +1690,7 @@ for a:(1..3) ::{ if a>1 { break } ; %t = a }
 I t == 1
 
 if t==1 :(%x):{ %x += 1 }   // compile error
-if t==1 :($x,%x):{ %x = 3 } // OK
+if t==1 :($x,%x):{ %x = $x + 1 } // OK
 I x == 3
 ```
 ]
@@ -1739,7 +1741,7 @@ I (1 2 3) == (1 2 3)     // must be explicit
 
 ```coffeescript
 // code/fcalls.prp file
-square = :(x):{$ * $}
+square = :($x):{$ * $}
 //r=square 3 + square 4     // parse error, complex argument
 //r=square(3 + square.(4))  // parse error, space required for arguments
 //r=square (3 + square (4)) // parse error, missing explicit argument
