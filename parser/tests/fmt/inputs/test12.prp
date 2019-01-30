@@ -1,4 +1,4 @@
-#formatted pyrope file is
+//formatted pyrope file is
 
 a    = (1..2 by 4)
 b = (    1.. by 3

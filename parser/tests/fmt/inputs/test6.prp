@@ -1,4 +1,4 @@
-#inputs to check range operation
+//inputs to check range operation
 
 
 a=(1..2 )

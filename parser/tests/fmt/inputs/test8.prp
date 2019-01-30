@@ -1,10 +1,10 @@
-#inputs to check while operation
+//inputs to check while operation
 
-#while loop with only one statement in body
+//while loop with only one statement in body
 while true {
     tmp2 = ()}
 
-#while statement in a while statement
+//while statement in a while statement
 
 while a>1{
 I team == 11

@@ -36,7 +36,7 @@
  function extractOptional(optional, index) {
    return optional ? optional[index] : null;
  }
- 
+
  function prettyPrint(head,tail){
  	var i,tmp=[]
     if((head!=null)){
@@ -44,7 +44,7 @@
     }
     return tail
  }
- 
+
  function prettyPrintScope(head,tail,end){
  	var i,tmp=[]
     if(!(tail instanceof Array) && head==null){
@@ -54,22 +54,22 @@
     if(head==null){
     	return head
     }
-    
+
     if(!(tail instanceof Array) && tail!=null){
     	head.push(tail)
     }
-    
+
     if(end){
-    	for(i=0;i<end.length;i++){ 
+    	for(i=0;i<end.length;i++){
         	head.push(end[i])
     	}
     }
    	return head
  }
- 
+
  function prettyPrintArray(head,tail){
  	var tmp
-    tmp = tail.reduce(function flat(a,b) {  	
+    tmp = tail.reduce(function flat(a,b) {
         if(Array.isArray(b)){
         	return b.reduce(flat,a)
         }
@@ -77,12 +77,12 @@
         	b = b.value
         }
      	a.push(b)
-        return a       
+        return a
    	},[]);
     tmp.unshift(head.value)
     return tmp.join('')
  }
- 
+
 }
 
 
@@ -93,8 +93,8 @@ start
         	head.splice(0,1)
             return head[0]
         }
-        
-    	for(i=0;i<head[1].length;i++){ 
+
+    	for(i=0;i<head[1].length;i++){
         	head[0].push(head[1][i])
     	}
         return head[0]
@@ -104,7 +104,7 @@ code_blocks
   = head:code_block_int tail:(y:EOS x:code_block_int{return prettyPrint(y,x)})* {
    	tail.unshift(head)
     var i,j,tmp=[]
-    for(i=0;i<tail.length;i++){ 
+    for(i=0;i<tail.length;i++){
     	for(j=0;j<tail[i].length;j++){
        		tmp.push(tail[i][j])
         }
@@ -122,7 +122,7 @@ code_block_int
         }
 
 try_statement
-	= TRY cond:logical_expression sc:((_ x:"::" LBRACE (EOS/__))/_ LBRACE x:(EOS/__) {return x}) 
+	= TRY cond:logical_expression sc:((_ x:"::" LBRACE (EOS/__))/_ LBRACE x:(EOS/__) {return x})
    	body:(x:code_blocks? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)}) RBRACE ELSE:(__ x:scope_else{return x})?
     {
     	if((sc instanceof Array) && sc.length==0)sc=null
@@ -140,10 +140,10 @@ try_statement
                 sc=null
         	} else if(sc && sc.length==4){
             	body = null //[sc[3]]
-                sc = sc[1]                
+                sc = sc[1]
         	}
         }
-        
+
  		return {
         	start_pos:location().start.offset,
         	end_pos:location().end.offset,
@@ -154,10 +154,10 @@ try_statement
           try_else:ELSE
     	}
     }
-    
+
 scope_declaration
 	= args:scope LBRACE sc:((EOS/__) __) body:(x:scope_body? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)})
-   	RBRACE alt:(__ x:scope_else{return x})? 
+   	RBRACE alt:(__ x:scope_else{return x})?
     {
     	var i,j
         for(i=0;i<sc[1].length;i++){
@@ -177,7 +177,7 @@ scope_declaration
             j = j-1
         }
         if((body instanceof Array) && body.length==0) body=null
-   
+
   		return {
      		type:"func_decl",
        		scope_args:args,
@@ -218,7 +218,7 @@ scope_body
         return head
     }
     / head:logical_expression __ {return head}
-    
+
 scope
         = COLON args:scope_condition? COLON {
         return args
@@ -249,8 +249,8 @@ scope_argument
    }
 
 if_statement
-        = if_type:(UNIQUE_IF/IF) if_test:logical_expression sc:((_ x:"::" LBRACE y:(EOS/__) )/_ LBRACE x:(EOS/__) {return x})  
-        if_true:(x:code_blocks? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)}) RBRACE ELSE:(__ x:else_statement{return x})? 
+        = if_type:(UNIQUE_IF/IF) if_test:logical_expression sc:((_ x:"::" LBRACE y:(EOS/__) )/_ LBRACE x:(EOS/__) {return x})
+        if_true:(x:code_blocks? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)}) RBRACE ELSE:(__ x:else_statement{return x})?
    	{
     	//return sc
         var type_of_if = "if";
@@ -269,7 +269,7 @@ if_statement
                 sc=null
         	} else if(sc && sc.length==4){
             	if_true=[sc[3]]
-                sc=sc[1]                
+                sc=sc[1]
         	}
         }
         if(if_type[0] == "unique if"){
@@ -284,7 +284,7 @@ if_statement
        			false_case:ELSE
      		}
         }
-        //return sc        
+        //return sc
 		return {
        		start_pos:location().start.offset,
         	end_pos:location().end.offset,
@@ -295,10 +295,10 @@ if_statement
        		false_case:ELSE
      	}
    	}
-        
+
 else_statement
-        = ELIF else_test:logical_expression sc:((_ x:"::" LBRACE (EOS/__))/_ LBRACE x:(EOS/__) {return x}) 
-        else_true:(x:code_blocks? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)}) RBRACE else_false:(__ x:else_statement{return x})? 
+        = ELIF else_test:logical_expression sc:((_ x:"::" LBRACE (EOS/__))/_ LBRACE x:(EOS/__) {return x})
+        else_true:(x:code_blocks? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)}) RBRACE else_false:(__ x:else_statement{return x})?
   	{
     	if((sc instanceof Array) && sc.length==0)sc=null
    		if(else_true!=null){
@@ -315,7 +315,7 @@ else_statement
                 sc=null
         	} else if(sc && sc.length==4){
             	else_true=[sc[3]]
-                sc=sc[1]                
+                sc=sc[1]
         	}
         }
      	return {
@@ -328,7 +328,7 @@ else_statement
        		false_case:else_false
      	};
    	}
-   / ELSE  sc:((_ x:"::" LBRACE (EOS/__))/_ LBRACE x:(EOS/__) {return x}) 
+   / ELSE  sc:((_ x:"::" LBRACE (EOS/__))/_ LBRACE x:(EOS/__) {return x})
    else_true:(x:code_blocks? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)}) RBRACE    //else
   	{
     	if((sc instanceof Array))sc=null
@@ -346,16 +346,16 @@ else_statement
                 sc=null
         	} else if(sc && sc.length==4){
             	else_true=[sc[3]]
-                sc=sc[1]                
+                sc=sc[1]
         	}
         }
-        
+
      	return else_true;
    	}
 
 for_statement
-  	= FOR idx:for_index sc:((_ x:"::" LBRACE (EOS/__))/_ LBRACE x:(EOS/__) {return x}) 
-    body:(x:code_blocks? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)}) RBRACE 
+  	= FOR idx:for_index sc:((_ x:"::" LBRACE (EOS/__))/_ LBRACE x:(EOS/__) {return x})
+    body:(x:code_blocks? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)}) RBRACE
     {
     	if((sc instanceof Array) && sc.length == 0)sc=null
     	if(body!=null){
@@ -372,7 +372,7 @@ for_statement
                 sc=null
         	} else if(sc && sc.length==4){
             	body = null //[sc[3]]
-                sc = sc[1]                
+                sc = sc[1]
         	}
         }
     	return {
@@ -398,10 +398,10 @@ for_index
    }
 
 while_statement
-   = p:WHILE cond:logical_expression sc:((_ x:"::" LBRACE (EOS/__))/_ LBRACE x:(EOS/__) {return x}) 
-   	body:(x:code_blocks? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)}) RBRACE 
+   = p:WHILE cond:logical_expression sc:((_ x:"::" LBRACE (EOS/__))/_ LBRACE x:(EOS/__) {return x})
+   	body:(x:code_blocks? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)}) RBRACE
     {
-    	//return 
+    	//return
     	if((sc instanceof Array) && sc.length==0)sc=null
     	if(body!=null){
         	if(sc && sc.length!=4){
@@ -417,10 +417,10 @@ while_statement
                 sc=null
         	} else if(sc && sc.length==4){
             	body = null //[sc[3]]
-                sc = sc[1]                
+                sc = sc[1]
         	}
         }
-        
+
  		return {
         	start_pos:location().start.offset,
         	end_pos:location().end.offset,
@@ -430,7 +430,7 @@ while_statement
            	while_body:body
     	}
    	}
-    
+
 return_statement
 	= RETURN head:logical_expression {
     	return{
@@ -440,7 +440,7 @@ return_statement
             r_arg:head
      	}
     }
-    
+
 assertion_statement
   	= ASSERTION head:logical_expression {
  		return {
@@ -476,13 +476,13 @@ assignment_expression
    tail:(function_pipe/fcall_implicit/rhs_expression_property/logical_expression) /*prop:(_ x:rhs_expression_property{return x})* */  {
     return {
     	start_pos:location().start.offset,
-       	end_pos:location().end.offset,    
+       	end_pos:location().end.offset,
         type:"assignment_expression",
         operator:op,
         left:head,
         right:tail
    	}
-  }     
+  }
 
 fcall_implicit
         = !constant func:tuple_dot_notation _ head:scope_declaration { //remove "!not_in_implicit" to support foo::{}
@@ -507,7 +507,7 @@ fcall_implicit
          	arguments:char
        }
      }
-     
+
 not_in_implicit
  = (_ assignment_operator)
    / (_ ".(")
@@ -535,8 +535,9 @@ not_in_implicit
    / __ INTERSECT
    / __ IN
    / __ HAT
+   / __ PIPE
    / __ AMPERSAND
-   
+
 fcall_implicit_no_arg
         = !constant func:tuple_dot_notation _ {
        	return {
@@ -553,7 +554,7 @@ fcall_explicit
         	arg = [];
         }
         if(scope) arg.push(scope)
-        
+
         var fcall_return = {
         	start_pos:location().start.offset,
         	end_pos:location().end.offset,
@@ -569,9 +570,9 @@ fcall_explicit
          			dot_prop: element,
        			};
  			}, fcall_return);
-        
+
         }
-        
+
         return fcall_return
    }
 
@@ -586,7 +587,7 @@ fcall_arg_notation
    }
    / LPAR RPAR {return null}
 
-function_pipe 
+function_pipe
 	= head:(fcall_implicit/logical_expression) _ tail:(FUNC_PIPE x:(fcall_implicit/fcall_explicit) _{return{f:x}})+ {
         return tail.reduce(function(result,element){
         	return{
@@ -608,10 +609,10 @@ punch_format
             type:"punch",
             punch_inp:ip,
             punch_op:op
-        } 
+        }
     }
 
-punch_rhs 
+punch_rhs
 	= first:"/" x:(a:identifier b:(DOT identifier)*)? "/" y:(DOT identifier)+ {
     	var arr = [], arr2 = [], foo = [];
         if(x != null){
@@ -646,7 +647,7 @@ punch_rhs
         foo.push(arr2);
         return foo
     }
-    
+
 logical_expression
         =  head:relational_expression tail:(__ (OR/AND) _ relational_expression)* {
      return buildBinaryExpression(head, tail);
@@ -660,7 +661,7 @@ relational_expression
 additive_expression //IN rule has conflicts with id beginning with "in". (eg) foo = inc # throws error
 	= head:bitwise_expression tail:(__ (T_PLUS/PLUS/MINUS/LEFT/RIGHT/T_STAR/UNION/INTERSECT/ /*IN*/ overload_notation) _ bitwise_expression)*
     tail2:(x:".." y:additive_expression?)?
-    {	
+    {
     	if(tail2){
         	var tmp = buildBinaryExpression(head, tail);
             if(tail2[1] == null){
@@ -675,11 +676,11 @@ additive_expression //IN rule has conflicts with id beginning with "in". (eg) fo
      		}
         }
    		return buildBinaryExpression(head, tail);
-  	}   
+  	}
 
 bitwise_expression
-	= head:multiplicative_expression 
-    tail:(__ (HAT/AMPERSAND) _ multiplicative_expression)* {
+	= head:multiplicative_expression
+    tail:(__ (HAT/AMPERSAND/PIPE) _ multiplicative_expression)* {
         return buildBinaryExpression(head, tail);
    	}
 
@@ -689,14 +690,14 @@ multiplicative_expression
    	}
 
 unary_expression
-	= factor 
+	= factor
     / op:NOT arg:factor {
     	return{
         	type:"not_op",
             not_arg:arg
         }
     }
-    
+
 factor
 	= LPAR __ head:logical_expression __ RPAR xhead:bit_selection_bracket? {
   		if(xhead){ //rule and ast for '(' expr ')'[[ ]] - bit sel statements
@@ -726,7 +727,7 @@ tuple_notation_no_bracket
    }
 
 tuple_notation
-	= LPAR head:bit_selection_notation tail:(_ bit_selection_notation)* RPAR by:(tuple_by_notation)? 
+	= LPAR head:bit_selection_notation tail:(_ bit_selection_notation)* RPAR by:(tuple_by_notation)?
     {
     	var char = buildList(head, tail, 1);
        	if(by instanceof Array){ //rule and ast for '(' expr ')'[[ ]] - bit sel statements
@@ -748,15 +749,15 @@ tuple_notation
                 skip_by:by
             }
         }
-    
+
        	var char = buildList(head, tail, 1);
        	return {
         	type:"tuple_list",
         	elements:char
        	}
- 	
+
 	}
-    
+
    / LPAR head:(rhs_expression_property/logical_expression) _
    tail:(COMMA (rhs_expression_property/logical_expression) __)* RPAR by:(tuple_by_notation/bit_selection_bracket)?
    	{
@@ -780,14 +781,14 @@ tuple_notation
                 skip_by:by
             }
         }
-    
+
        	var char = buildList(head, tail, 1);
        	return {
         	type:"tuple_list",
         	elements:char
        	}
   	}
-    
+
    / LPAR RPAR {
      return {
        type:"tuple_list",
@@ -805,9 +806,9 @@ tuple_notation_with_object
         	type:"tuple_list",
         	elements:char
        	}
- 	
+
 	}
-    
+
    / LPAR head:(rhs_expression_property/logical_expression) _
    tail:(COMMA (rhs_expression_property/logical_expression) __)* RPAR
    	{
@@ -817,7 +818,7 @@ tuple_notation_with_object
         	elements:char
        	}
   	}
-   
+
 range_notation
         = head:(bit_selection_notation)? ".." tail:(additive_expression)? by:tuple_by_notation? {
 		if(by){
@@ -834,10 +835,10 @@ range_notation
        		l_bound:tail
      	}
    }
-   
+
 bit_selection_bracket
 	= tail:(LBRK LBRK property:(logical_expression/tuple_notation_no_bracket)? RBRK RBRK {return {bit_property:property}})*
-    
+
 bit_selection_notation
 	= head:(tuple_dot_notation) tail:bit_selection_bracket {
      return tail.reduce(function(result, element) {
@@ -865,7 +866,7 @@ tuple_dot_notation
 
 tuple_array_bracket
 	=  tail:(LBRK property:(logical_expression/tuple_notation_no_bracket) RBRK {return {arr_property:property}})*
-    
+
 tuple_array_notation
 	=  head:(lhs_var_name) tail:tuple_array_bracket {
    		return tail.reduce(function(result, element) {
@@ -885,7 +886,7 @@ lhs_expression
                 }if(y[type]['type'] == "tuple_array"){
                 	return slash(y['arr_obj'], 'arr_obj');
                 }
-                
+
                 var arr = [];
                 arr.push('\\');
                 arr.push(y[type]['value']);
@@ -954,7 +955,7 @@ overload_notation
        //value:head
      }
    }
-   
+
 overload_name
         = (!(overload_exception/line_terminator) .)+ {return text();}
 
@@ -1006,8 +1007,8 @@ id_char
 id_prefix
         = BANG
    / LOCAL_REGISTER
-   // AMPERSAND
-   
+   / AMPERSAND
+
 id_postfix = "?"
 
 string_constant
@@ -1060,7 +1061,7 @@ hexa_decimal
      	type:"number",
        	value:head+tail.join('')
    	}
-  
+
 }
 
 binary
@@ -1126,7 +1127,7 @@ decimal_signed
 }
 
 decimal_digit "integer greater than or equal to zero"
-	= head:("-")? tail:[0-9] tail2:[0-9_]* {              
+	= head:("-")? tail:[0-9] tail2:[0-9_]* {
   		var tmp = "0d"
    		if(head) {
        		return {
@@ -1134,7 +1135,7 @@ decimal_digit "integer greater than or equal to zero"
          		value:head+tmp+tail+tail2.join(''),
        		}
    		}
-     
+
    		return {
      		type:"number",
        		value:tmp+tail+tail2.join(''),
@@ -1146,7 +1147,7 @@ decimal_digit "integer greater than or equal to zero"
         return {
      		type:"number",
        		value:tmp.join(''),
-   		}  	
+   		}
     }
 
 non_zero_digit "integer greater than zero"
@@ -1227,7 +1228,7 @@ white_space
 EOS
 	= head:(__ SEMI_COLON+ {return }
    	/ _ x:single_line_comment? line_terminator_sequence {return x}
-   	/ __ EOF) 
+   	/ __ EOF)
 
 EOF
         = !.
@@ -1247,7 +1248,7 @@ multi_line_comment_no_line_terminator
 
 comment "comment"
         = head:multi_line_comment            //multi-line comment
-   / head:single_line_comment 
+   / head:single_line_comment
 
 single_line_comment
         = "//" (!line_terminator .)* {//return "comment"
@@ -1277,9 +1278,9 @@ BANG       =  x:"!"  ![=]   {return x}
 LBRK       =  "["         white_space*
 RBRK       =  white_space* x:"]"
 LPAR       =  "("                 white_space*
-RPAR       =  white_space* ")" _          
+RPAR       =  white_space* ")" _
 LBRACE       =  "{"               white_space*
-RBRACE       =  white_space* "}"               
+RBRACE       =  white_space* "}"
 RANGE_DOT  = x:".."      {return x;}
 STAR       =  x:"*"       {return {type:"arithmetic_operator",value:x};}
 PLUS       =  x:"+"      {return {type:"arithmetic_operator",value:x};}
@@ -1306,7 +1307,7 @@ AS                 = x:"as"                     white_space* {return x;}
 HAT        =  x:"^"  ![=]        {return {type:"bitwise_operator",value:x};}
 OR         =  x:("or")           {return {type:"logical_operator",value:x};}
 AND        =  x:("and")          {return {type:"logical_operator",value:x};}
-IN         = x:"in"            {return {type:"in_operator",value:x};} 
+IN         = x:"in"            {return {type:"in_operator",value:x};}
 T_PLUSEQU  =  head:T_PLUS tail:EQU  {return head}
 STAREQU    =  x:STAR EQU         {return x}
 DIVEQU     =  "/="        white_space*

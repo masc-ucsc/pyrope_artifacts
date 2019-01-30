@@ -319,7 +319,7 @@ mytest = ::{
   f.b = 3
 
   a = methodx c f
-  I a.res == 6 and a.or == 0b11
+  I a.res == 6 and a.mor == 0b11
 }
 ```
 ]
@@ -334,7 +334,7 @@ void prp_methodx(prp_test1_a &a
                ,const prp_test1_b b
                ,const prp_test1_f f) {
   a.res = b + f.a + f.b;
-  a.or  = b | f.a | f.b;
+  a.mor = b | f.a | f.b;
 }
 ```
 ```bash
@@ -381,7 +381,7 @@ task: Quick Dive to Pyrope
 c = $cin
 for i:(0..$a.__bits) {
   %sum[[i]] = $a[[i]] ^ $b[[i]] ^ c
-  c =  ($a[[i]] & $b[[i]] | ($a[[i]] & c) | ($b[[i]] & c)
+  c =  ($a[[i]] & $b[[i]]) | ($a[[i]] & c) | ($b[[i]] & c)
 }
 
 test = ::{
@@ -472,7 +472,7 @@ task: Quick Dive to Pyrope
 
 ```coffeescript
 // code/counter.prp file
-*..+.. as /libs/adder/scla/.cla      // Overload + operator
+*..+.. as \libs.adder.scla.cla      // Overload + operator
 if $enable {
   @total := @total + 1
   I 3 ..+.. 4 == 7 == 3 + 4          // + is an alias for ..+..
@@ -492,8 +492,8 @@ task: Quick Dive to Pyrope
 
 ```coffeescript
 // code/add4.prp file
-..+.. as /libs/adder/scla/.cla
-s1 as /libs/adder/.rca
+..+.. as \libs.adder.scla.cla
+s1 as \libs.adder.rca
 
 (%sum sum1 sum2) as __stage:true
 

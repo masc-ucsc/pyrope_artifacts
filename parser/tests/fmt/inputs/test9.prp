@@ -1,6 +1,6 @@
-#inputs to check if operation
+//inputs to check if operation
 
-#if statement
+//if statement
 if a==1{
 	b=1
 	clock a
@@ -8,7 +8,7 @@ if a==1{
 else{c=d+1
 I j==1}
 
-#if statement ifel statement
+//if statement ifel statement
 if x==1{
 	if wer ==1{
 	j= 3+a

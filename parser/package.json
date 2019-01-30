@@ -7,6 +7,7 @@
   "dependencies": {
     "commander": "^2.11.0",
     "pegjs-backtrace": "^0.1.1",
+    "pegjs-dev": "^0.11.0-dev",
     "prettier": "^1.5.3",
     "underscore": "^1.8.3"
   },

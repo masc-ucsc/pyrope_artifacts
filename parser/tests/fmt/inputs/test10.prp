@@ -1,10 +1,10 @@
-#inputs to check for operation
+//inputs to check for operation
 
 for a:$ { $.__block a 
 a= t+3
 }
 
-#for loop in a for loop
+//for loop in a for loop
 for i:(0..2 ) {
      for t:5{I sum == a+b
 sum a b
