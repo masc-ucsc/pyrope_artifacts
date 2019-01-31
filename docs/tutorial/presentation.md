@@ -1590,7 +1590,7 @@ I total == 1+2+3
 I _i == 3  // compile error, undefined
 
 @val = 3
-@val_link punch @/scope2/.var
+@val_link punch @scope2.var
 I @val_link.__id == @val.__id
 I @val_link == 3
 @val = 1
@@ -1618,13 +1618,13 @@ n2 = ::{
 }
 n3 = ::{
   // Punch a wire through n2/n1 hierarchy
-  $p1 punch %/n2.n1/.o
+  $p1 punch %n2.n1.o
   %o2 = $1 + 1
-  @p2 punch @/n1/.r
+  @p2 punch @n1.r
   %o4 = @p2 + 1
 }
-$i1 punch %/n2.n1/.o
-$i2 punch %/scope5.n2.n1/.o
+$i1 punch %n2.n1.o
+$i2 punch %scope5.n2.n1.o
 I $i1.__id == $i2.__id
 I n3.o2 == 2
 I n3.o4 == 4
@@ -1646,7 +1646,7 @@ nested1_5b = ::{
     @cycle += @incr
   }
 }
-@n2_links punch @/nested2/
+@n2_links punch @nested2
 for i:@n2_links {
   i.incr = i.__index + 1
 }
@@ -2511,7 +2511,7 @@ I child.__obj == parent.__obj
 child.dox = ::{
   _tmp = super $
   @this.v1 = 3  // add new field in child
-  %p1 punch $/objects1.child/.v2
+  %p1 punch $objects1.child.v2
   %p1 = 5
   return tmp + 7
 }
