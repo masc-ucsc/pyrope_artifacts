@@ -1,5 +1,5 @@
-#inputs to check tuple list
-a = (1 2 3) + 4
-a = (1 2 3) ++ 7
-#overload operator     
-a = (11 12 13) ..+.. 14
+//inputs to check tuple list
+a = (0d1 , 0d2 , 0d3) + 0d4
+a = (0d1 , 0d2 , 0d3) ++ 0d7
+//overload operator     
+a = (0d11 , 0d12 , 0d13) ..+.. 0d14

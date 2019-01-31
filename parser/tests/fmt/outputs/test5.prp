@@ -1,4 +1,4 @@
-#inputs to check assertion statements
-I f == 3
-I a == (1 2 3 4)
-I a == 5
+//inputs to check assertion statements
+I f == 0d3
+I a == (0d1 , 0d2 , 0d3 , 0d4)
+I a == 0d5

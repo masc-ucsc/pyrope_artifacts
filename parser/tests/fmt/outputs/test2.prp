@@ -1,7 +1,7 @@
-#inputs to check binary operation
-a = 1 + 2
-b = 3 - 8
-c = d * (2 + 3 + 4)
+//inputs to check binary operation
+a = 0d1 + 0d2
+b = 0d3 - 0d8
+c = d * (0d2 + 0d3 + 0d4)
 z = x or y
-p = a >> 2
-k = 1 + 2 + 4 + 5 + 6 + ((7 - 8) * 6)
+p = a >> 0d2
+k = 0d1 + 0d2 + 0d4 + 0d5 + 0d6 + ((0d7 - 0d8) * 0d6)

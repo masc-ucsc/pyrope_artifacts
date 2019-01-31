@@ -1,22 +1,24 @@
-#inputs to check if operation
-#if statement
-if a == 1 {
-  b = 1
+//inputs to check if operation
+//if statement
+if a == 0d1 {
+  b = 0d1
   clock a
-}else {
-  c = d + 1
-  I j == 1
+}else{
+  c = d + 0d1
+  I j == 0d1
 }
-#if statement ifel statement
-if x == 1 {
-  if wer == 1 {
-    j = 3 + a
-    sum = 1
+//if statement ifel statement
+if x == 0d1 {
+  if wer == 0d1 {
+    j = 0d3 + a
+    sum = 0d1
   }
-}elif a == 1 {
-  b = 1
+}elif a == 0d1 {
+  b = 0d1
   obj2.oneortwo = one + two
-}elif c == 1 {
-  j = 1
-  l = 1
-}else {  p = 0}
+}elif c == 0d1 {
+  j = 0d1
+  l = 0d1
+}else{
+  p = 0d0
+}
