@@ -727,7 +727,7 @@ tuple_notation_no_bracket
    }
 
 tuple_notation
-	= LPAR head:bit_selection_notation tail:(_ bit_selection_notation)* RPAR by:(tuple_by_notation)?
+	= LPAR head:bit_selection_notation tail:(_ bit_selection_notation)* RPAR by:(tuple_by_notation/bit_selection_bracket)?
     {
     	var char = buildList(head, tail, 1);
        	if(by instanceof Array){ //rule and ast for '(' expr ')'[[ ]] - bit sel statements
