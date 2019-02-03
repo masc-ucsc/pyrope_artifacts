@@ -114,7 +114,8 @@ code_blocks
   }
 
 code_block_int
-        = x:__ head:(if_statement/for_statement/while_statement/try_statement/punch_format/assignment_expression/function_pipe/fcall_implicit/fcall_explicit
+        = x:__ head:(if_statement/for_statement/while_statement/try_statement/punch_format/
+        assignment_expression/function_pipe/fcall_implicit/fcall_explicit
         /return_statement/compile_check_statement/negation_statement/tail:assertion_statement {return tail})   {
         	x.push(head)
             return x
@@ -1320,7 +1321,7 @@ COMMA      =  _ ","    __
 COLON      =  ":"
 DOUBLE_COLON       =  "::"                white_space*
 DOT        =  x:"."          //{return x;}
-BY         = "by" white_space*
+BY         = white_space* "by" white_space*
 IF         = "if"         white_space+
 UNIQUE_IF  = "unique if" white_space+
 ELIF         = "elif"         white_space+
@@ -1336,5 +1337,5 @@ NEGATION         = "N"         white_space+
 END                             = "end"         white_space*
 RETURN                             = "return" _
 SLASH                   = "/" white_space*
-PIPE                    = "|"
+PIPE                    = x:"|" {return {type:"bitwise_operator",value:x};}
 PUNCH 			= "punch" white_space+

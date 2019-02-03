@@ -562,14 +562,11 @@ function cfg_gen(data){
         for(var j = 0; j < data[i].length; j++){
           if(j == data[i].length - 1){
             method_id_track = 1;
-            //FIXME
-            //while x::{while y::{z = 1}} gives wrong CFG
-            //comment out above line to fix it
           }
 
-          tmp_scope_count = local_scope_count;
-          if(local_scope_count < 0){
-            tmp_scope_count = scope_count;
+          //tmp_scope_count = local_scope_count; //seems useless - remove this line
+          if(local_scope_count < 0){ //scope count for entries otuside of a scope
+            tmp_scope_count = scope_count - scope_out_count;
           }
           if(typeof(data[i][j])=="object" && data[i][j] != null && data[i][j]["type"] != "comment"){            
             cfg_gen(data[i][j]);
@@ -587,10 +584,14 @@ function cfg_gen(data){
       }
     }
 
+    //FIXME
+    //while x::{while y::{z = 1}} gives wrong CFG
+    //comment out the below if block to fix it
+
     //remove unwanted "tmp" var from arr of "while" and "for"
-    if((arr[4] == "while" || arr[4] == "for") && arr[3].match(/___/)){
-      arr.splice(3,1);
-    }
+    //if((arr[4] == "while" || arr[4] == "for") && arr[3].match(/___/)){
+    //  arr.splice(3,1);
+    //}
 
     if((arr[3] == 'for' || arr[3] == 'try') && arr.length == 6){
       k_count = k_count + 1;
@@ -847,6 +848,7 @@ function cfg_gen(data){
   }*/
 
   arr.splice(2, 0, tmp_scope_count);  //insert scope_count in arr
+  //tmp_scope_count = 0;
 
   if(arr[5] == "or" || arr[5] == "and"){
     mark_read.push(arr);
