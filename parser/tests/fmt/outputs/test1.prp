@@ -1,4 +1,4 @@
-#inputs to check assignment operation
-a = 1
-b = 3
+//inputs to check assignment operation
+a = 0d1
+b = 0d3
 c = d

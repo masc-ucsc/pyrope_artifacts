@@ -1,5 +1,5 @@
-#inputs to check range operation
-a = (1..2)
-b = (1..)
-c = (..2)
+//inputs to check range operation
+a = (0d2..0d1)
+b = (..0d1)
+c = (0d2..)
 d = (..)

@@ -1,2 +1,2 @@
-for a:1 {  j = 1}
-# Comment there
+for a:0d1 { j = 0d1}
+// Comment there

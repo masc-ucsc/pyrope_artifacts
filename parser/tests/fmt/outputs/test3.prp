@@ -1,3 +1,3 @@
-#inputs to check tuple object
-a.sum = 1
+//inputs to check tuple object
+a.sum = 0d1
 self.myvalue = value
