@@ -411,7 +411,7 @@ g = $a & $b // Generate
 p = $a ^ $b // Propagate
 
 // 4 bit: c = g[[3]] | g[[2]] & p[[3]] | g[[1]] & p[[3]] & p[[2]] |...
-c = $cin & &.(p)  // &.(p) is and reduction fcall with p as argument
+c = $cin & p.and_reduction  // and_reduction is a library call
 for i:(0..a.__bits) {
   _tmp = g[[i]]
   for j:(i..(a.__bits-1)) {
@@ -472,14 +472,18 @@ task: Quick Dive to Pyrope
 
 ```coffeescript
 // code/counter.prp file
-*..+.. as \libs.adder.scla.cla      // Overload + operator
+..+.. = \libs.adder.scla.cla      // Overload + operator
 if $enable {
   @total := @total + 1
   I 3 ..+.. 4 == 7 == 3 + 4          // + is an alias for ..+..
 }
-```
 
-???
+my_add as \libs.adder.scal.cla
+..+.. = :($a $b) when $a.__bits>1 and $b.bits==1:{
+ // Special code for special case
+}
+
+```
 
 .footnote[
   created with [remark](https://github.com/gnab/remark)
