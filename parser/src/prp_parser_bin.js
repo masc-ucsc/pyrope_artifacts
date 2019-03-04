@@ -100,7 +100,7 @@ catch(err) {
       expectedDescs.length = j;
     }
 
-    expectedDesc = err.expected.length > 1 ? expectedDescs.slice(0, -1).join(", ") + " or " + expectedDescs[err.expected.length - 1] : expectedDescs[0]; 
+    expectedDesc = err.expected.length > 1 ? expectedDescs.slice(0, -1).join(", ") + " or " + expectedDescs[err.expected.length - 1] : expectedDescs[0];
     if(expectedDescs.indexOf(undefined) >= 0){ //remove 'undefined' entry from expected array
       expectedDescs.splice(descriptions.indexOf(undefined), 1);
     }
@@ -145,7 +145,7 @@ catch(err) {
         //console.error(data.substr(errorLocation, err.location.end.column));
         console.error('-'.dup(start_column) + '^');
         //console.error('Line '+err.location.start.line+', column '+err.location.start.column+': '+json_content_user[i].userError);
-        process.exit(0);
+        process.exit(2);
         //return;
       }
     }
@@ -166,15 +166,15 @@ catch(err) {
         console.error(filename.split('/').pop()+':'+start_line+':'+start_column+': error: '+json_content_system[i].userError.slice(6));
         console.error(data_backup[start_line-1]);
         console.error('-'.dup(start_column) + '^');
-        process.exit(2);
+        process.exit(3);
         //return;
-      }  
+      }
     }
 
     console.error(filename.split('/').pop()+':'+start_line+':'+start_column+': error: '+err.message);
     console.error(data_backup[start_line - 1]);
     console.error('-'.dup(start_column) + '^');
-    process.exit(0);
+    process.exit(4);
     //return;
   }
 }
