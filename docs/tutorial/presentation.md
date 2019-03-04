@@ -439,14 +439,14 @@ task: Quick Dive to Pyrope
 // libs/adder/code/scla.prp file
 cla = :($a $b) when $a.__bits==8:{           // specialize when bits == 8
   s1 = cla $a[[0..3]] $b[[0..3]] cin:0       // cla for 4 bits
-  t = generate.($a[[0..3]] $b[[0..3]])       // generate carry method
+  t = generate.($a[[0..3]],$b[[0..3]])       // generate carry method
   s2 = cla $a[[4..7]] $b[[4..7]] cin:t       // CLA with fast cin
   %sum = (s2.sum s1.sum)[[]]                 // bit concatenation
 }
 
 cla = :($a $b) when $a.__bits==12:{          // specialize when bits == 12
-  s1 = cla $a[[0...6]] $b[[0...6]] cin:0     // ... vs .. Ruby style ranges
-  t = generate.($a[[0..6]] $b[[0..6]])       // generate carry method
+  s1 = cla $a[[0..7]] $b[[0..7]] cin:0       // .. Ruby style ranges
+  t = generate.($a[[0..6]],$b[[0..6]])       // generate carry method
   s2 = cla $a[[6..11]] $b[[6..11]] cin:t
   %sum = (s2.sum s1.sum)[[]]
 }
@@ -471,7 +471,7 @@ task: Quick Dive to Pyrope
 # Customizing the counter
 
 ```coffeescript
-// code/counter.prp file
+// code/ccounter.prp file
 ..+.. = \libs.adder.scla.cla      // Overload + operator
 if $enable {
   @total := @total + 1
@@ -814,12 +814,12 @@ module de.tuhh.ict.Timing {
 ```coffeescript
 // code/vspshdl.prp file
 // % is the output vector
-% = (a:1 b:2 c:3 d:4)
+% = (a:1,b:2,c:3,d:4)
 %a = %b
 %b = %c
 %c = %d
 %d = 5
-I % == (a:2 b:3 c:4 d:5)
+I % == (a:2,b:3,c:4,d:5)
 ```
 * Avoid hardware driven syntax
 ]
@@ -1034,8 +1034,8 @@ eleven = increment.(double.(5))
 add = :($x $y):{$x + $y}
 addFive = \add  // add reference, no call
 addFive = ::{ super x:5 y:$y }
-eleven  = \addFive y:6
-twelve  = \addFive y:7
+eleven  = ::{ super y:6 }
+twelve  = ::{ super y:7 }
 ```
 * Pyrope has primitive currying
 ]
@@ -1409,15 +1409,15 @@ bar = x == 3
    or x == 3 and !(x!=3)
    or false
 
-bar = false or
-      true         // compile error, ops after newline
+//bar = false or
+//      true     // compile error, ops after newline
 
 I (true or false==false) == (true or (false==false))
 
 d = 1
    ,3
-d = 1,
-    3          // compile error, ',' after newline
+//d = 1,
+//    3          // compile error, ',' after newline
 
 bar = 3
     * 1 + 4
@@ -1693,7 +1693,7 @@ I t == 0
 for a:(1..3) ::{ if a>1 { break } ; %t = a }
 I t == 1
 
-if t==1 :(%x):{ %x += 1 }   // compile error
+//if t==1 :(%x):{ %x += 1 }   // compile error
 if t==1 :($x,%x):{ %x = $x + 1 } // OK
 I x == 3
 ```
@@ -1780,7 +1780,7 @@ I a.b == 1 and a.c == 2
 I a.0 == 1 and a.2 == 2
 
 b =(3,false)   // ordered, unnamed
-I b.0 == 3 b[1] == false
+I b.0 == 3 and b[1] == false
 
 c1 as (__bits:1, __bits:3) // final ordered unnamed
 c as c1
@@ -1949,7 +1949,7 @@ class: split-50
 ### Basic
 ```coffeescript
 // code/ranges1.prp
-I (1 2 3) == 1...4 == 1..3
+I (1 2 3) == 1..3
 
 I (0..7 ..by.. 2) == (0 2 4 6)
 I 0..15 ..by.. (2 3) == (0 2 5 7 10 12 15)
@@ -1973,9 +1973,9 @@ I (..3) == (-1..3)
 ### Complex
 ```coffeescript
 // code/ranges2.prp
-numbers = (1...10)
+numbers = (1..9)
 start  = numbers[0..2]
-middle = numbers[3...-2]
+middle = numbers[3..-2]
 end    = numbers[-2..]
 copy   = numbers[..]
 
@@ -1991,7 +1991,7 @@ I val[[..-2]] == 0b01_10_11
 I val[[-2..]] == 0b00
 I val[[-1]]   == 0b1  // MSB
 
-I (1..3) * 2 = (2 4 6)
+I (1..3) * 2 == (2 4 6)
 I (1..3) + 2 == (3..5)
 I (1 2 4) ++ 3 == (1..4)
 ```
@@ -2015,7 +2015,7 @@ b.__rnd_bias ++= (5 9)  // 0 10%, 3 20%, 4 20%, and 9 50% chance
 c as __bits:8
 c.__rnd_bias   = (1 0)      // weight 1 for value 0
 c.__rnd_bias ++= (2 255)    // weight 2 for value 255
-c.__rnd_bias ++= (7 1..254) // weigth 7 for the rest
+c.__rnd_bias ++= (7,1..254) // weigth 7 for the rest
 puts c.__rnd                // 10% chance 0, 20% chance 255, 70% other
 ```
 
@@ -2548,7 +2548,7 @@ class: split-50
 // code/objects1.prp
 obj1.foo as __bits:3
 obj2.bar as __bits:2
-I obj1 isnt obj2
+I !(obj1 is obj2)
 
 obj1c = obj1
 obj1.foo  = 1
