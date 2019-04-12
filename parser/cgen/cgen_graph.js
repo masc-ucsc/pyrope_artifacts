@@ -187,6 +187,7 @@ function pretty_print_predicates(read_arr, read_var){
 
 function cfg_gen(data){ 
   var arr = [];
+  var prp_type = null;
 
   if(method_id_track == 1){ //insert k_next=null for last element in block
     arr.push("null");
@@ -218,14 +219,17 @@ function cfg_gen(data){
 
     if(i == "condition"){
       arr.push("if");       
+      prp_type = "if";
     }
 
     if(i == "uif_condition"){
       arr.push("uif");
+      prp_type = "uif";
     }
 
     if(i == "while_condition"){
       arr.push("while");
+      prp_type = "while";
     }
 
     if(i == "function"){
@@ -234,10 +238,12 @@ function cfg_gen(data){
 
     if(i == "for_index"){
       arr.push("for");
+      prp_type = "for";
     }
 
-    if(i == "try_condition"){
+    if(i == "type" && data[i] == "try"){
       arr.push("try");
+      prp_type = "try";
     }
 
     if(i == "punch_inp" && data[i] != null){
@@ -299,7 +305,8 @@ function cfg_gen(data){
     }
 
     if(i == "scope_args"){
-      arr.push("::{");
+      if(prp_type == null)
+        arr.push("::{");
       scope_pos_track = arr.length; //var helps to push fcall dest k_id before arg list
       if(data[i] != null){ //check if scope_args is not null
         if(Array.isArray(data[i]["scope_arg_list"])){
@@ -593,13 +600,14 @@ function cfg_gen(data){
     //  arr.splice(3,1);
     //}
 
-    if((arr[3] == 'for' || arr[3] == 'try') && arr.length == 6){
+    if((arr[3] == 'for' || arr[3] == 'try') && arr.length >= 6){
       k_count = k_count + 1;
       k_next_count = k_next_count + 1;
       arr.splice(1, 0, 'K'+k_next_count); //push k_next to arr
     }
 
-    if(arr[3] == 'while' && arr.length == 6){
+    //FIXME -> change length to 7 to fix scope_args cfg bug for while and for
+    if(arr[3] == 'while' && arr.length >= 6){
       k_count = k_count + 1;
       k_next_count = k_next_count + 1;
       arr.splice(1, 0, 'K'+k_next_count); //push k_next to arr
