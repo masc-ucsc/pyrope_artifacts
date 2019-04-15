@@ -151,23 +151,6 @@ code_block_int "legal code"
             return x
         	//return head
         }
-
-try_statement "try block"
-	= TRY sc:((_ x:scope LBRACE (EOS/__))/_ LBRACE x:(EOS/__) {return x}) 
-   	body:(x:code_blocks? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)}) RBRACE ELSE:(__ x:scope_else{return x})?
-    {
-    	var tmp_sc = prettyPrintBlocks(body, sc)
-        
- 		return {
-        	start_pos:location().start.offset,
-        	end_pos:location().end.offset,
-     		type:"try",
-            scope:tmp_sc[0],
-            scope_args:tmp_sc[1],
-           	try_body:body,
-            try_else:ELSE
-    	}
-    }
     
 scope_declaration "scope declaration"
 	= args:scope LBRACE sc:((EOS/__) __) body:(x:scope_body? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)})
@@ -200,7 +183,7 @@ scope_declaration "scope declaration"
         }
    	}
 
-scope_else "scope else block"
+scope_else "scope else"
   	= ELSE _ LBRACE sc:((EOS/__) __) else_true:(x:scope_body? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)}) RBRACE
   	{
     	var i,j
@@ -235,29 +218,54 @@ scope_body "scope body"
     
 scope "scope colon"
         = COLON args:scope_condition? COLON {
+        if(args['scope_arg_list'] == null && args['when'] == null)
+        	args = null
         return args
    }
 
 scope_condition "scope condition"
-        =  head:scope_argument tail:(WHEN x:(logical_expression) {return x} )? {
+        =  head:scope_argument? tail:(WHEN x:(logical_expression) {return x} )? {
      return {
        scope_arg_list:head,
        when:tail
      }
    }
-   / head:(x:scope_argument {return x})? WHEN tail:(logical_expression)  {
+   /*/ head:(x:scope_argument {return x})? WHEN tail:(logical_expression)  {
      return {
        arg_list:head,
        when:tail
      }
-   }
+   }*/
 
 scope_argument "scope argument"
 	= fcall_arg_notation
 
+scope_colon "scope colon"
+	= (_ x:scope LBRACE y:(EOS/__) )/_ LBRACE x:(EOS/__) {return x}
+
+block_body "block body"
+	= (x:code_blocks? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)}) RBRACE
+
+try_statement "try block"
+	= TRY sc:scope_colon 
+   	body:block_body ELSE:(__ x:scope_else{return x})?
+    {
+    	var tmp_sc = prettyPrintBlocks(body, sc)
+        
+ 		return {
+        	start_pos:location().start.offset,
+        	end_pos:location().end.offset,
+     		type:"try",
+            scope:tmp_sc[0],
+            scope_args:tmp_sc[1],
+           	try_body:body,
+            try_else:ELSE
+    	}
+    }
+    
 if_statement "if block"
-        = if_type:(UNIQUE_IF/IF) if_test:logical_expression sc:((_ x:scope LBRACE y:(EOS/__) )/_ LBRACE x:(EOS/__) {return x})  
-        if_true:(x:code_blocks? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)}) RBRACE ELSE:(__ x:else_statement{return x})? 
+        = if_type:(UNIQUE_IF/IF) if_test:logical_expression sc:scope_colon  
+        if_true:block_body ELSE:(__ x:else_statement{return x})? 
    	{
         var tmp_sc = prettyPrintBlocks(if_true, sc)
         var type_of_if = "if";
@@ -287,8 +295,8 @@ if_statement "if block"
    	}
         
 else_statement "elif or else block"
-        = ELIF else_test:logical_expression sc:((_ x:scope LBRACE (EOS/__))/_ LBRACE x:(EOS/__) {return x}) 
-        else_true:(x:code_blocks? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)}) RBRACE else_false:(__ x:else_statement{return x})? 
+        = ELIF else_test:logical_expression sc:scope_colon 
+        else_true:block_body else_false:(__ x:else_statement{return x})? 
   	{
     	var tmp_sc = prettyPrintBlocks(else_true, sc)
         
@@ -303,8 +311,8 @@ else_statement "elif or else block"
        		false_case:else_false
      	};
    	}
-   / ELSE  sc:((_ x:scope LBRACE (EOS/__))/_ LBRACE x:(EOS/__) {return x}) 
-   else_true:(x:code_blocks? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)}) RBRACE    //else
+   / ELSE  sc:scope_colon 
+   else_true:block_body    //else
   	{
     	/*if((sc instanceof Array))sc=null
    		if(else_true!=null){
@@ -329,8 +337,8 @@ else_statement "elif or else block"
    	}
 
 for_statement "for block"
-  	= FOR idx:for_index sc:((_ x:scope LBRACE (EOS/__))/_ LBRACE x:(EOS/__) {return x}) 
-    body:(x:code_blocks? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)}) RBRACE 
+  	= FOR idx:for_index sc:scope_colon 
+    body:block_body 
     {
     	var tmp_sc = prettyPrintBlocks(body, sc)
     	return {
@@ -357,8 +365,8 @@ for_index "for index notation"
    }
 
 while_statement "while block"
-   = p:WHILE cond:logical_expression sc:((_ x:scope LBRACE (EOS/__))/_ LBRACE x:(EOS/__) {return x}) 
-   	body:(x:code_blocks? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)}) RBRACE 
+   = p:WHILE cond:logical_expression sc:scope_colon
+   	body:block_body 
     {
         var tmp_sc = prettyPrintBlocks(body, sc)
         
@@ -540,7 +548,7 @@ punch_format "punch format"
     }
 
 punch_rhs "punch RHS"
-	= first:"/" x:(a:identifier b:(DOT identifier)*)? "/" y:(DOT identifier)+ {
+	= first:"/" x:(a:identifier b:(DOT identifier)*)? "/" y:((DOT identifier)+ / (DOT identifier)*) {
     	var arr = [], arr2 = [], foo = [];
         if(x != null){
     		var tmp1 = buildList(x[0],x[1],1);
@@ -557,7 +565,7 @@ punch_rhs "punch RHS"
         foo.push(arr2);
         return foo
     }
-    / first:"/" x:(a:identifier b:(DOT identifier)*)? "/" y:(DOT identifier)* {
+   /* / first:"/" x:(a:identifier b:(DOT identifier)*)? "/" y:(DOT identifier)* {
     	var arr = [], arr2 = [], foo = [];
         if(x != null){
     		var tmp1 = buildList(x[0],x[1],1);
@@ -573,7 +581,7 @@ punch_rhs "punch RHS"
         foo.push(arr);
         foo.push(arr2);
         return foo
-    }
+    }*/
     
 logical_expression "expression"
         =  head:relational_expression tail:(__ (OR/AND) _ relational_expression)* {
