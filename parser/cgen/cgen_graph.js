@@ -246,6 +246,10 @@ function cfg_gen(data){
       prp_type = "try";
     }
 
+    if(i == "compile_body") {
+      arr.push("#");
+    }
+    
     if(i == "punch_inp" && data[i] != null){
       arr.push("punch");
       arr.push(data[i]["value"]);
@@ -276,7 +280,7 @@ function cfg_gen(data){
     if(i == "arguments" && Array.isArray(data[i])){ //handles arguments in fcall
       for(var j = 0; j < data[i].length; j++){
         if(typeof(data[i][j])=="object" && data[i][j] != null){
-          if(data[i][j]["type"] == "number" || data[i][j]["type"] == "identifier"){
+          if(data[i][j]["type"] == "number" || data[i][j]["type"] == "identifier" || data[i][j]["type"] == "string"){
             arr.push(data[i][j]["value"]);
           }else if(arg_list.indexOf(data[i][j]["type"]) >= 0){
             arr.push(convertToNumberingScheme(tmp_count));
@@ -430,12 +434,29 @@ function cfg_gen(data){
       arr.splice(1, 0, 'K'+k_next_count); //push k_next to arr
     }
 
+    if(i == "compile_body") {
+      k_count++;
+      k_next_count++;
+      arr.unshift('K'+k_count); //push k_id to arr        
+      arr.push('K'+(k_count+1)); //push k_count of # body
+      //console.log(arr);
+      method_id_track = 1;
+      cfg_gen(data[i][0]);
+
+    }
+
+    if(arr[3] == "#") {
+      k_count = k_count + 1;
+      k_next_count = k_next_count + 1;
+      arr.splice(1, 0, 'K'+k_next_count); //push k_next to arr
+    }
+    
     if(i == "try_body"){
       if(data[i] == null){
         arr.splice(arr.length-1,0,"null");
       }else if(Array.isArray(data[i])){
         var local_scope_count = -1;
-        k_count++;      //k_count for "while"
+        k_count++;      //k_count for "try"
         k_next_count++;
         arr.unshift('K'+k_count); //push k_id to arr        
         arr.push('K'+(k_count+2)); //push k_count of try body
@@ -749,6 +770,15 @@ function cfg_gen(data){
           arr.push('!'+data[i]["not_arg"]["value"]);
         }else{
           arr.push('!'+convertToNumberingScheme(tmp_count));
+          tmp_count = tmp_count + 1;
+          tmp_count_track = 1;
+          cfg_gen(data[i]["not_arg"]);
+        }
+      }else if(data[i]["type"] == "bitwise_not_op"){
+        if(data[i]["not_arg"]["type"] == "number" || data[i]["not_arg"]["type"] == "identifier"){
+          arr.push('~'+data[i]["not_arg"]["value"]);
+        }else{
+          arr.push('~'+convertToNumberingScheme(tmp_count));
           tmp_count = tmp_count + 1;
           tmp_count_track = 1;
           cfg_gen(data[i]["not_arg"]);
