@@ -8,6 +8,7 @@
    sudo yarn global add ava
 
    # Packages needed for pyrope parser
+   go to /path/to/your/pyrope/parser
    yarn install
 
 2nd test trivial formatting/parsing sample
