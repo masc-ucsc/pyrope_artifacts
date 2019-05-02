@@ -394,8 +394,8 @@ compile_check_statement "compile check"
    	}
 
 assignment_expression
-        =  !constant head:(overload_notation/lhs_expression) __ op:(assignment_operator/FUNC_PIPE) __
-   tail:(fcall_implicit/logical_expression) function_pipe /*prop:(_ x:rhs_expression_property{return x})* */  {
+        =  !constant head:(overload_notation/lhs_expression) __ op:(assignment_operator/*/FUNC_PIPE*/) __
+   tail:(fcall_implicit/logical_expression) /*function_pipe*/ /*prop:(_ x:rhs_expression_property{return x})* */  {
     return {
     	start_pos:location().start.offset,
        	end_pos:location().end.offset,
@@ -407,7 +407,7 @@ assignment_expression
   }
 
 fcall_implicit
-        = !constant func:tuple_dot_notation _ head:scope_declaration { //remove "!not_in_implicit" to support foo::{}
+        = !constant func:tuple_dot_notation _ head:scope_declaration function_pipe { //remove "!not_in_implicit" to support foo::{}
         var arg = [];
         arg.push(head);
         return {
@@ -418,7 +418,7 @@ fcall_implicit
          	arguments:arg
        }
      }
-     / !constant func:tuple_dot_notation !not_in_implicit {
+     / !constant func:tuple_dot_notation function_pipe !not_in_implicit  {
         //var char = buildList(head, tail, 1);
         return {
         	start_pos:location().start.offset,
@@ -461,7 +461,7 @@ not_in_implicit
    / __ PIPE
 
 fcall_explicit
-        = !constant func:tuple_dot_notation DOT arg:fcall_arg_notation scope:scope_declaration? chain:(DOT x:(fcall_explicit/tuple_dot_notation){return x})* {
+        = !constant func:tuple_dot_notation DOT arg:fcall_arg_notation scope:scope_declaration? chain:(DOT x:(fcall_explicit/tuple_dot_notation){return x})* function_pipe {
         if(arg == null && scope){
         	arg = [];
         }
