@@ -91,3 +91,40 @@ I s == ((x+1)*(x+1) 9 16)
 // TODO: This is a compile error (# inputs is unknown at compile time)
 s = $x ** (1 2 3) |> map ::{$+1} |> map ::{$*$}
 
+
+==========================
+CHISEL example library (PrefixSum) to do tree reduction
+
+prefix_reduction = ::{
+  total = $0
+  for i:$[1..] {
+    total = $.__block total i
+  }
+
+  return total
+}
+
+total = (1 2 3 4) |> prefix_reduction ::{ $0 + $1 }
+
+------
+Go over KoggeStoneAdder in CHISEL and do the equivalent in Pyrope to see
+(Latchup.io Jack talk on CHISEL 3)
+
+------
+Go over sparse prefix sum in CHISEL and Pyrope
+
+------
+Add example:
+
+doadd = ::{ $0 + $1 }
+reduce = ::{
+  total = $1
+  for i:$[2..] {
+    total = $0(total, i)
+  }
+  return total
+}
+total = (1 2 3 4) |> reduce \doadd
+I total == 10
+
+
