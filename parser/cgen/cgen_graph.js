@@ -646,7 +646,8 @@ function cfg_gen(data){
           if_phi = k_count;
           tmp_if_phi = if_phi;
         }else{
-          if_phi = tmp_if_phi;
+          //if_phi = tmp_if_phi;
+          if_phi = k_count;
           elif_phi_mark = 0;
         }
         
