@@ -1141,8 +1141,8 @@ a = 0
 a.__read = ::{
   this += 1
 }
-equality = (a == 1) and (a == 2) and (a == 3)
-I(equality)
+eq = (a == 1) and (a == 2) and (a == 3)
+I(eq)
 
 for a:myMap ::{
   puts("{} = {}",,,,a.__index,,,a,,,)
@@ -1181,9 +1181,9 @@ C = A * B
 .column[
 ### Pyrope
 ```coffeescript
-x = 1..10
-y = 10..0 ..by.. 2 // (10 8 6 4 2 0)
-A = ((1 2) (3 4))
+x = (1..10)
+y = (10..0) ..by.. 2 // (10 8 6 4 2 0)
+A = ((1,2),(3,4))
 
 sum = 0
 for i:(1..x.__length) {
@@ -1191,13 +1191,13 @@ for i:(1..x.__length) {
 }
 
 x3=(1..3) ** 2  // compile error
-I((2 4 6) == (1..3) * 2)
-A = (1 0 3)
-B = (2 3 7)
+I((2,4,6) == (1..3) * 2)
+A = (1,0,3)
+B = (2,3,7)
 C = A ** B      // OK, matching sizes
-I(C == (2 0 21))
+I(C == (2,0,21))
 D = A * B
-I(C == ((2 0 6) (3 0 9) (7 0 21)))
+I(C == ((2,0,6),(3,0,9),(7,0,21)))
 ```
 * Share tuple vs element operators
 * Different applications/goals/...
@@ -2023,7 +2023,7 @@ I((1 2 4) ++ 3 == (1..4))
 ---
 # Random number generation
 
-rnd and rnd_bias interface. Seed controller by environment variable.
+### rnd and rnd_bias interface. Seed controller by environment variable.
 
 ```coffeescript
 // code/rndtest.prp
