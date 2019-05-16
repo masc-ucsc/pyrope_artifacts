@@ -369,7 +369,7 @@ for i:(0..a.__bits) {                // iterate #bits
 %cout = carry
 
 test2 = ::{
-  c = rca a:32 b:4 cin:0
+  c = rca(a:32, b:4, cin:0)
   puts("sum is {0:b} {0}",c.sum)     // print sum in binary and decimal
 }
 ```
@@ -425,8 +425,8 @@ for i:(0..a.__bits) {
 
 test = ::{
   for a:(1..40) b:(1..100) {
-    c1 = cla a:a b:b cin:0
-    c2 = rca a:a b:b cin:0
+    c1 = cla(a:a,b:b,cin:0)
+    c2 = rca(a:a,b:b,cin:0)
     I c1.cout == c2.cout
   }
 }
@@ -477,7 +477,7 @@ task: Quick Dive to Pyrope
 ..+.. = \libs.adder.scla.cla      // Overload + operator
 if $enable {
   @total := @total + 1
-  I 3 ..+.. 4 == 7 == 3 + 4          // + is an alias for ..+..
+  I(3 ..+.. 4 == 7 == 3 + 4)      // + is an alias for ..+..
 }
 
 my_add as \libs.adder.scal.cla
@@ -509,11 +509,11 @@ sum2 = $c + $c
 
 test = ::{
   b as add4 a:1 b:2 c:3 d:4
-  I b.sum == 0
+  I(b.sum == 0)
   yield
-  I b.sum == 0
+  I(b.sum == 0)
   yield
-  I b.sum == 10
+  I(b.sum == 10)
 }
 ```
 
@@ -776,7 +776,7 @@ test = ::{
   for n:(0..9) {
     b = vspyrtl bitwidth:6 n:n
     waitfor b.result  // multiple clocks
-    I b.result == seq[n]
+    I(b.result == seq[n])
   }
 }
 ```
@@ -821,7 +821,7 @@ module de.tuhh.ict.Timing {
 %b = %c
 %c = %d
 %d = 5
-I % == (a:2,b:3,c:4,d:5)
+I(% == (a:2,b:3,c:4,d:5))
 ```
 * Avoid hardware driven syntax
 ]
@@ -1086,14 +1086,14 @@ objectTest.set_value = :($a):{
 a = objecttest.set_value 1
 b = objecttest.set_value 1
 
-I a == b == 1
-I a.get_value() == b.get_value
-I a.get_value() == b.get_value()
-I a.get_value   == b.get_value
-I a.__obj == b.__obj and a.__obj != 1.__obj
+I(a == b == 1)
+I(a.get_value() == b.get_value)
+I(a.get_value() == b.get_value())
+I(a.get_value   == b.get_value)
+I(a.__obj == b.__obj and a.__obj != 1.__obj)
 
 total = 0..10 |> filter ::{$ & 1} |> map ::{$*$}
-I total == (1,9,25,49,81)
+I(total == (1,9,25,49,81))
 ```
 ]
 
@@ -1130,7 +1130,7 @@ a.__read = ::{
   this += 1
 }
 equality = (a == 1) and (a == 2) and (a == 3)
-I equality
+I(equality)
 
 for a:myMap ::{
   puts("{} = {}",,,,a.__index,,,a,,,)
@@ -1179,13 +1179,13 @@ for i:(1..x.__length) {
 }
 
 x3=(1..3) ** 2  // compile error
-I (2 4 6) == (1..3) * 2
+I((2 4 6) == (1..3) * 2)
 A = (1 0 3)
 B = (2 3 7)
 C = A ** B      // OK, matching sizes
-I C == (2 0 21)
+I(C == (2 0 21))
 D = A * B
-I C == ((2 0 6) (3 0 9) (7 0 21))
+I(C == ((2 0 6) (3 0 9) (7 0 21)))
 ```
 * Share tuple vs element operators
 * Different applications/goals/...
@@ -1258,25 +1258,25 @@ class: split-50
 // code/controlflow1.prp
 
 if cond1 {
-  I cond1
+  I(cond1)
 }elif cond2 {
-  I !cond1 and cond2
+  I(!cond1 and cond2)
 }
 
 unique if cond3 {
-  I  cond3 and !cond4
+  I( cond3 and !cond4)
 }elif cond4 {
-  I !cond3 and  cond4
+  I(!cond3 and  cond4)
 }else{
-  I !cond3 and !cond4
+  I(!cond3 and !cond4)
 }
 
 unique if cond5 {
-  I  cond5 and !cond6
+  I( cond5 and !cond6)
 }elif cond6 {
-  I !cond5 and  cond6
+  I(!cond5 and  cond6)
 }
-I cond5 or cond6 // Unique implies full too
+I(cond5 or cond6) // Unique implies full too
 ```
 ]
 
@@ -1286,11 +1286,11 @@ I cond5 or cond6 // Unique implies full too
 // code/controlflow2.prp
 total = 0
 for a:(1..3) { total += a }
-I total == (1+2+3)
+I(total == (1+2+3))
 
 total = 0 // compact double nested loop
 for a:(1..3) b:(1 2) { total += a }
-I total == (1+2+3 + 1+2+3)
+I(total == (1+2+3 + 1+2+3))
 
 // Powerful library. Simple reduce example
 reduce = ::{
@@ -1302,7 +1302,7 @@ reduce = ::{
 }
 
 a = (1 2 3) |> reduce ::{$0+$1}
-I a == (1+2+3)
+I(a == (1+2+3))
 ```
 ]
 
@@ -1317,13 +1317,13 @@ class: split-50
 // operators read left and right side
 
 a = (1 2 3) + 4      // element op
-I a == (5 6 7)
+I(a == (5 6 7))
 
 a = (1 2 3) ++ (4 5) // tuple concat
-I a == (1 2 3 4 5)
+I(a == (1 2 3 4 5))
 
 a = (1 2 3) ..+.. 4  // element op
-I a == (5 6 7)
+I(a == (5 6 7))
 
 // ..XX.. means operator XX
 // .. are optional for non-alphanumeric operators
@@ -1342,7 +1342,7 @@ I a == (5 6 7)
 
   return t
 }
-I (1 3) ..dox.. (2 1) == (3 2 5 4)
+I((1 3) ..dox.. (2 1) == (3 2 5 4))
 
 sub1 = ::{
   t = ()
@@ -1351,8 +1351,8 @@ sub1 = ::{
   return t
 }
 // .. required in call to be operator
-I (3 2) ..sub1.. 1 == (2 1)
-I (3 2) ..sub1.. (2 3) == (1 0)
+I((3 2) ..sub1.. 1 == (2 1))
+I((3 2) ..sub1.. (2 3) == (1 0))
 ```
 ]
 
@@ -1381,21 +1381,21 @@ class: split-50
 ```coffeescript
 // code/precedence1.prp
 // Typically expected results
-I (true or !false) == (true or (!false))
-I (3*5+5) == ((3*5) + 5)
+I((true or !false) == (true or (!false)))
+I((3*5+5) == ((3*5) + 5))
 
 a = true or false==false
 b = true or (false==false)
-I a == b
+I(a == b)
 
 c = (2) |> fcall(1)
-I c == fcall(1,2)
+I(c == fcall(1,2))
 
 //bar = true or false and true // compile error
 //x = 3 ++ 4 -- 3              // compile error
 
 c = a == 3 == b                // OK
-I c == (a==3 and 3==b)
+I(c == (a==3 and 3==b))
 ```
 ]
 
@@ -1414,17 +1414,18 @@ bar = x == 3
 //bar = false or
 //      true     // compile error, ops after newline
 
-I (true or false==false) == (true or (false==false))
+I((true or false==false) == (true or (false==false)))
 
-d = 1
-   ,3
-//d = 1,
-//    3          // compile error, ',' after newline
+d = (1
+    ,3)
+e = (,,1,,,
+    ,3,,) // Extra empty commas have no meaning
+I(e==d) 
 
 bar = 3
     * 1 + 4
     * 3 - 1
-I bar == 3 * (1+4) * (3-1)
+I(bar == 3 * (1+4) * (3-1))
 ```
 ]
 
@@ -1432,22 +1433,20 @@ I bar == 3 * (1+4) * (3-1)
 ### explicit ;
 ```coffeescript
 // code/precedence3.prp
-x = 3 ++ 4 -- 3     // compile error, precedence?
+x = 3 ++ 4 -- 3     // compile error, precedence
 x = 3 ; ++ 4 -- 3   // OK, 3 ++ (4 -- 3)
 
 b = !a or d         // OK, ! higher precedence
 b = !a or c == d    // OK, == breaks expression
-I b == !a or (c == d)
+I(b == !a or (c == d))
 
 bar = true or false and true // compile error
 bar = true ; or true and false ; or true
-I bar == true or (true and false) or true
+I(bar == true or (true and false) or true)
 
-I (1,3) == (1 3)
-d = 1 3
-I d == 1 3
-I d == ;( ; 1 ;, 2;+1)   // Ugly but legal syntax
+I((1,3) == (,,,1,,,3,,))
 f = 1 +;3                // Ugly illegal syntax
+f = 1 ;+3                // Ugly legal syntax
 ```
 ]
 
@@ -1670,12 +1669,12 @@ class: split-50
 // code/scope3.prp
 a = 1
 if a == 1 ::{
-  a = 2           // compile error, no a in local
-  %this.a = 3     // compile error, no %a in parent
-  this.a = 3      // compile error, only %,$,% for this
-  f = 3           // local scope
+  a = 2       // compile error, no a in local
+  %this.a = 3 // compile error, no %a in parent
+  this.a = 3  // compile error, only %,$,% for this
+  f = 3       // local scope
 }
-I f == 3          // compile error, undefined
+I f == 3      // compile error, undefined
 I a == 1
 ```
 ]
@@ -2176,7 +2175,7 @@ class: split-50
 // $i? = false  // do not consume
 // $i? = true   // consume
 // $i! = true   // trigger retry to input
-// $i! = false  // do not retry input, consume if valid
+// $i! = false  // do not retry input, gone if valid
 // $i?          // is valid set?
 // $i!          // is retry set?
 // $i!!         // is clear set?
@@ -2193,7 +2192,7 @@ class: split-50
 // %o!! = false // do not clear flop
 
 // yield        // stop and start from here cycle
-// waitfor      // block execution until input is ready
+// waitfor      // blocking wait until input is ready
 ```
 ]
 
@@ -2511,32 +2510,29 @@ I tmp.oneortwo ..in.. (1 2 0)
 ```coffeescript
 // code/objects1.prp
 parent.dox = ::{return 1+$0}
+I(parent.dox(3) == 4)
 
-child = parent  // inherit
-I child.__obj == parent.__obj
+child = parent  // copy
+I(child.__obj == parent.__obj)
 child.dox = ::{
   _tmp = super $
-  @this.v1 = 3  // add new field in child
-  %p1 punch $objects1.child.v2
-  %p1 = 5
+  %o3 = punch @this.v2 // add new field in child
+  %o3 = 3              // set a value
   return tmp + 7
 }
-puts($v2)
-I child.__obj != parent.__obj
+I(child.__obj != parent.__obj)
 
-I child.v1 == 0
-I child.v2 == 0
-t = child.dox 4
-I t == (1+4+7)
-I child.v1 == 3
-I child.v2 == 5
+I(child.v1) // compile error, v1 undefined
+t = child.dox(4)
+I(t == (1+4+7))
+I(child.v1 == 3)
 
 grandson = child
-grandson.dox = :when $0>20:{100}
-t = grandson.dox 4
-I t == (1+4+7)
-t = grandson.dox 30
-I t == 100
+grandson.dox = :when $0>20:{ super $; 100}
+t = grandson.dox(4)
+I(t == (1+4+7))
+t = grandson.dox(30)
+I(t == 100)
 ```
 ]
 
@@ -2612,19 +2608,24 @@ class: split-50
 I as ::{
   puts import "c++" io.print
   if (!$0) {
-    puts($[1..], "\n")
+    if ($.__size==1) {
+      puts("assertion failed\n");
+    }else{
+      puts($[1..] ++ "\n")
+    }
   }
 }
 }
 a = 3
-I(a == 3, "oop")   // runtime check
+I(a == 3, "oops")  // runtime check
 {.__constexpr:true
 I(a == 3)          // compile time check
 
 cond = true
 }
 c = 3
-a = b + {.__constexpr:true 4+c} - d
+c.__constexpr = true // c must be compile time
+a = b + 4+c - d
 // 4+c must be compile time constant
 ```
 ]
@@ -2633,7 +2634,8 @@ a = b + {.__constexpr:true 4+c} - d
 ### Strings must be known at compile time
 ```coffeescript
 // code/debug2.prp
-if {.__constexpr:true cond } { // Error unless c is know at compile
+cond.__constexpr = true
+if cond {
   b = "potato"
 }else{
   b = "carrot"
@@ -2648,10 +2650,8 @@ for a:tup ::{
 ]
 
 ---
-class: split-50
 # Interface with C code
 
-.column[
 ### C-api must have known IO at compile time
 ```coffeescript
 // code/test_call1.prp
@@ -2674,9 +2674,10 @@ void prp_myprint(const prp_tuple inp, prp_tuple &out) {
   fmt::print(inp.get("txt").get_sview(), inp.get(1).get_sview());
 }
 ```
-]
 
-.column[
+---
+# Interface with C code
+
 ### C-api structs converted to C++
 ```coffeescript
 // code/test_call2.prp
@@ -2693,4 +2694,3 @@ void prp_my_c_code(const prp_tuple inp, prp_tuple &out) {
   fmt::print("b:{} c:{} d:{}\n", b.get_uint64(), c.get_bool(), d.get_sview());
 }
 ```
-]
