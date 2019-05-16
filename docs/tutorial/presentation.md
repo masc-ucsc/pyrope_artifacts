@@ -224,16 +224,16 @@ endmodule
 ### Pyrope unit test
 ```coffeescript
 // code/counter_test.prp file
-b as counter __stage:true // pipeline type
-b.total as __bits:4
+b as counter ++ (__stage:true) // pipeline type
+b.total as (__bits:4)
 b.enable = 0
-I b.total == 0       // assertion
-yield                // advance clock
-I b.total == 0
+I(b.total == 0)                // assertion
+yield                          // advance clock
+I(b.total == 0)
 b.enable = 1
-I b.total == 0
-yield                // advance clock
-I b.total == 1
+I(b.total == 0)
+yield                          // advance clock
+I(b.total == 1)
 ```
 ]
 
@@ -255,16 +255,16 @@ if $enable {
 ### Pyrope unit test
 ```coffeescript
 // code/counter_test.prp file
-*b as counter        //__stage:true
-b.total as __bits:4
+*b as counter // ++ (__stage:true) // combination type
+b.total as (__bits:4)
 b.enable = 0
-I b.total == 0
-yield
-I b.total == 0
+I(b.total == 0)                // assertion
+yield                          // advance clock
+I(b.total == 0)
 b.enable = 1
-*I b.total == 1      // before it was 0
-yield
-*I b.total == 2      // before it was 1
+*I(b.total == 1)
+yield                          // advance clock
+*I(b.total == 2)
 ```
 ]
 
@@ -298,32 +298,13 @@ endmodule
 ]
 
 ---
+class: split-40
 task: Quick Dive to Pyrope
-class: split-50
 
 # Testbenches
 
 * Pyrope language testbenches are synthesizable
 * Complex tests can interface with C++
-
-.column[
-### Pyrope
-```coffeescript
-// code/test1.prp file
-mytest = ::{
-  puts("Hello World")
-  I 1 == 0+1
-  yield
-  c = 1
-  f.a = 2
-  f.b = 3
-
-  m import "c++" methodx
-  a = m(c, f)
-  I a.res == 6 and a.mor == 0b11
-}
-```
-]
 
 .column[
 ### c++
@@ -335,7 +316,7 @@ void prp_methodx(const prt_tuple i ,prp_tuple &out) {
   prp_struct f(i.get("f");
   prp_number b(f.get("b"))
   prp_number c(i.get(0));
-  p.set("res", i.get(0).uint32() + f.get("a").uint32() + f.get("b").uint32();
+  p.set("res", i.get(0) + f.get("a") + f.get("b");
   p.set("mor", i.get(0) | f.get("a") | f.get("b");
 }
 ```
@@ -344,6 +325,27 @@ $find . -type f
 ./code/test1.prp
 ./mysrc/test2.cpp
 $prp --run test1.mytest ./mysrc/test2.cpp
+```
+]
+
+.column[
+### Pyrope
+```coffeescript
+// code/test1.prp file
+mytest = ::{
+  puts import io.puts
+  puts("Hello World")
+  I 1 == 0+1
+  yield
+  c = 1
+  f.a = 2
+  f.b = 3
+
+  m import methodx
+  a = m(c, f)
+  I(a.res == 6)
+  I(a.mor == 0b11)
+}
 ```
 ]
 
@@ -362,15 +364,16 @@ fa = :($a $b $cin %sum %cout):{      // method with explicit arguments
 
 carry = $cin                         // 0 if RCA without carry in
 for i:(0..a.__bits) {                // iterate #bits
-  tmp = fa a[[i]] b[[i]] carry       // function call to fa
+  tmp = fa(a[[i]],b[[i]],carry)      // function call to fa
   %sum[[i]] = tmp.sum
   carry     = tmp.cout
 }
 %cout = carry
 
 test2 = ::{
+  puts import io.puts
   c = rca(a:32, b:4, cin:0)
-  puts("sum is {0:b} {0}",c.sum)     // print sum in binary and decimal
+  puts("sum is {0:b} {0}",c.sum)     // puts has c++ fmt in prplib
 }
 ```
 
@@ -407,13 +410,14 @@ task: Quick Dive to Pyrope
 
 ```coffeescript
 // libs/adder/code/cla.prp file
+and_red import lib.and_reduction
 %sum = rca(a:$a b:$b cin:0).sum
 
 g = $a & $b // Generate
 p = $a ^ $b // Propagate
 
 // 4 bit: c = g[[3]] | g[[2]] & p[[3]] | g[[1]] & p[[3]] & p[[2]] |...
-c = $cin & p.and_reduction  // and_reduction is a library call
+c = $cin & and_red(p)
 for i:(0..a.__bits) {
   _tmp = g[[i]]
   for j:(i..(a.__bits-1)) {
@@ -448,7 +452,7 @@ cla = :($a $b) when $a.__bits==8:{           // specialize when bits == 8
 
 cla = :($a,$b) when $a.__bits==12:{          // specialize when bits == 12
   s1 = cla($a[[0..7]],$b[[0..7]],cin:0)      // .. Ruby style ranges
-  t = generate($a[[0..6]],$b[[0..6]])       // generate carry method
+  t = generate($a[[0..6]],$b[[0..6]])        // generate carry method
   s2 = cla($a[[6..11]] $b[[6..11]],cin:t)
   %sum = (s2.sum,s1.sum)[[]]
 }
@@ -474,14 +478,14 @@ task: Quick Dive to Pyrope
 
 ```coffeescript
 // code/ccounter.prp file
-..+.. = \libs.adder.scla.cla      // Overload + operator
+..+.. import libs.adder.scla.cla  // Overload + operator
 if $enable {
   @total := @total + 1
   I(3 ..+.. 4 == 7 == 3 + 4)      // + is an alias for ..+..
 }
 
-my_add as \libs.adder.scal.cla
-..+.. = :($a $b) when $a.__bits>1 and $b.bits==1:{
+my_add import libs.adder.scal.cla
+..+.. = :($a,$b) when $a.__bits>1 and $b.bits==1:{
  // Special code for special case
 }
 
@@ -494,26 +498,28 @@ my_add as \libs.adder.scal.cla
 ---
 task: Quick Dive to Pyrope
 
-# 2 Pipeline stage adder
+# 3 Pipeline stage adder
 
 ```coffeescript
 // code/add4.prp file
-..+.. as \libs.adder.scla.cla
-s1 as \libs.adder.rca
+..+.. import libs.adder.scla.cla
+s1 import libs.adder.rca
 
-(%sum sum1 sum2) as __stage:true
+%sum.__state = true
+%sum1.__state as true
+%sum2 as (__state:true)
 
 sum1 = $a + $b
 sum2 = $c + $c
-%sum = s1 a:sum1.sum b:sum2.sum cin:0
+%sum = s1(a:sum1.sum,b:sum2.sum,cin:0)
 
 test = ::{
-  b as add4 a:1 b:2 c:3 d:4
-  I(b.sum == 0)
+  b as add4(a:1,b:2,c:3,d:4)
+  I(b.sum1 == 10 and b.sum2 ==  0 and b.sum ==  0)
   yield
-  I(b.sum == 0)
+  I(b.sum1 == 10 and b.sum2 == 10 and b.sum ==  0)
   yield
-  I(b.sum == 10)
+  I(b.sum1 == 10 and b.sum2 == 10 and b.sum == 10)
 }
 ```
 
@@ -556,7 +562,7 @@ endmodule
 ### Pyrope
 ```coffeescript
 // code/vsverilog.prp file
-($a $b) as __bits:2
+($a,$b) as __bits:3
 %c = $a + $b
 ```
 * No inputs/outputs
@@ -612,11 +618,12 @@ if $a? and $b? {
 ```
 ```coffeescript
 test = ::{
+  puts import io.puts
   gcd as vschisel
-  (a b z) as __bits:16
-  z = gcd a:a.__rand b:b.__rand
+  (a,b,z) as __bits:16
+  z = gcd(a:a.__rand,b:b.__rand)
   waitfor z
-  puts("gcd for " ++ a ++ " and " ++ b ++ " is "  ++ z)
+  puts("gcd for {} and {} is {}", a, b, z)
 }
 ```
 * Global type inference
@@ -651,7 +658,7 @@ module mkTb (Empty);
 
     for (int k=20;k<24;k=k+1)
       a = a + k;
-    $display ("%0d: rule r, a=%0d",cycle,a);
+    $display ("%0d: rule r, a=%0d", cycle, a);
   endrule
 endmodule: mkTb
 ```
@@ -674,6 +681,7 @@ if cycle[[0..1]] == 3 { a = a + 3 }
 for k:(20..24) {
   a = a + k
 }
+puts import io.puts
 puts("{}: rule, a={}",cycle,a)
 ```
 * More compact syntax
@@ -719,7 +727,8 @@ if @counter {
 }
 
 test = ::{
-  b = vsmigen maxperiod:300000
+  puts import io.puts
+  b = vsmigen(maxperiod:300000)
   puts("led is {}",b.led)
   yield 300000
   puts("led is {}",b.led)
@@ -762,11 +771,10 @@ def fibonacci(n, req, bitwidth):
 ### Pyrope
 ```coffeescript
 // code/vspyrtl.prp file
-(@a @b @i) as __bits:$bitwidth
 if $n? {  // new request
-  (@a @b @i) = (0 0 n)
+  (@a,@b,@i) = (0,0,n)
 }else{
-  (@a @b @i) = (@b,@a+@b, @i-1)
+  (@a,@b,@i) = (@b,@a+@b, @i-1)
 }
 if @i == 0 { %result = @a }
 ```
@@ -774,7 +782,8 @@ if @i == 0 { %result = @a }
 test = ::{
   seq = (0 1 1 2 3 5 8 13 21 34)
   for n:(0..9) {
-    b = vspyrtl bitwidth:6 n:n
+    n as __bits:6     // 6 bit fibonacci
+    b = vspyrtl(n:n)
     waitfor b.result  // multiple clocks
     I(b.result == seq[n])
   }
@@ -893,6 +902,7 @@ collector out.resolved on "gen" {
 ### Pyrope
 ```coffeescript
 // code/vsliberty.prp file
+puts import io.puts
 gen  = ::{
   @data = @data + 1
 }
@@ -947,13 +957,14 @@ a..field1 = 1
 ### Pyrope
 ```coffeescript
 // code/vsdart.prp file
+puts import io.puts
 person.fromJson = ::{
   puts("in Person")
 }
 
 employee = person
 employee.fromJson = ::{
-  super $ // Notice, no fromJson
+  super($) // Notice, no fromJson
   puts("in Employee")
 }
 
@@ -1031,13 +1042,13 @@ let twelve = addFive 7;
 increment = :($x):{$x + 1 }
 double    = :($x):{$x + $x}
 
-eleven = increment(double(5))
+eleven = 5 |> double |> increment
 
-add = :($x $y):{$x + $y}
+add = :($x,$y):{$x + $y}
 addFive = \add  // add reference, no call
-addFive = ::{ super x:5 y:$y }
-eleven  = ::{ super y:6 }
-twelve  = ::{ super y:7 }
+addFive = ::{ super(x:5,y:$y) }
+eleven  = ::{ super(y:6) }
+twelve  = ::{ super(y:7) }
 ```
 * Pyrope has primitive currying
 ]
@@ -1125,6 +1136,7 @@ for(let pair of myMap) {
 ### Pyrope
 ```coffeescript
 // code/vsjs1.prp file
+puts import io.puts
 a = 0
 a.__read = ::{
   this += 1
@@ -1220,6 +1232,7 @@ y = pow(10, floor(log10(x)))
 .column[
 ### Pyrope
 ```coffeescript
+puts import io.puts
 square = :($x):{$ * $}
 eat    = :($x):{puts(square($)) }
 
@@ -1457,6 +1470,7 @@ class: split-50
 .column[
 ```coffeescript
 // code/singleline.prp
+puts import io.puts
 if true { x = 3 }       // OK
 if true {
 x = 3 }                 // OK
@@ -1492,6 +1506,7 @@ class: split-50
 .column[
 ```coffeescript
 // code/codeblock.prp file
+puts import io.puts
 each as ::{
   I $.__block is def
   for a:$ { $.__block a }
@@ -1689,14 +1704,14 @@ I t == 1+2+3
 
 t = 0
 for a:(1..3) ::{t = a} // local scope
-I t == 0
+I(t == 0)
 
 for a:(1..3) ::{ if a>1 { break } ; %t = a }
-I t == 1
+I(t == 1)
 
 //if t==1 :(%x):{ %x += 1 }   // compile error
 if t==1 :($x,%x):{ %x = $x + 1 } // OK
-I x == 3
+I(x == 3)
 ```
 ]
 
@@ -1735,9 +1750,9 @@ f(1,2,3)                // after newline
 
 a = 3 |> f(2,3) |> f(1) // after pipe
 if f(2,1,3) {           // must be explicit
-  I true
+  I(true)
 }
-I (1,2,3) == (1,2,3)    // must be explicit
+I((1,2,3) == (1,2,3))   // must be explicit
 ```
 ]
 
@@ -1746,6 +1761,7 @@ I (1,2,3) == (1,2,3)    // must be explicit
 
 ```coffeescript
 // code/fcalls.prp file
+puts import io.puts
 square = :($x):{$ * $}
 //r=square 3 + square 4     // parse error, complex argument
 //r=square(3 + square(4))   // parse error, space required for arguments
@@ -1776,51 +1792,57 @@ class: split-50
 ### Basic tuples
 ```coffeescript
 // code/tuples1.prp
-a = (b:1 c:2)  // ordered, named
-I a.b == 1 and a.c == 2
-I a.0 == 1 and a.2 == 2
+a = (b:1,c:2)  // ordered, named
+I(a.b == 1 and a.c == 2)
+I(a.0 == 1 and a.2 == 2)
 
 b =(3,false)   // ordered, unnamed
-I b.0 == 3 and b[1] == false
+I(b.0 == 3 and b[1] == false)
 
 c1 as (__bits:1, __bits:3) // final ordered unnamed
 c as c1
 c as (b:, c:)  // final ordered named
-c = (true 2)
-c = (false 33) // compile error
+c = (true,2)
+c = (false,33) // compile error
 c.bar = 3      // compile error
 
-d as (a:3 5)   // final, ordered, unnamed
-I d.a == 3 and d[1] == 5
+d as (a:3,5)   // final, ordered, unnamed
+I(d.a == 3 and d[1] == 5)
 
-g = (1 2 3)
-I (1 3) ..in.. g
-g ++= (2 5)
+g = (1,2,3)
+I((1,3) ..in.. g)
+g ++= (2,5)
+
+e.0 = 3        // unamed, ordered
+I(e.0 == 3 and e == 3)
 ```
 ]
 
 .column[
 ### Complex tuples
 ```coffeescript
-e.0 = 3        // unamed, ordered
-I e.0 == 3 and e == 3
+(e1, e2) = 3
+I(e1 == 3 and e2 == 3)
+//(e1, e2) = (3) // Compile error
+(e1, e2)= (1, 2)
+I(e1 == 1 and e2 == 2)
 
 s as __set:true
-s = (1  2  3  3)
-I s == (1 2 3)
-s = s ++ 4  // add to tuple
-s = s ++ (1 4 5)
-I s == (1 2 3 4 5)
+s = (1, 2, 3, 3)
+I(s == (1,2,3))
+s ++= 4  // add to tuple
+s = s ++ (1,4,5)
+I(s == (1,2,3,4,5))
 
 x = __size:32
 x[(1 3)] = (3 1)
 x[(1 2)] = (1 1)
-I x[(1 3)] == (3 1)
-I x[(0b1 0b11)][0] = 3
-I x[0b1_11][1] = 1
+I(x[(1 3)] == (3 1))
+I(x[(0b1 0b11)][0] == 3)
+I(x[0b1_11][1] == 1)
 
-a = (a:1 b:2) ++ (b:5 c:6)
-I a == (a:1 b:5 c:6)
+a = (a:1,b:2) ++ (b:5,c:6)
+I(a == (a:1,b:5,c:6))
 ```
 ]
 
@@ -1837,16 +1859,16 @@ class: split-50
 @b as @a __fwd:false  // without cycle fowarding
 @cycle as __bits:8
 
-I @a[0] == @cycle
+I(@a[0] == @cycle)
 
 prev_val = @cycle
 @cycle += 1
 @a[0] = @cycle
 @b[0] = @cycle
 
-I @a[0] == @cycle
-I @a[0].__last == prev_val
-I @b[0] == @b[0].__last == prev_val
+I(@a[0] == @cycle)
+I(@a[0].__last == prev_val)
+I(@b[0] == @b[0].__last == prev_val)
 
 %out = @a[0] + @b.0
 ```
@@ -1950,23 +1972,23 @@ class: split-50
 ### Basic
 ```coffeescript
 // code/ranges1.prp
-I (1 2 3) == 1..3
+I((1 2 3) == 1..3)
 
-I (0..7 ..by.. 2) == (0 2 4 6)
-I 0..15 ..by.. (2 3) == (0 2 5 7 10 12 15)
+I((0..7 ..by.. 2) == (0 2 4 6))
+I(0..15 ..by.. (2 3) == (0 2 5 7 10 12 15))
 
-I (1..2) ..union.. 3 == (1..3)
-I (1..10) ..intersect.. (2..20) == (2..10)
+I((1..2) ..union.. 3 == (1..3))
+I((1..10) ..intersect.. (2..20) == (2..10))
 
 // Ranges can be open
-I (3..) ..intersect.. (1..5) == (3..5)
-I (..)  ..intersect.. (1..2) == (1..2)
-I (..4) ..union..     (2..3) == (..4)
-I (2..) == (2..-1)
-I (..3) == (-1..3)
+I((3..) ..intersect.. (1..5) == (3..5))
+I((..)  ..intersect.. (1..2) == (1..2))
+I((..4) ..union..     (2..3) == (..4))
+I((2..) == (2..-1))
+I((..3) == (-1..3))
 
 // Ranges can be converted to values
-// I (1..3)[[]]  // compile error
+// I((1..3)[[]])  // compile error
 ```
 ]
 
@@ -1980,21 +2002,21 @@ middle = numbers[3..-2]
 end    = numbers[-2..]
 copy   = numbers[..]
 
-I start  == (1 2 3)
-I middle == (4 5 6 7)
-I end    == (8 9)
-I copy   == (1 2 3 4 5 6 7 8 9)
+I(start  == (1 2 3))
+I(middle == (4 5 6 7))
+I(end    == (8 9))
+I(copy   == (1 2 3 4 5 6 7 8 9))
 
 val = 0b00_01_10_11
 
-I val[[0..1]] == 0b11
-I val[[..-2]] == 0b01_10_11
-I val[[-2..]] == 0b00
-I val[[-1]]   == 0b1  // MSB
+I(val[[0..1]] == 0b11)
+I(val[[..-2]] == 0b01_10_11)
+I(val[[-2..]] == 0b00)
+I(val[[-1]]   == 0b1  // MSB)
 
-I (1..3) * 2 == (2 4 6)
-I (1..3) + 2 == (3..5)
-I (1 2 4) ++ 3 == (1..4)
+I((1..3) * 2 == (2 4 6))
+I((1..3) + 2 == (3..5))
+I((1 2 4) ++ 3 == (1..4))
 ```
 ]
 
@@ -2005,6 +2027,7 @@ rnd and rnd_bias interface. Seed controller by environment variable.
 
 ```coffeescript
 // code/rndtest.prp
+puts import io.puts
 a = __rnd 1..3          // rnd between 1 2 3
 b as __bits:12
 a = b.__rnd             // rnd from 0 to 4095
@@ -2094,15 +2117,18 @@ c = 0xFF[[0..2]]          // explicit drop bits
 // code/assertions.prp
 
 a = 3
-#b = a  // b and a must be known at Compile time
+a.__constexpr = true
+b = a  // b and a must be known at Compile time
 
-#if a==3 {  // compile time if condition
-  I true    // runtime assertion
+if a==3 {  // compile time if condition
+  I(true)   // runtime assertion
   %d = $0+a // no constant
 }
 
-#I a == b   // Compile time assertion
-I %d != a   // runtime assertion
+{.constexpr:true
+I(a == b)   // Compile time assertion
+}
+I(%d != a)  // runtime assertion
 
 ```
 
@@ -2120,9 +2146,9 @@ a = a + 1   // OK
 b = 3u2bits // explicit, __bits:2 __range:3u2bits
 b = b - 1   // OK, __range:2u2bits
 b = b + 2   // compile error, __bits explicit 2
-I b == 2
+I(b == 2)
 b := b + 2  // OK (drop bits)
-I b == 0    // 4u2bits -> 0b100[[0..1]] == 0
+I(b == 0)   // 4u2bits -> 0b100[[0..1]] == 0
 
 // implicit unless all values explicit
 c = 3 - 1u1bits // implicit, __bits:2 __range:2u2bits
@@ -2132,7 +2158,7 @@ c = 3 - 1u1bits // implicit, __bits:2 __range:2u2bits
 @d += 1
 @d += 1     // compile error
 
-I 0b11_1100 == (a 0b1100)[[]] // bit concatenation
+I(0b11_1100 == (a 0b1100)[[]]) // bit concatenation
 ```
 ]
 
@@ -2151,11 +2177,11 @@ if xx {
   c = c - 4
 }
 a = a + 1  // compile error, may be out range
-I c.__range == (1,6) // all possible values
+I(c.__range == (1,6)) // all possible values
 c = c + 2
-I c.__range == (3,8) and c.__bits == 4
+I(c.__range == (3,8) and c.__bits == 4)
 c = c ^ (c>>1)  // Not predictable
-I c.__range == (0..15) and c.__bits == 4
+I(c.__range == (0..15) and c.__bits == 4)
 c = 300   // OK because c was explicit
 
 d = 50u2bits  // compile error
@@ -2239,6 +2265,7 @@ if a?.counter>0 {         // Option 3 (same)
 ```
 ```coffeescript
 // code/fluid3.prp file
+puts import io.puts
 puts("prints every cycle")
 try {
   puts("odd cycles")
@@ -2262,13 +2289,13 @@ everyother = ::{
 
 @total_all   += 1
 @total_yield += everyother
-I @total_all == @total_yield
+I(@total_all == @total_yield)
 try {
    @total2_all += 1
 }
 try {
    @total2_yield += everyother()
-   I @total2_all == 2 then @total2_yield == 1
+   I(@total2_all == 2 then @total2_yield == 1)
 }
 ```
 ]
@@ -2488,20 +2515,20 @@ obj2.oneortwo2 = 2
 
 if $input[[0..1]] == 0 {
   tmp = obj1
-  I tmp.oneortwo  == 1
-  I tmp.oneortwo2 == 1
+  I(tmp.oneortwo  == 1)
+  I(tmp.oneortwo2 == 1)
 }elif $input[[0..1]] == 1 {
   tmp = obj2
-  I tmp.oneortwo  == 2
-  I tmp.oneortwo2 == 2
+  I(tmp.oneortwo  == 2)
+  I(tmp.oneortwo2 == 2)
 }else{
   // Calling undefined method is __init value
   // NEVER runtime error
-  I tmp.oneortwo  == 0
-  I tmp.oneortwo2 == 0
+  I(tmp.oneortwo  == 0)
+  I(tmp.oneortwo2 == 0)
 }
 
-I tmp.oneortwo ..in.. (1 2 0)
+I(tmp.oneortwo ..in.. (1 2 0))
 ```
 ]
 
@@ -2515,7 +2542,7 @@ I(parent.dox(3) == 4)
 child = parent  // copy
 I(child.__obj == parent.__obj)
 child.dox = ::{
-  _tmp = super $
+  _tmp = super($)
   %o3 = punch @this.v2 // add new field in child
   %o3 = 3              // set a value
   return tmp + 7
@@ -2528,7 +2555,7 @@ I(t == (1+4+7))
 I(child.v1 == 3)
 
 grandson = child
-grandson.dox = :when $0>20:{ super $; 100}
+grandson.dox = :when $0>20:{ super($); 100}
 t = grandson.dox(4)
 I(t == (1+4+7))
 t = grandson.dox(30)
@@ -2546,12 +2573,12 @@ class: split-50
 // code/objects1.prp
 obj1.foo as __bits:3
 obj2.bar as __bits:2
-I !(obj1 is obj2)
+I(!(obj1 is obj2))
 
 obj1c = obj1
 obj1.foo  = 1
 obj1c.foo = 3
-I obj1 is obj1c
+I(obj1 is obj1c)
 
 obj3 as obj1 or obj2 // Union type
 if 3.__rnd == 2 {
@@ -2563,7 +2590,7 @@ if 3.__rnd == 2 {
 }
 
 if obj3 is obj1 {
-  I obj3.foo == 1
+  I(obj3.foo == 1)
 }
 ```
 ]
@@ -2577,11 +2604,11 @@ class: split-50
 ```coffeescript
 // code/objects1.prp
 a = 0x73
-I a == 0b111011
-I a == 0b?11?11
+I(a == 0b111011)
+I(a == 0b?11?11)
 
 c as __bits:4
-I c.popcount <= 1 // Only 1 bit can be set
+I(c.popcount <= 1) // Only 1 bit can be set
 
 unique if c == 0b???1 { // ? only in binaries
   onehot = 1
@@ -2606,7 +2633,7 @@ class: split-50
 // code/debug1.prp
 {.__debug:1
 I as ::{
-  puts import "c++" io.print
+  puts import io.puts
   if (!$0) {
     if ($.__size==1) {
       puts("assertion failed\n");
@@ -2642,8 +2669,8 @@ if cond {
 }
 tup[b] = true
 for a:tup ::{
-  io import "c++" io./.*/
-  io.print("index:{} value:{}\n",a.__index,a)
+  io import io./.*/
+  io.puts("index:{} value:{}\n",a.__index,a)
   I tup[a.__index] == a
 }
 ```
@@ -2655,16 +2682,19 @@ for a:tup ::{
 ### C-api must have known IO at compile time
 ```coffeescript
 // code/test_call1.prp
-myprint import "c++" myprint
+myprint import myprint
 myprint("hello")
-_a3 import "c++" add3
-for i:(1.._a3(7)) {
-  myprint(txt:"i:{}", i)
+read_val import json_read
+read_val.__constexpr = true
+I(read_val("foo")==6)            // called at compile time
+for i:(1..read_val("file")) {
+  myprint(txt:"i:{}", i)         // called at simulation time
 }
 // code/myprint.cpp
 #include "prp_cpp.hpp"
-void prp_add3(const prp_tuple inp, prp_tuple &out) {
-  out.set(0,inp.begin().get_uint64());
+void prp_json_read(const prp_tuple inp, prp_tuple &out) {
+  prp_string str = inp.get(0);
+  out.set(0,str.str().size()+3); // Fix value in output given set of inputs
 }
 void prp_myprint(const prp_tuple inp, prp_tuple &out) {
   assert( inp.get(0).is_string()); assert(!inp.get(1).is_string());
@@ -2681,7 +2711,7 @@ void prp_myprint(const prp_tuple inp, prp_tuple &out) {
 ### C-api structs converted to C++
 ```coffeescript
 // code/test_call2.prp
-my_c_code import "c++" my_c_code
+my_c_code import my_c_code
 a = (b:1, c:true, d:"hello")
 %foo = my_c_code(a)
 // code/test_call2.cpp
