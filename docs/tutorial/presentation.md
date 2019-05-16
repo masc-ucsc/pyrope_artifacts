@@ -311,14 +311,15 @@ class: split-50
 ```coffeescript
 // code/test1.prp file
 mytest = ::{
-  puts "Hello World"
+  puts("Hello World")
   I 1 == 0+1
   yield
   c = 1
   f.a = 2
   f.b = 3
 
-  a = methodx c f
+  m import "c++" methodx
+  a = m(c, f)
   I a.res == 6 and a.mor == 0b11
 }
 ```
@@ -328,13 +329,14 @@ mytest = ::{
 ### c++
 ```c++
 // mysrc/test2.cpp file
-#include "prp_test1.hpp"
+#include "prp_cpp.hpp"
 
-void prp_methodx(prp_test1_a &a
-               ,const prp_test1_b b
-               ,const prp_test1_f f) {
-  a.res = b + f.a + f.b;
-  a.mor = b | f.a | f.b;
+void prp_methodx(const prt_tuple i ,prp_tuple &out) {
+  prp_struct f(i.get("f");
+  prp_number b(f.get("b"))
+  prp_number c(i.get(0));
+  p.set("res", i.get(0).uint32() + f.get("a").uint32() + f.get("b").uint32();
+  p.set("mor", i.get(0) | f.get("a") | f.get("b");
 }
 ```
 ```bash
@@ -368,7 +370,7 @@ for i:(0..a.__bits) {                // iterate #bits
 
 test2 = ::{
   c = rca a:32 b:4 cin:0
-  puts "sum is {0:b} {0}" c.sum      // print sum in binary and decimal
+  puts("sum is {0:b} {0}",c.sum)     // print sum in binary and decimal
 }
 ```
 
@@ -386,7 +388,7 @@ for i:(0..$a.__bits) {
 
 test = ::{
   for a:(1..100) b:(0..33) c:(0 1) {
-    d = rca2 a:a b:b cin:c
+    d = rca2(a:a, b:b, cin:c)
     I d.sum == (a+b+c)
   }
 }
@@ -405,7 +407,7 @@ task: Quick Dive to Pyrope
 
 ```coffeescript
 // libs/adder/code/cla.prp file
-%sum = rca.(a:$a b:$b cin:0).sum
+%sum = rca(a:$a b:$b cin:0).sum
 
 g = $a & $b // Generate
 p = $a ^ $b // Propagate
@@ -438,25 +440,25 @@ task: Quick Dive to Pyrope
 ```coffeescript
 // libs/adder/code/scla.prp file
 cla = :($a $b) when $a.__bits==8:{           // specialize when bits == 8
-  s1 = cla $a[[0..3]] $b[[0..3]] cin:0       // cla for 4 bits
-  t = generate.($a[[0..3]],$b[[0..3]])       // generate carry method
-  s2 = cla $a[[4..7]] $b[[4..7]] cin:t       // CLA with fast cin
-  %sum = (s2.sum s1.sum)[[]]                 // bit concatenation
+  s1 = cla($a[[0..3]],$b[[0..3]],cin:0)      // cla for 4 bits
+  t = generate($a[[0..3]],$b[[0..3]])        // generate carry method
+  s2 = cla($a[[4..7]],$b[[4..7]],cin:t)      // CLA with fast cin
+  %sum = (s2.sum,s1.sum)[[]]                 // bit concatenation
 }
 
-cla = :($a $b) when $a.__bits==12:{          // specialize when bits == 12
-  s1 = cla $a[[0..7]] $b[[0..7]] cin:0       // .. Ruby style ranges
-  t = generate.($a[[0..6]],$b[[0..6]])       // generate carry method
-  s2 = cla $a[[6..11]] $b[[6..11]] cin:t
-  %sum = (s2.sum s1.sum)[[]]
+cla = :($a,$b) when $a.__bits==12:{          // specialize when bits == 12
+  s1 = cla($a[[0..7]],$b[[0..7]],cin:0)      // .. Ruby style ranges
+  t = generate($a[[0..6]],$b[[0..6]])       // generate carry method
+  s2 = cla($a[[6..11]] $b[[6..11]],cin:t)
+  %sum = (s2.sum,s1.sum)[[]]
 }
 
 cla = :($a $b):{                             // default CLA (not CLA, just RCA)
-  return rca.($a $b cin:0)
+  return rca($a,$b,cin:0)
 }
 
 test = ::{
-  s = cla 3 5
+  s = cla(3,5)
   I s.sum == 8
 }
 ```
@@ -614,7 +616,7 @@ test = ::{
   (a b z) as __bits:16
   z = gcd a:a.__rand b:b.__rand
   waitfor z
-  puts "gcd for " a " and " b " is " z
+  puts("gcd for " ++ a ++ " and " ++ b ++ " is "  ++ z)
 }
 ```
 * Global type inference
@@ -672,7 +674,7 @@ if cycle[[0..1]] == 3 { a = a + 3 }
 for k:(20..24) {
   a = a + k
 }
-puts "{}: rule, a={}" cycle a
+puts("{}: rule, a={}",cycle,a)
 ```
 * More compact syntax
 * More traditional language, no rules
@@ -718,9 +720,9 @@ if @counter {
 
 test = ::{
   b = vsmigen maxperiod:300000
-  puts "led is {}" b.led
+  puts("led is {}",b.led)
   yield 300000
-  puts "led is {}" b.led
+  puts("led is {}",b.led)
 }
 ```
 * Avoid weird DSL syntax
@@ -896,9 +898,9 @@ gen  = ::{
 }
 sink = ::{
   if $data? {
-     puts ": {}" $data
+     puts(": {}",,,,$data)
   }else{
-     puts ": No data"
+     puts(": No data")
   }
 }
 s = sink __stage:true
@@ -946,13 +948,13 @@ a..field1 = 1
 ```coffeescript
 // code/vsdart.prp file
 person.fromJson = ::{
-  puts "in Person"
+  puts("in Person")
 }
 
 employee = person
 employee.fromJson = ::{
   super $ // Notice, no fromJson
-  puts "in Employee"
+  puts("in Employee")
 }
 
 emp = employee.fromJson
@@ -1029,7 +1031,7 @@ let twelve = addFive 7;
 increment = :($x):{$x + 1 }
 double    = :($x):{$x + $x}
 
-eleven = increment.(double.(5))
+eleven = increment(double(5))
 
 add = :($x $y):{$x + $y}
 addFive = \add  // add reference, no call
@@ -1085,13 +1087,13 @@ a = objecttest.set_value 1
 b = objecttest.set_value 1
 
 I a == b == 1
-I a.get_value.() == b.get_value
-I a.get_value.() == b.get_value.()
-I a.get_value    == b.get_value
+I a.get_value() == b.get_value
+I a.get_value() == b.get_value()
+I a.get_value   == b.get_value
 I a.__obj == b.__obj and a.__obj != 1.__obj
 
 total = 0..10 |> filter ::{$ & 1} |> map ::{$*$}
-I total == (1 9 25 49 81)
+I total == (1,9,25,49,81)
 ```
 ]
 
@@ -1131,7 +1133,7 @@ equality = (a == 1) and (a == 2) and (a == 3)
 I equality
 
 for a:myMap ::{
-  puts "{} = {}" a.__index a
+  puts("{} = {}",,,,a.__index,,,a,,,)
 }
 ```
 * Some similarities in functionality
@@ -1173,7 +1175,7 @@ A = ((1 2) (3 4))
 
 sum = 0
 for i:(1..x.__length) {
-  sum = sum + abs.(x.(i))
+  sum = sum + abs(x(i))
 }
 
 x3=(1..3) ** 2  // compile error
@@ -1219,17 +1221,17 @@ y = pow(10, floor(log10(x)))
 ### Pyrope
 ```coffeescript
 square = :($x):{$ * $}
-eat    = :($x):{puts square.($)}
+eat    = :($x):{puts(square($)) }
 
 for food:(1 2 3) {
   if food !=2 { eat food }
 }
 
-r=square.(3 + square.(4))// 361
-r=square.(3) + square.(4)// 25
+r=square(3 + square(4))// 361
+r=square(3) + square(4)// 25
 
 // Minimum number of parenthesis
-y = pow.(10 floor.(log10.(x)))
+y = pow(10 floor(log10(x)))
 // Simpler syntax with pipes
 y = log2 x |> floor |> pow 10
 ```
@@ -1386,8 +1388,8 @@ a = true or false==false
 b = true or (false==false)
 I a == b
 
-c = fcall 1 2
-I c == fcall.(1 2)
+c = (2) |> fcall(1)
+I c == fcall(1,2)
 
 //bar = true or false and true // compile error
 //x = 3 ++ 4 -- 3              // compile error
@@ -1462,13 +1464,13 @@ x = 3 }                 // OK
 //if true
 //{ x = 3 }             // parse error, no newline
 
-if true ::{ puts x}     // error scope in block
-if true { puts x }      // OK
+if true ::{ puts(x)}     // error scope in block
+if true { puts(x) }      // OK
 
-if true ::{ a = 3 ; puts a }
+if true ::{ a = 3 ; puts(a)}
 
 // parse error, no space between :: {
-//if true :: {puts false}
+//if true :: {puts(false})
 
 c = 0
 d = 0
@@ -1477,7 +1479,7 @@ I d == 0 and c == 0      // :: is a new scope
 if true ::{ %c = 1 ; %d = 2 }
 I d == 2 and c == 1
 
-for a:(1..3) {puts a}
+for a:(1..3) {puts(a)}
 I a == 3                 // compile error
 
 // ; is same as a newline
@@ -1496,8 +1498,8 @@ each as ::{
   for a:$ { $.__block a }
 }
 
-each.(1 2 3)    ::{ puts $ }
-(1 2 3) |> each ::{ puts $ }
+each(1 2 3)     ::{ puts($) }
+(1 2 3) |> each ::{ puts($) }
 
 map as ::{
   t = ()
@@ -1594,7 +1596,7 @@ I total == 1+2+3
 I _i == 3  // compile error, undefined
 
 @val = 3
-@val_link punch @scope2.var
+@val_link punch @scope2.val
 I @val_link.__id == @val.__id
 I @val_link == 3
 @val = 1
@@ -1650,7 +1652,7 @@ nested1_5b = ::{
     @cycle += @incr
   }
 }
-@n2_links punch @nested2
+@n2_links match @nested2
 for i:@n2_links {
   i.incr = i.__index + 1
 }
@@ -1706,12 +1708,12 @@ class: split-50
 .column[
 ```coffeescript
 // code/impvsexp1.prp file
-a = (1,2+3,3)            // tuple
-a = f.(1,2,f2.(3))       // function call
+a = (1,2+3,3)           // tuple
+a = f(1,2,f2(3))        // function call
 b = (1
-    ,2-3)                // 2 lines
-a = f.(1
-      ,2-4*fcall.(3-1))  // 2 lines function call
+    ,2-3)               // 2 lines
+a = f(1
+      ,2-4*fcall(3-1))  // 2 lines function call
 ```
 
 * Commas can be avoided if the elements are single line and have no expressions.
@@ -1719,8 +1721,8 @@ a = f.(1
 ```coffeescript
 // code/impvsexp2.prp file
 a = (1 2 3)
-a = f.(1 2 3)
-b = (1+23*fcall.(2+4))
+a = f(1 2 3)
+b = (1+23*fcall(2+4))
 ```
 ]
 
@@ -1729,14 +1731,14 @@ b = (1+23*fcall.(2+4))
 
 ```coffeescript
 // code/impvsexp3.prp file
-a = (1 2 3)              // required, tuple
-f 1 2 3                  // after newline
+a = (1,2,3)             // required, tuple
+f(1,2,3)                // after newline
 
-a = 3 |> f 2 3 |> f 1    // after pipe
-if f.(2 1 3) {           // must be explicit
+a = 3 |> f(2,3) |> f(1) // after pipe
+if f(2,1,3) {           // must be explicit
   I true
 }
-I (1 2 3) == (1 2 3)     // must be explicit
+I (1,2,3) == (1,2,3)    // must be explicit
 ```
 ]
 
@@ -1747,22 +1749,22 @@ I (1 2 3) == (1 2 3)     // must be explicit
 // code/fcalls.prp file
 square = :($x):{$ * $}
 //r=square 3 + square 4     // parse error, complex argument
-//r=square(3 + square.(4))  // parse error, space required for arguments
+//r=square(3 + square(4))   // parse error, space required for arguments
 //r=square (3 + square (4)) // parse error, missing explicit argument
 r=square square 4           // compile error, square has 1 argument, 2 passed
 r=square (3 + (square  4))  // compile error, two args, but first reqs argument
-r=square (3 + square.(4))   // OK, 361 = (3+4^2)^2 ; ^ is exp, not power
-r=square.(3 + square.(4))   // OK, 361
-r=square.(3) + square.(4)   // OK, 25
+r=square (3 + square(4))   // OK, 361 = (3+4^2)^2 ; ^ is exp, not power
+r=square(3 + square(4))   // OK, 361
+r=square(3) + square(4)   // OK, 25
 pass  = ::{
   if $.__size == 1 { return 7 }
   if $.__size == 2 { return 9 }
   11
 }
-puts 3 square 4 5           // compile error, missing required square arg
-puts 3 square.(4) 5         // OK, prints "3 16 5"
-puts 3 pass 4 5             // OK, prints "3 11 5"
-puts 3 pass.(4) 5           // OK, prints "3 7 5"
+puts(3,square,4,5)         // OK, prints "3 4 5"
+puts(3,square(4),5)        // OK, prints "3 16 5"
+puts(,,3,,,,pass,,,,5,,)   // OK, prints "3 11 5"
+puts(3,pass(4),5)          // OK, prints "3 7 5"
 ```
 
 
@@ -2016,7 +2018,7 @@ c as __bits:8
 c.__rnd_bias   = (1 0)      // weight 1 for value 0
 c.__rnd_bias ++= (2 255)    // weight 2 for value 255
 c.__rnd_bias ++= (7,1..254) // weigth 7 for the rest
-puts c.__rnd                // 10% chance 0, 20% chance 255, 70% other
+puts(c.__rnd)               // 10% chance 0, 20% chance 255, 70% other
 ```
 
 ```bash
@@ -2045,7 +2047,7 @@ $prp --run rndtest
 // custom reset
 @mem2.__init = ::{
   // Called during reset or after clear (!!)
-  @_reset_pos as __bits:log2.(@this.__size) __reset:false
+  @_reset_pos as __bits:log2(@this.__size) __reset:false
   @this[@_reset_pos] = @_reset_pos
   @_reset_pos += 1
 }
@@ -2238,13 +2240,13 @@ if a?.counter>0 {         // Option 3 (same)
 ```
 ```coffeescript
 // code/fluid3.prp file
-puts "prints every cycle"
+puts("prints every cycle")
 try {
-  puts "odd cycles"
+  puts("odd cycles")
   yield         // Yield applies to scope ::{}
-  puts "even cycles"
+  puts("even cycles")
 }
-puts "prints every cycle"
+puts("prints every cycle")
 ```
 ]
 
@@ -2260,13 +2262,13 @@ everyother = ::{
 }
 
 @total_all   += 1
-@total_yield += everyother.()
+@total_yield += everyother
 I @total_all == @total_yield
 try {
    @total2_all += 1
 }
 try {
-   @total2_yield += everyother.()
+   @total2_yield += everyother()
    I @total2_all == 2 then @total2_yield == 1
 }
 ```
@@ -2308,24 +2310,24 @@ class: split-50
 sadd = ::{ %sum = $a + $b }
 sinc = ::{ % = $ + 1 }
 combinational = ::{
-  % = ssum.(a:sinc.($a), b:sinc.($b))
+  % = ssum(a:sinc($a), b:sinc($b))
 }
 
 one_stage_flop_out  = ::{ // The output is flopped
-  % = ssum.(a:sinc.($a), b:sinc.($b))
+  % = ssum(a:sinc($a), b:sinc($b))
   % as __stage:true
 }
 
 one_stage_comb_out = ::{  // Not flopped output
   a1 as sinc
   a2 as ssum __stage:true
-  % = a2.(a:a1.($a), b:a1.($b))
+  % = a2(a:a1($a), b:a1($b))
 }
 
 two_stage_comb_out = ::{  // Not flopped output
   a1 as sinc __stage:true
   a2 as ssum __stage:true
-  % = a2.(a:a1.($a), b:a1.($b))
+  % = a2(a:a1($a), b:a1($b))
 }
 ```
 ]
@@ -2336,19 +2338,19 @@ two_stage_comb_out = ::{  // Not flopped output
 // code/fluid8.prp file
 
 combinational = ::{
-  % = ssum.(a:sinc.($a), b:sinc.($b))
+  % = ssum(a:sinc($a), b:sinc($b))
 }
-incsum = combinational.(a:$a,b:$b)
+incsum = combinational(a:$a,b:$b)
 incsum as __fluid:true    // instance is fluid
 
 one_stage_fluid  = ::{    // Same as incsum
-  % = ssum.(a:sinc.($a), b:sinc.($b))
+  % = ssum(a:sinc($a), b:sinc($b))
   % as __fluid:true
 }
 
 mixed_weird_fluid = ::{
-  %out1 = a2.(a:a1.($a), b:a1.($b))
-  %out2 = a2.(a:$a b:$b)
+  %out1 = a2(a:a1($a), b:a1($b))
+  %out2 = a2(a:$a b:$b)
   %out2 as __fluid:true
 }
 
@@ -2368,18 +2370,18 @@ sadd = ::{ %sum = $a + $b }
 sinc = ::{ % = $ + 1 }
 
 opt1_2stages = ::{
-  s1_a = sinc.($a)
-  s1_b = sinc.($b)
+  s1_a = sinc($a)
+  s1_b = sinc($b)
   s1_a as __stage:true
   s1_b as __stage:true
-  % = sadd.(a:s1_a b:s1_b)
+  % = sadd(a:s1_a b:s1_b)
   % as __stage:true
 }
 
 opt2_2stages = ::{
-  s1_a = sinc.($a)
-  s1_b = sinc.($b)
-  % = sadd.(a:s1_a b:s1_b)
+  s1_a = sinc($a)
+  s1_b = sinc($b)
+  % = sadd(a:s1_a b:s1_b)
 
   (s1_a s1_b %) as __stage:true
 }
@@ -2390,16 +2392,16 @@ opt2_2stages = ::{
 ### More Compact
 ```coffeescript
 opt3_2stages = ::{
-  s1.a = sinc.($a)
-  s1.b = sinc.($b)
-  % = sadd.(a:s1.a b:s1.b)
+  s1.a = sinc($a)
+  s1.b = sinc($b)
+  % = sadd(a:s1.a b:s1.b)
 
   (s1 %) as __stage:true
 }
 
 opt4_2stages = ::{
-  s1 = (a:sinc.($a), b:sinc.($b)) __stage:true
-  %  = sadd.(s1) __stage:true
+  s1 = (a:sinc($a), b:sinc($b)) __stage:true
+  %  = sadd(s1) __stage:true
 }
 ```
 ]
@@ -2519,7 +2521,7 @@ child.dox = ::{
   %p1 = 5
   return tmp + 7
 }
-puts $v2
+puts($v2)
 I child.__obj != parent.__obj
 
 I child.v1 == 0
@@ -2603,35 +2605,92 @@ class: split-50
 # Debugging
 
 .column[
-### Debug statements have no impact
+### Debug have no impact on non-debug
 ```coffeescript
 // code/debug1.prp
-a = 3
-I a == 3   // runtime check
-#I a == 3  // compile time check
-
-N a != 3   // N (never) is I !(xxx)
-#if true { // condition known at compile time
-  c = 3
+{.__debug:1
+I as ::{
+  puts import "c++" io.print
+  if (!$0) {
+    puts($[1..], "\n")
+  }
 }
-#c = 3+4   // c is known at compile time
+}
+a = 3
+I(a == 3, "oop")   // runtime check
+{.__constexpr:true
+I(a == 3)          // compile time check
+
+cond = true
+}
+c = 3
+a = b + {.__constexpr:true 4+c} - d
+// 4+c must be compile time constant
 ```
 ]
 
 .column[
-### Strings have no compute impact, kow at compile time
+### Strings must be known at compile time
 ```coffeescript
 // code/debug2.prp
-if c == 3 { // Error unless c is know at compile
+if {.__constexpr:true cond } { // Error unless c is know at compile
   b = "potato"
 }else{
   b = "carrot"
 }
 tup[b] = true
 for a:tup ::{
-  puts "index:{} value:{}" a.__index a
+  io import "c++" io./.*/
+  io.print("index:{} value:{}\n",a.__index,a)
   I tup[a.__index] == a
 }
 ```
 ]
 
+---
+class: split-50
+# Interface with C code
+
+.column[
+### C-api must have known IO at compile time
+```coffeescript
+// code/test_call1.prp
+myprint import "c++" myprint
+myprint("hello")
+_a3 import "c++" add3
+for i:(1.._a3(7)) {
+  myprint(txt:"i:{}", i)
+}
+// code/myprint.cpp
+#include "prp_cpp.hpp"
+void prp_add3(const prp_tuple inp, prp_tuple &out) {
+  out.set(0,inp.begin().get_uint64());
+}
+void prp_myprint(const prp_tuple inp, prp_tuple &out) {
+  assert( inp.get(0).is_string()); assert(!inp.get(1).is_string());
+  assert(!inp.get("txt").is_number()); assert( inp.get(1).is_number());
+  assert(inp.get(0) == inp.get("txt"));
+
+  fmt::print(inp.get("txt").get_sview(), inp.get(1).get_sview());
+}
+```
+]
+
+.column[
+### C-api structs converted to C++
+```coffeescript
+// code/test_call2.prp
+my_c_code import "c++" my_c_code
+a = (b:1, c:true, d:"hello")
+%foo = my_c_code(a)
+// code/test_call2.cpp
+#include "prp_cpp.hpp"
+void prp_my_c_code(const prp_tuple inp, prp_tuple &out) {
+  assert(inp.is_tupple());
+  prp_number  b = inp.get("b");
+  prp_boolean c = inp.get("c");
+  prp_string  d = inp.get("d");
+  fmt::print("b:{} c:{} d:{}\n", b.get_uint64(), c.get_bool(), d.get_sview());
+}
+```
+]
