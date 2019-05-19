@@ -335,7 +335,7 @@ $prp --run test1.mytest ./mysrc/test2.cpp
 mytest = ::{
   puts import io.puts
   puts("Hello World")
-  I 1 == 0+1
+  I(1 == 0+1)
   yield
   c = 1
   f.a = 2
@@ -392,7 +392,7 @@ for i:(0..$a.__bits) {
 test = ::{
   for a:(1..100) b:(0..33) c:(0 1) {
     d = rca2(a:a, b:b, cin:c)
-    I d.sum == (a+b+c)
+    I(d.sum == (a+b+c))
   }
 }
 ```
@@ -431,7 +431,7 @@ test = ::{
   for a:(1..40) b:(1..100) {
     c1 = cla(a:a,b:b,cin:0)
     c2 = rca(a:a,b:b,cin:0)
-    I c1.cout == c2.cout
+    I(c1.cout == c2.cout)
   }
 }
 ```
@@ -463,7 +463,7 @@ cla = :($a $b):{                             // default CLA (not CLA, just RCA)
 
 test = ::{
   s = cla(3,5)
-  I s.sum == 8
+  I(s.sum == 8)
 }
 ```
 
@@ -505,9 +505,9 @@ task: Quick Dive to Pyrope
 ..+.. import libs.adder.scla.cla
 s1 import libs.adder.rca
 
-%sum.__state = true
-%sum1.__state as true
-%sum2 as (__state:true)
+%sum.__stage = true
+%sum1.__stage as true
+%sum2 as (__stage:true)
 
 sum1 = $a + $b
 sum2 = $c + $c
@@ -621,7 +621,7 @@ test = ::{
   puts import io.puts
   gcd as vschisel
   (a,b,z) as __bits:16
-  z = gcd(a:a.__rand,b:b.__rand)
+  z = gcd(a:a.__rnd,b:b.__rnd)
   waitfor z
   puts("gcd for {} and {} is {}", a, b, z)
 }
@@ -1000,16 +1000,16 @@ let result = switch (isBig, animal) {
 ### Pyrope
 ```coffeescript
 // code/vsreason1.prp file
-unique if isBig and animal is Dog {
+unique if isBig and animal.__obj == Dog {
   result = 1
-}elif isBig and animal is Car {
+}elif isBig and animal.__obj == Car {
   result = 2
-}elif isBig and animal is Bird {
+}elif isBig and animal.__obj == Bird {
   result = 3
-}elif !isBig
-  and animal is Bird or animal is Cat {
+}elif !isBig and (animal.__obj == Bird 
+                or animal.__obj == Cat) {
   result = 4
-}elif !isBig and animal is Bird {
+}elif !isBig and animal.__obj == Bird {
   result = 5
 }
 ```
@@ -1094,8 +1094,8 @@ objectTest.set_value = :($a):{
   return this
 }
 
-a = objecttest.set_value 1
-b = objecttest.set_value 1
+a = objecttest.set_value(1)
+b = objecttest.set_value(1)
 
 I(a == b == 1)
 I(a.get_value() == b.get_value)
@@ -1103,7 +1103,7 @@ I(a.get_value() == b.get_value())
 I(a.get_value   == b.get_value)
 I(a.__obj == b.__obj and a.__obj != 1.__obj)
 
-total = 0..10 |> filter ::{$ & 1} |> map ::{$*$}
+total = (0..10) |> filter ::{$ & 1} |> map ::{$*$}
 I(total == (1,9,25,49,81))
 ```
 ]
@@ -1488,12 +1488,12 @@ if true ::{ a = 3 ; puts(a)}
 c = 0
 d = 0
 if true ::{ c = 1 ; d = 2 }
-I d == 0 and c == 0      // :: is a new scope
+I(d == 0 and c == 0)      // :: is a new scope
 if true ::{ %c = 1 ; %d = 2 }
-I d == 2 and c == 1
+I(d == 2 and c == 1)
 
 for a:(1..3) {puts(a)}
-I a == 3                 // compile error
+I(a == 3)                // compile error
 
 // ; is same as a newline
 ```
@@ -1508,18 +1508,17 @@ class: split-50
 // code/codeblock.prp file
 puts import io.puts
 each as ::{
-  I $.__block is def
-  for a:$ { $.__block a }
+  for a:$ { $.__block(a) }
 }
 
-each(1 2 3)     ::{ puts($) }
-(1 2 3) |> each ::{ puts($) }
+each(1,2,3)     ::{ puts($) }
+(1,2,3) |> each ::{ puts($) }
 
 map as ::{
   t = ()
-  fun = $.__block
+  fun = \$.__block
   for a:$ {
-    t ++= fun a
+    t ++= fun(a)
   }
   return t
 }
@@ -1529,8 +1528,8 @@ a = ::{ 2+1 }  // OK implicit return
 // parse error, only last can be implicit return
 //a = ::{ 1+1 ; 2+1 }
 
-s = (1 2 3) |> map ::{$+1} |> map ::{$*$}
-I s == (4 9 16)
+s = (1,2,3) |> map ::{$+1} |> map ::{$*$}
+I(s == (4,9,16))
 ```
 ]
 --
@@ -1546,20 +1545,19 @@ reduce = ::{
   while true {
     tmp2 = ()
     for i:(0..tmp.__size by 2) {
-      tmp2 ++= redop tmp[i] tmp[i+1]
+      tmp2 ++= redop(tmp[i],tmp[i+1])
     }
     if tmp2.__size <=1 { return tmp2 }
     tmp = tmp2
-    if tmp2.__size[[0]] {     // odd number
-      tmp = tmp2[[..-2]]      // all but last two
-      tmp ++= redop tmp2[-2..]// reduce last two
+    if tmp2.__size[[0]] {      // odd number
+      tmp   = tmp2[[..-2]]     // all but last two
+      tmp ++= redop(tmp2[-2..])// reduce last two
     }
   }
-  I false
+  I(false)
 }
-a = (1 2 3) |> reduce ::{$0 + $1}
-I a == 6
-
+a = (1,2,3) |> reduce ::{$0 + $1}
+I(a == 6)
 ```
 ]
 
@@ -1577,14 +1575,14 @@ b = ::{
   %out = a // compile error, undefined a
 }
 x = b
-I a == 1
+I(a == 1)
 c = ::{
   a = 2    // local variable
   d = 4
   %out = a
 }
-I d==4     // compile error, d not defined
-I c.out == 2
+I(d==4)    // compile error, d not defined
+I(c.out == 2)
 ```
 ]
 
@@ -1598,23 +1596,22 @@ a = 1
 if a == 1 {
   a = 2
   b = 3
-  _f = 4
 }
-I a == 2 and b == 3
-I _f == 4  // compile error, undefined
+I(a == 2)
+I(b == 4) // compile error, undefined
 
 total = 0  // needed
-for _i:(1..3) { total += _i }
+for i:(1..3) { total += i }
 
-I total == 1+2+3
-I _i == 3  // compile error, undefined
+I(total == 1+2+3)
+I(i == 3) // compile error, undefined
 
 @val = 3
 @val_link punch @scope2.val
-I @val_link.__id == @val.__id
-I @val_link == 3
+I(@val_link.__id == @val.__id)
+I(@val_link == 3)
 @val = 1
-I @val_link == 1
+I(@val_link == 1)
 ```
 ]
 
@@ -1645,9 +1642,9 @@ n3 = ::{
 }
 $i1 punch %n2.n1.o
 $i2 punch %scope5.n2.n1.o
-I $i1.__id == $i2.__id
-I n3.o2 == 2
-I n3.o4 == 4
+I($i1.__id == $i2.__id)
+I(n3.o2 == 2)
+I(n3.o4 == 4)
 ```
 ]
 
@@ -1670,48 +1667,8 @@ nested1_5b = ::{
 for i:@n2_links {
   i.incr = i.__index + 1
 }
-I @n2_links[0].id == 1
-I @n2_links[1].id == 2
-```
-]
----
-class: split-50
-# Scope outside code regions II
-
-.column[
-### Accessing outside scope
-```coffeescript
-// code/scope3.prp
-a = 1
-if a == 1 ::{
-  a = 2       // compile error, no a in local
-  %this.a = 3 // compile error, no %a in parent
-  this.a = 3  // compile error, only %,$,% for this
-  f = 3       // local scope
-}
-I f == 3      // compile error, undefined
-I a == 1
-```
-]
-
-.column[
-### Code regions in ifs/fors
-```coffeescript
-// code/scope4.prp
-t = 0
-for a:(1..3) { t += a }
-I t == 1+2+3
-
-t = 0
-for a:(1..3) ::{t = a} // local scope
-I(t == 0)
-
-for a:(1..3) ::{ if a>1 { break } ; %t = a }
-I(t == 1)
-
-//if t==1 :(%x):{ %x += 1 }   // compile error
-if t==1 :($x,%x):{ %x = $x + 1 } // OK
-I(x == 3)
+I(@n2_links[0].id == 1)
+I(@n2_links[1].id == 2)
 ```
 ]
 
@@ -1730,29 +1687,30 @@ a = f(1
       ,2-4*fcall(3-1))  // 2 lines function call
 ```
 
-* Commas can be avoided if the elements are single line and have no expressions.
+* Extra commas have no impact
 
 ```coffeescript
 // code/impvsexp2.prp file
-a = (1 2 3)
-a = f(1 2 3)
+a = (,,,1,,,,2,,,,3,,,)
+a = f(,,,1,,2,,3,,,)
 b = (1+23*fcall(2+4))
 ```
 ]
 
 .column[
-* In function calls, when commas can be avoided, parenthesis are optional after a newline, an assignment, or a pipe operator.
+* Tuple assignments
 
 ```coffeescript
 // code/impvsexp3.prp file
-a = (1,2,3)             // required, tuple
-f(1,2,3)                // after newline
-
-a = 3 |> f(2,3) |> f(1) // after pipe
-if f(2,1,3) {           // must be explicit
-  I(true)
-}
-I((1,2,3) == (1,2,3))   // must be explicit
+a = (1,3)
+I(a==(1,3))
+(a,b) = 3
+I(a == 3 and b == 3)
+(a,b) = (3,4)
+I(a == 3 and b == 4)
+(a,b) = (b,a)
+I(a == 4 and b == 3)
+// (a,b) = 3 // compile error
 ```
 ]
 
@@ -1761,7 +1719,9 @@ I((1,2,3) == (1,2,3))   // must be explicit
 
 ```coffeescript
 // code/fcalls.prp file
-puts import io.puts
+puts import io.puts  // puts only visible to this file
+export puts          // export puts to all the files in this directory
+
 square = :($x):{$ * $}
 //r=square 3 + square 4     // parse error, complex argument
 //r=square(3 + square(4))   // parse error, space required for arguments
@@ -1782,6 +1742,30 @@ puts(,,3,,,,pass,,,,5,,)   // OK, prints "3 11 5"
 puts(3,pass(4),5)          // OK, prints "3 7 5"
 ```
 
+---
+# Uniform call syntax
+
+### https://en.wikipedia.org/wiki/Uniform_Function_Call_Syntax
+```coffeescript
+// code/uniform.prp file
+puts import io.puts
+
+ms = ::{ return this * 1000 }
+us = ::{ return this * 1000_000 }
+
+I(3.ms == 3000.us)
+
+hash = ::{
+  bad_hash = 0
+  for i:$ {
+    bad_hash ^= i
+  }
+  return bad_hash
+}
+
+I(3.hash(4) == hash(3,4) == (3,4).hash() == hash(3,4))
+
+```
 
 ---
 class: split-50
@@ -1880,22 +1864,6 @@ I(@b[0] == @b[0].__last == prev_val)
 * Enforces the rd/wr ports if indicated
 * Moves logic to get addresses at posedge
 ]
----
-class: split-50
-
-# Flop/Latches/SRAM parameters
-
-```coffeescript
-// code/mem5.prp
- __bits:int       Number of bits in register
- __reset:bool     Reset register (true default)
- __posedge:bool   Posedge or negedge (true default)
- __fflop:bool     Flip-flop or latch based (true default)
- __last:bool      Last value or flop output
- __size:int       Number of entries in a SRAM-like flop
- __clk_pin:name   Wire signal to control clk pin
- __reset_pin:name Wire signal to control reset pi
-```
 
 ---
 class: split-50
@@ -1966,16 +1934,55 @@ class: split-50
 ---
 class: split-50
 
+# Compiler Parameters
+
+.column[
+### Flop/Latches/SRAM Specific
+```coffeescript
+// code/mem5.prp
+ __bits          Number of bits in register
+ __posedge       Posedge or negedge (true)
+ __fflopl        Flip-flop or latch based (false)
+ __lastl         Last value or flop output
+ __size          Entries in a SRAM-like flop
+ __stage         stage or comb submodule (false)
+ __clk_pin       Wire signal to control clk pin
+ __reset_pin     Wire signal to control reset pin
+ __reset         Code block to execute during reset
+ __reset_cycles  Number of reset cycles required (1)
+```
+]
+
+.column[
+### Generic
+```coffeescript
+// code/generic.prp
+ __rnd           Generate an allowed random number
+ __obj           ID for each module hierarchy
+ $.__block       Code block passed to function
+ __size          Number of entries in tuple
+ __index         Loop iteration position
+ __set           Tuple behaves like a set (false)
+ __rnd_bias      Controls random generation
+ __fluid         Outputs in module handled as fluid
+ __constexpr     Statement known at compile time
+ __debug:bool    Debug statment, no side effects
+```
+]
+---
+class: split-50
+
 # Ranges
 
 .column[
 ### Basic
 ```coffeescript
 // code/ranges1.prp
-I((1 2 3) == 1..3)
+// I((1,2,3) == 1..3) compile error
+I((1,2,3) == (1..3))
 
-I((0..7 ..by.. 2) == (0 2 4 6))
-I(0..15 ..by.. (2 3) == (0 2 5 7 10 12 15))
+I(((0..7) ..by.. 2) == (0 2 4 6))
+I((0..15) ..by.. (2 3) == (0 2 5 7 10 12 15))
 
 I((1..2) ..union.. 3 == (1..3))
 I((1..10) ..intersect.. (2..20) == (2..10))
@@ -1987,7 +1994,7 @@ I((..4) ..union..     (2..3) == (..4))
 I((2..) == (2..-1))
 I((..3) == (-1..3))
 
-// Ranges can be converted to values
+// Ranges can not be converted to values
 // I((1..3)[[]])  // compile error
 ```
 ]
@@ -1996,27 +2003,28 @@ I((..3) == (-1..3))
 ### Complex
 ```coffeescript
 // code/ranges2.prp
-numbers = (1..9)
-start  = numbers[0..2]
-middle = numbers[3..-2]
-end    = numbers[-2..]
-copy   = numbers[..]
+seq = (1..9)
+start  = seq[0..2]
+middle = seq[3..-2] // seq[-2..3] same
+end    = seq[-2..]
+copy   = seq[..]
 
-I(start  == (1 2 3))
-I(middle == (4 5 6 7))
-I(end    == (8 9))
-I(copy   == (1 2 3 4 5 6 7 8 9))
+I(start  == (1,2,3))
+I(middle == (4,5,6,7))
+I(end    == (8,9))
+I(copy   == (1,2,3,4,5,6,7,8,9))
 
 val = 0b00_01_10_11
 
-I(val[[0..1]] == 0b11)
-I(val[[..-2]] == 0b01_10_11)
-I(val[[-2..]] == 0b00)
-I(val[[-1]]   == 0b1  // MSB)
+I(val[[0..2]] == 0b011)
+I(val[[2..0]] == 0b011) // no order
+I(val[[..-2]] == 0b00)
+I(val[[-2..]] == 0b00)  // no order
+I(val[[-1]]   == 0b1    // MSB)
 
-I((1..3) * 2 == (2 4 6))
+I((1..3) * 2 == (2,4,6))
 I((1..3) + 2 == (3..5))
-I((1 2 4) ++ 3 == (1..4))
+I((1,2,4) ++ 3 == (1..4))
 ```
 ]
 
@@ -2055,19 +2063,20 @@ $prp --run rndtest
 ```coffeescript
 // code/reset1.prp
 @a as __bits:3
-@a.__init = 13
+@a.__reset = ::{ this = 13 }
 
 @b as __bits:3 __reset:false // disable reset
 
 @mem0 as __bits:4 __size:16
-@mem0.__init = ::{ 3 }
+@mem0.__reset = ::{ this = 3 }
 
-@mem1 as __bits:4 __reset:false __size:16
+@mem1 as (__bits:4,__size:16, __reset_pin:0)
 
-@mem2 as __bits:2 __size:32
+@mem2 as (__bits:2,__size:32)
 
-// custom reset
-@mem2.__init = ::{
+// complex custom reset
+@mem2.__reset_cycles = @mem2.__size + 4
+@mem2.__reset = ::{
   // Called during reset or after clear (!!)
   @_reset_pos as __bits:log2(@this.__size) __reset:false
   @this[@_reset_pos] = @_reset_pos
@@ -2078,7 +2087,7 @@ $prp --run rndtest
 ---
 # Multiple Clocks
 
-* Each flop or fluid stage an have its own clock
+### Each flop or fluid stage can have its own clock
 
 ```coffeescript
 // code/clk1.prp
@@ -2089,7 +2098,8 @@ $prp --run rndtest
 @clk2_flop = @clk_flop
 
 %out = @clk2_flop
-%out as __fluid:true __clk_pin:$clk3  // 3rd clock for output
+%out as __fluid:true
+%out as __clk_pin:$clk3  // 3rd clock for output
 ```
 
 ---
@@ -2322,6 +2332,17 @@ try {
 .column[
 ```coffeescript
 // code/fluid6.prp file
+if $in1? {
+  val2 = $in1
+}elif $in2? {
+  val2 = $in2
+}else{
+  val2 = 0
+}
+
+// Same as previous statements
+val1 = $in1 ?? $in2 ?? 0
+
 ```
 ]
 
@@ -2570,15 +2591,15 @@ class: split-50
 .column[
 ### dealing with objects
 ```coffeescript
-// code/objects1.prp
+// code/objects2a.prp
 obj1.foo as __bits:3
 obj2.bar as __bits:2
-I(!(obj1 is obj2))
+I(!(obj1.__obj == obj2.__obj))
 
 obj1c = obj1
 obj1.foo  = 1
 obj1c.foo = 3
-I(obj1 is obj1c)
+I(obj1.__obj == obj1c.__obj)
 
 obj3 as obj1 or obj2 // Union type
 if 3.__rnd == 2 {
@@ -2589,9 +2610,39 @@ if 3.__rnd == 2 {
   obj3.bar = 2
 }
 
-if obj3 is obj1 {
+if obj3.__obj == obj1.__obj {
   I(obj3.foo == 1)
 }
+```
+]
+
+.column[
+### dealing with objects
+```coffeescript
+// code/objects2b.prp
+a.lo = 77
+a.a.a = 1
+a.a.b = 2
+a.a.c = ::{
+  I(this.a == 1)
+  this.d += 1
+  this.b = 2
+  this.this.lo = 10
+}
+a.b.a = 4
+a.b.b = 5
+a.b.c = ::{
+  I(this.a == 4)
+  this.d += 1
+  this.b = 2
+  this.this.lo = 20
+}
+
+I(a.lo == 77 and a.a.b == 2 and a.b.b == 5)
+a.a.c()
+I(a.lo == 10 and a.a.b == 3 and a.b.b == 5)
+a.b.c()
+I(a.lo == 20 and a.a.b == 3 and a.b.b == 6)
 ```
 ]
 
@@ -2671,13 +2722,13 @@ tup[b] = true
 for a:tup ::{
   io import io./.*/
   io.puts("index:{} value:{}\n",a.__index,a)
-  I tup[a.__index] == a
+  I(tup[a.__index] == a)
 }
 ```
 ]
 
 ---
-# Interface with C code
+# Interface with C++ code
 
 ### C-api must have known IO at compile time
 ```coffeescript
@@ -2706,7 +2757,7 @@ void prp_myprint(const prp_tuple inp, prp_tuple &out) {
 ```
 
 ---
-# Interface with C code
+# Interface with C++ code
 
 ### C-api structs converted to C++
 ```coffeescript
