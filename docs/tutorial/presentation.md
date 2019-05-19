@@ -157,6 +157,16 @@ none
   * Allows Pyrope 2 Verilog, edit Verilog, Verilog 2 Pyrope, edit Pyrope...
 
 ---
+
+# Fast/Live Pyrope
+
+* No includes, uses packages
+
+* No DSL (most HDLs) that generate an executable to create code (not incremental)
+
+* Integrated with LGraph to interact with annotations
+
+---
 # Things that Pyrope can not do
 
 * Generic programming language, Pyrope is synthesizable
