@@ -260,7 +260,7 @@ function peg$parse(input, options) {
       peg$c17 = peg$literalExpectation("::", false),
       peg$c18 = function(x, y, z) {return prettyPrintScope(x,y,z)},
       peg$c19 = function(head) {
-              if(head instanceof Array)
+              if(head instanceof Array && head[0] == null)
               	return head[0]
               return head
           },
