@@ -219,17 +219,17 @@ function cfg_gen(data){
 
     if(i == "condition"){
       arr.push("if");       
-      prp_type = "if";
+      //prp_type = "if";
     }
 
     if(i == "uif_condition"){
       arr.push("uif");
-      prp_type = "uif";
+      //prp_type = "uif";
     }
 
     if(i == "while_condition"){
       arr.push("while");
-      prp_type = "while";
+      //prp_type = "while";
     }
 
     if(i == "function"){
@@ -238,12 +238,12 @@ function cfg_gen(data){
 
     if(i == "for_index"){
       arr.push("for");
-      prp_type = "for";
+      //prp_type = "for";
     }
 
     if(i == "type" && data[i] == "try"){
       arr.push("try");
-      prp_type = "try";
+      //prp_type = "try";
     }
 
     if(i == "compile_body") {
@@ -269,13 +269,22 @@ function cfg_gen(data){
 
     if(i == "pipe_arg"){
       arr.push(".()");
-      if(data["pipe_func"]["arguments"][0] == null){
-        data["pipe_func"]["arguments"][0] = data[i];
-      }else{
-        data["pipe_func"]["arguments"].push(data[i]);
+      if(data["pipe_func"]["type"] == "function_call"){
+        if(data["pipe_func"]["arguments"] == null){
+          data["pipe_func"]["arguments"] = data[i];
+          //data["pipe_func"]["arguments"].push(data[i][0]); //insert 0th element from array
+          //data["pipe_func"]["arguments"][0] = data[i];
+        }else{
+          for(var j = 0; j < data[j].length; j++){
+            data["pipe_func"]["arguments"].push(data[i][j]);
+          }
+        }
+      }else if(data["pipe_func"]["type"] == "func_pipe"){
+        data["pipe_func"]["pipe_arg"].push(data[i][0]);
       }
       data[i] = null;
     }
+
 
     if(i == "arguments" && Array.isArray(data[i])){ //handles arguments in fcall
       for(var j = 0; j < data[i].length; j++){
@@ -309,8 +318,7 @@ function cfg_gen(data){
     }
 
     if(i == "scope_args"){
-      if(prp_type == null)
-        arr.push("::{");
+      arr.push("::{");
       scope_pos_track = arr.length; //var helps to push fcall dest k_id before arg list
       if(data[i] != null){ //check if scope_args is not null
         if(Array.isArray(data[i]["scope_arg_list"])){
@@ -788,6 +796,11 @@ function cfg_gen(data){
         arr.push(data[i]["value"]);
       }else if(operators.indexOf(data[i]["type"]) >= 0){
         arr.push(data[i]["value"]);
+      }else if(data[i]["type"] == "func_pipe"){
+        arr.push(convertToNumberingScheme(tmp_count));
+        tmp_count = tmp_count + 1;
+        tmp_count_track = 1;
+        cfg_gen(data[i]);
       }else if(data[i]["type"] == "function_call"){
         arr.push(convertToNumberingScheme(tmp_count));
         tmp_count = tmp_count + 1;
