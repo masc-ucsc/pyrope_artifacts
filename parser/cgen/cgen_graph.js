@@ -4,7 +4,7 @@ var tmp_count_track = 0;
 var start = 0, end = 0;
 var k_count = 0, k_next_count = 1;
 var scope_count = 0, scope_out_count = 0, tmp_scope_count = 0;
-var scope_pos_track = 0; 
+var scope_pos_track = 0;
 var false_count_track = -2;
 var elif_condition_track = 0;
 var list = [":","func_pipe","binary_expression","tuple_array","range","bit_select","function_call","tuple_list","tuple_dot"];
@@ -26,7 +26,6 @@ cfg_gen_setup = function(input){ //enable this to pass AST to cfg_gen_setup; als
     if(mark_read.length > 0){
       mark_variable_read(mark_read);
     }
-    
   }
 }
 
@@ -43,8 +42,6 @@ function mark_variable_read(mark_arr){
       //console.log(mark_arr[i][8]);
       recursive_variable_read(mark_arr, i, mark_arr[i][8], 8);
     }
-    
-    
   }
 }
 
@@ -62,12 +59,12 @@ function recursive_variable_read(mark_arr, mark_index, mark_var, pos){
 
   while(pos == 7 && i < arr_range){
     if(mark_arr[i][6] == mark_arr[i+1][7]){
-      i = i + 1;   
+      i = i + 1;
     }else if(mark_arr[i][6] == mark_arr[i+1][8]){
       //console.log("HERE2 "+mark_arr[i+1][5]+" "+mark_arr[i+1][7]);
       read_condition.push(mark_arr[i+1][5]);
       read_condition.push(mark_arr[i+1][7]);
-      i = i + 1; 
+      i = i + 1;
     }else{
       pos = 0;
       var tmp_i = i;
@@ -78,7 +75,6 @@ function recursive_variable_read(mark_arr, mark_index, mark_var, pos){
         }
       }
     }
-        
   }
 
   while(pos == 8 && i < arr_range){
@@ -127,10 +123,9 @@ function recursive_variable_read(mark_arr, mark_index, mark_var, pos){
         tmp_read_condition.push(read_condition[x]);
       }else{
         tmp_read_condition.push("!"+read_condition[x]);
-      }  
+      }
     }
     //console.log(tmp_read_condition);
-    
     if(tmp_read_condition.length == 1){
       var tmp_print_arr = [];
       k_count++;
@@ -145,15 +140,13 @@ function recursive_variable_read(mark_arr, mark_index, mark_var, pos){
     }else{
       pretty_print_predicates(tmp_read_condition, read_condition[0]);
     }
-    
-  } 
- 
+  }
 }
 
 function pretty_print_predicates(read_arr, read_var){
 
   var tmp_read_arr = [];
- 
+
   k_count++;
   k_next_count++;
   tmp_read_arr.push("K"+k_count);
@@ -185,7 +178,7 @@ function pretty_print_predicates(read_arr, read_var){
   }
 }
 
-function cfg_gen(data){ 
+function cfg_gen(data){
   var arr = [];
   var prp_type = null;
 
@@ -199,16 +192,16 @@ function cfg_gen(data){
     elif_next_track = 0;
   }
 
-  if(tmp_count_track > 0){ 
+  if(tmp_count_track > 0){
     //push tmp var to lower levels of expression (along with start and end positions)
     // x = 1+2*3 => tmp1 = 2*3 => tmp0 = 1 + tmp1 => x = tmp0
     arr.push(start);
     arr.push(end);
     arr.push(convertToNumberingScheme(tmp_count-1));
   }
-  
+
   //for loop traverses AST(in json format)
-  for(var i in data){    
+  for(var i in data){
     if(i == "start_pos" && tmp_count_track == 0) {
       start = data[i];
       arr.push(data[i]);
@@ -218,7 +211,7 @@ function cfg_gen(data){
     }
 
     if(i == "condition"){
-      arr.push("if");       
+      arr.push("if");
       //prp_type = "if";
     }
 
@@ -249,7 +242,7 @@ function cfg_gen(data){
     if(i == "compile_body") {
       arr.push("#");
     }
-    
+
     if(i == "punch_inp" && data[i] != null){
       arr.push("punch");
       arr.push(data[i]["value"]);
@@ -296,7 +289,7 @@ function cfg_gen(data){
             tmp_count = tmp_count + 1;
             tmp_count_track = 1;
             cfg_gen(data[i][j]);
-          }   
+          }
         }
       }
     }
@@ -312,7 +305,7 @@ function cfg_gen(data){
             tmp_count = tmp_count + 1;
             tmp_count_track = 1;
             cfg_gen(data[i][j]);
-          } 
+          }
         }
       }
     }
@@ -352,7 +345,7 @@ function cfg_gen(data){
         arr.push("null"); //push null into arr if scope_arg == null.
       }
 
-    }    
+    }
 
     if(i == "scope_body"){
       if(data[i] == null){
@@ -361,7 +354,7 @@ function cfg_gen(data){
         var local_scope_count = -1;
         k_count++;      //k_count for "while"
         k_next_count++;
-        arr.unshift('K'+k_count); //push k_id to arr        
+        arr.unshift('K'+k_count); //push k_id to arr
         arr.splice(scope_pos_track+2,0,'K'+(k_count+2)); //push k_count of scope body in cfg
         k_count++;
         k_next_count++;
@@ -371,7 +364,7 @@ function cfg_gen(data){
             data[i].splice(j, 1);
           }
         }
-        
+
         //the three lines below handle scope_count field in arr
         //scope_count = tmp_scope_count;
         scope_count++;
@@ -395,7 +388,7 @@ function cfg_gen(data){
         }
 
       }
-    }   
+    }
 
     if(i == "scope_alt_body"){
       if(data[i] == null){
@@ -445,7 +438,7 @@ function cfg_gen(data){
     if(i == "compile_body") {
       k_count++;
       k_next_count++;
-      arr.unshift('K'+k_count); //push k_id to arr        
+      arr.unshift('K'+k_count); //push k_id to arr
       arr.push('K'+(k_count+1)); //push k_count of # body
       //console.log(arr);
       method_id_track = 1;
@@ -458,7 +451,7 @@ function cfg_gen(data){
       k_next_count = k_next_count + 1;
       arr.splice(1, 0, 'K'+k_next_count); //push k_next to arr
     }
-    
+
     if(i == "try_body"){
       if(data[i] == null){
         arr.splice(arr.length-1,0,"null");
@@ -466,7 +459,7 @@ function cfg_gen(data){
         var local_scope_count = -1;
         k_count++;      //k_count for "try"
         k_next_count++;
-        arr.unshift('K'+k_count); //push k_id to arr        
+        arr.unshift('K'+k_count); //push k_id to arr
         arr.push('K'+(k_count+2)); //push k_count of try body
         k_count++;
         k_next_count++;
@@ -476,7 +469,7 @@ function cfg_gen(data){
             data[i].splice(j, 1);
           }
         }
-        
+
         //the three lines below handle scope_count field in arr
         //scope_count = tmp_scope_count;
         if(data['try_scope'] == "::"){
@@ -507,7 +500,7 @@ function cfg_gen(data){
         }
 
       }
-    } 
+    }
 
     if(i == "try_else"){
       if(data[i] == null){
@@ -569,14 +562,14 @@ function cfg_gen(data){
         tmp_count_track = 1;
         cfg_gen(data[i][j]);
       }
-    }    
-    
+    }
+
     if(i == "for_body" || i == "while_body"){
       if(data[i] == null){
         arr.push("null");
       }else if(Array.isArray(data[i])){
         var local_scope_count = -1;
-        k_count++; 
+        k_count++;
         k_next_count++;
         arr.unshift('K'+k_count); //push k_id to arr
         arr.push('K'+(k_count+2));  //push "for" target k_id to arr
@@ -604,7 +597,7 @@ function cfg_gen(data){
           if(local_scope_count < 0){ //scope count for entries otuside of a scope
             tmp_scope_count = scope_count - scope_out_count;
           }
-          if(typeof(data[i][j])=="object" && data[i][j] != null && data[i][j]["type"] != "comment"){            
+          if(typeof(data[i][j])=="object" && data[i][j] != null && data[i][j]["type"] != "comment"){
             cfg_gen(data[i][j]);
           }
         }
@@ -649,7 +642,7 @@ function cfg_gen(data){
       }else if(Array.isArray(data[i])){
         k_count++;      //k_count for "if"
         k_next_count++;
-        
+
         if(elif_phi_mark == 0){
           if_phi = k_count;
           tmp_if_phi = if_phi;
@@ -658,8 +651,8 @@ function cfg_gen(data){
           if_phi = k_count;
           elif_phi_mark = 0;
         }
-        
-        arr.unshift('K'+k_count); // push k_id to arr        
+
+        arr.unshift('K'+k_count); // push k_id to arr
         arr.push('K'+(k_count+2)); //index for true case
 
         k_count++;
@@ -675,18 +668,17 @@ function cfg_gen(data){
           if(j == data[i].length - 1){
             method_id_track = 1;
           }
-          if(typeof(data[i][j])=="object" && data[i][j] != null && data[i][j]["type"] != "comment"){                                    
-            cfg_gen(data[i][j]); 
+          if(typeof(data[i][j])=="object" && data[i][j] != null && data[i][j]["type"] != "comment"){
+            cfg_gen(data[i][j]);
           }
         }
-        
-      } 
+      }
     }
 
     if(i == "false_case"){
       if(data[i] == null){
         arr.push("null");
-      }else if(Array.isArray(data[i])){        
+      }else if(Array.isArray(data[i])){
         arr.push('K'+(k_count+2));  //push else target k_id into arr
         k_count++;
         k_next_count++;
@@ -696,14 +688,14 @@ function cfg_gen(data){
             data[i].splice(j, 1);
           }
         }
-        
+
         for(var j = 0; j < data[i].length; j++){
           if(j == data[i].length - 1){
             method_id_track = 1;
           }
-          if(typeof(data[i][j])=="object" && data[i][j] != null && data[i][j]["type"] != "comment"){            
+          if(typeof(data[i][j])=="object" && data[i][j] != null && data[i][j]["type"] != "comment"){
             cfg_gen(data[i][j]);
-          } 
+          }
         }
 
       }else if(typeof(data[i])=="object"){
@@ -716,7 +708,7 @@ function cfg_gen(data){
         elif_phi_mark = 0;
       }
       arr.push("'K"+if_phi);
-    }   
+    }
 
     if((arr[3] == 'if' || arr[3] == 'uif') && i == "false_case"){
       k_count = k_count + 1;
@@ -742,7 +734,7 @@ function cfg_gen(data){
       }
     }
     if(i == "arr_obj"){
-      arr.push("[]");    
+      arr.push("[]");
     }
     if(i == "dot_obj"){
       arr.push(".");
@@ -762,12 +754,12 @@ function cfg_gen(data){
       }
     }
     if(i == "property"){ //for x = a:1 (or) foo.(b, a:1)// handles identifier with property
-      arr.push(":"); 
+      arr.push(":");
     }
     if(i == "operator" && !(typeof(data[i])=="object")){
       arr.push(data[i]);  //handles "=" push into CFG array
     }
-    
+
     if(typeof(data[i])=="object" && data[i] != null){
       if(data[i]["type"] == "binary_expression"){
         arr.push(convertToNumberingScheme(tmp_count));
@@ -820,7 +812,7 @@ function cfg_gen(data){
         arr.push(convertToNumberingScheme(tmp_count));
         tmp_count = tmp_count + 1;
         tmp_count_track = 1;
-        cfg_gen(data[i]);  
+        cfg_gen(data[i]);
       }else if(data[i]["type"] == "range"){
         arr.push(convertToNumberingScheme(tmp_count));
         tmp_count = tmp_count + 1;
@@ -853,12 +845,10 @@ function cfg_gen(data){
         arr[0] = "F"+(false_count_track+1);
         elif_condition_track = 0;
       }
-          
     }
-  
   }
 
-  if(arr[0][0] != 'K'){  
+  if(arr[0][0] != 'K'){
     k_count++;
     k_next_count++;
     arr.unshift('K'+k_next_count);
@@ -872,7 +862,6 @@ function cfg_gen(data){
     arr.splice(2,1);
   }
 
-  
   if(arr[5] == '=' || arr[5] == ':=' || arr[5] == 'as'){  //remove additional "tmp" var in assign expressions
     arr.splice(4,1);
   }
@@ -880,14 +869,14 @@ function cfg_gen(data){
   if(arr[5] == 'if'){ //remove additional "tmp" var in if statements
     arr.splice(4,1);
   }
- 
+
   if(arr[4].match(/___/)){  //swap 'tmp' to column no:4
     var tmp = arr[4];
     arr[4] = arr[5];
     arr[5] = tmp;
   }
 
-  if(arr[4] == ".()" && arr[5].match(/___/)){ 
+  if(arr[4] == ".()" && arr[5].match(/___/)){
     //remove extra "tmp" variable in .() cfg within fcall/while blocks
     //FIXME: remove this if not needed
     //arr.splice(5,1);
