@@ -391,15 +391,15 @@ task: Quick Dive to Pyrope
 
 ```coffeescript
 // libs/adder/code/rca.prp file
-fa = :($a $b $cin %sum %cout):{      // method with explicit arguments
+fa = :($a $b $cin %sum %cout):{    // method with explicit arguments
   tmp   = $a  ^ $b
   %sum  = tmp ^ $cin
   %cout = (tmp & $cin) | ($a & $b)
 }
 
-carry = $cin                         // 0 if RCA without carry in
-for i in (0..a.__bits) {             // iterate #bits
-  tmp = fa(a[[i]],b[[i]],carry)      // function call to fa
+carry = $cin                       // 0 if RCA without carry in
+for i in 0..a.__bits {             // iterate #bits
+  tmp = fa(a[[i]],b[[i]],carry)    // function call to fa
   %sum[[i]] = tmp.sum
   carry     = tmp.cout
 }
@@ -408,7 +408,7 @@ for i in (0..a.__bits) {             // iterate #bits
 test2 = ::{
   puts import io.puts
   c = rca(a:32, b:4, cin:0)
-  puts("sum is {0:b} {0}",c.sum)     // puts has c++ fmt in prplib
+  puts("sum is {0:b} {0}",c.sum)   // puts has c++ fmt in prplib
 }
 ```
 
@@ -453,7 +453,7 @@ p = $a ^ $b // Propagate
 
 // 4 bit: c = g[[3]] | g[[2]] & p[[3]] | g[[1]] & p[[3]] & p[[2]] |...
 c = $cin & and_red(p)
-for i in (0..a.__bits) {
+for i in 0..a.__bits {
   _tmp = g[[i]]
   for j in (i..(a.__bits-1)) {
     _tmp = _tmp & p[[j]]
@@ -713,7 +713,7 @@ else               { a = a + 2 }
 
 if cycle[[0..1]] == 3 { a = a + 3 }
 
-for k in (20..24) {
+for k in 20..24 {
   a = a + k
 }
 puts import io.puts
@@ -816,7 +816,7 @@ if @i == 0 { %result = @a }
 ```coffeescript
 test = ::{
   seq = (0 1 1 2 3 5 8 13 21 34)
-  for n in (0..9) {
+  for n in 0..9 {
     n as __bits:6     // 6 bit fibonacci
     b = vspyrtl(n:n)
     waitfor b.result  // multiple clocks
@@ -1221,7 +1221,7 @@ y = (10..0) ..by.. 2 // (10 8 6 4 2 0)
 A = ((1,2),(3,4))
 
 sum = 0
-for i in (1..x.__length) {
+for i in 1..x.__length {
   sum = sum + abs(x(i))
 }
 
@@ -1333,18 +1333,18 @@ I(cond5 and cond6) // Unique implies full too
 ```coffeescript
 // code/controlflow2.prp
 total = 0
-for a in (1..3) { total += a }
+for a in 1..3 { total += a }
 I(total == (1+2+3))
 
 total = 0 // compact double nested loop
-for a in (1..3) ; b in (1, 2) { total += a }
+for a in 1..3 ; b in (1, 2) { total += a }
 I(total == (1+2+3 + 1+2+3))
 
 // Powerful library. Simple reduce example
 reduce = ::{
   t = $0
   for a in $[1..] {
-    t = $.__block(t, a)
+    t = #(t, a)      // # access code block
   }
   return t
 }
@@ -1543,7 +1543,7 @@ class: split-50
 // code/codeblock.prp file
 puts import io.puts
 each as ::{
-  for a in $ { $.__block(a) }
+  for a in $ { #(a) }
 }
 
 each(1,2,3)     ::{ puts($) }
@@ -1551,9 +1551,8 @@ each(1,2,3)     ::{ puts($) }
 
 map as ::{
   t = ()
-  fun = \$.__block
   for a in $ {
-    t ++= fun(a)
+    t ++= #(a)
   }
   return t
 }
@@ -1572,9 +1571,9 @@ I(s == (4,9,16))
 ```coffeescript
 // code/reduce.prp file
 reduce = ::{
-  if $.__size <= 1{ return $ }
+  if $.__size <= 1 { return $ }
 
-  redop = \$.__block // code block reference
+  redop = \#.0   // reference, not function call
   tmp = $
 
   while true {
@@ -1593,6 +1592,52 @@ reduce = ::{
 }
 a = (1,2,3) |> reduce ::{$0 + $1}
 I(a == 6)
+```
+]
+---
+class: split-50
+# Code blocks II
+
+.column[
+```coffeescript
+// code/codeblock2.prp file
+dec_large = ::{
+  for a in $ {
+    if (#[0](a)) {      // #.0 == #[0]
+      % ++= #.potato(a) // #.1 == #.potato
+    }else{
+      % ++= a
+    }
+  }
+}
+
+a = (1, 2, 3, 10) |> dec_large ::{ $0 > 3 } potato { $0-1 }
+I(a==(1,2,3,9))
+```
+]
+--
+.column[
+```coffeescript
+// code/codeblock3.prp file
+tree_reduce as ::{
+  red_step as ::{
+    for i in 1..$.__size by $width {
+      % ++= #($[i..(i+$width)])
+    }
+  }
+  val = red_step($,\#)      // Pass code blocks too
+  I(val.__size<$.__size-1)  // Each pass should reduce elements
+  while val.__size>1  {
+    val = red_step($width, val, \#)
+  }
+  return val
+}
+
+a = (1,1,1,2,2,2,0,1,0)
+a3 = a |> tree_reduce(width=3) ::{ for i in ${ % += i } }
+I(a3==10) # 2 levels: ((1+1+1) + (2+2+2) + (0+1+0))
+a2 = a |> tree_reduce(width=2) ::{ for i in ${ % += i } }
+I(a2==10) # 4 levels: ((((1+1) + (1+2)) + ((2+2) + (0+1))) + ((0)))
 ```
 ]
 
@@ -1975,9 +2020,10 @@ class: split-50
 ### Flop/Latches/SRAM Specific
 ```coffeescript
 // code/mem5.prp
- __bits          Number of bits in register
+ __bits          Number of bits
+ __allowed       Allowed values
  __posedge       Posedge or negedge (true)
- __lastl         Last value or flop output
+ __last          Beginning of cycle value (only flops/srams)
  __size          number of entries in a SRAM or tuple
  __latch         Latch not flop based (false)
  __clk_pin       Wire signal to control clk pin (rd and wr)
@@ -1997,6 +2043,7 @@ class: split-50
  __rnd           Generate an allowed random number
  __obj           ID for each module hierarchy
  __index         Loop iteration position
+ __io_pos        io possition for generated verilog
  __set           Tuple behaves like a set (false)
  __rnd_bias      Controls random generation
  __stage         stage or comb submodule (false)
@@ -2186,20 +2233,20 @@ class: split-50
 ### Explicit vs implicit
 ```coffeescript
 // code/precission1.prp
-a = 3       // implicit, __range:3u2bits
+a = 3       // implicit, __allowed:3u2bits
 a = a + 1   // OK
 
-b = 3u2bits // explicit, __bits:2 __range:3u2bits
-b = b - 1   // OK, __range:2u2bits
+b = 3u2bits // explicit, __bits:2 __allowed:3u2bits
+b = b - 1   // OK, __allowed:2u2bits
 b = b + 2   // compile error, __bits explicit 2
 I(b == 2)
 b := b + 2  // OK (drop bits)
 I(b == 0)   // 4u2bits -> 0b100[[0..1]] == 0
 
 // implicit unless all values explicit
-c = 3 - 1u1bits // implicit, __bits:2 __range:2u2bits
+c = 3 - 1u1bits // implicit, __bits:2 __allowed:2u2bits
 
-@d as __range:(0, 1, 7) // allowed values
+@d as __allowed:(0, 1, 7) // allowed values
 @d = 1      // OK
 @d += 1
 @d += 1     // compile error
@@ -2212,7 +2259,7 @@ I(0b11_1100 == (a, 0b1100)[[]]) // bit concatenation
 ### Conditions
 ```coffeescript
 // code/precission2.prp
-a as __range:(1..6)
+a as __allowed:(1..6)
 a = 5
 c = 5
 if xx {
@@ -2223,11 +2270,11 @@ if xx {
   c = c - 4
 }
 a = a + 1  // compile error, may be out range
-I(c.__range == (1,6)) // all possible values
+I(c.__allowed == (1,6)) // all possible values
 c = c + 2
-I(c.__range == (3,8) and c.__bits == 4)
+I(c.__allowed == (3,8) and c.__bits == 4)
 c = c ^ (c>>1)  // Not predictable
-I(c.__range == (0..15) and c.__bits == 4)
+I(c.__allowed == (0..15) and c.__bits == 4)
 c = 300   // OK because c was explicit
 
 d = 50u2bits  // compile error

@@ -62,8 +62,8 @@ I a==3
 map as ::{
   t = ()
   fun = $.__block
-  for a:$ {
-    t ++= fun a
+  for a in $ {
+    t ++= fun(a)
   }
   return t
 }
@@ -127,4 +127,17 @@ reduce = ::{
 total = (1 2 3 4) |> reduce \doadd
 I total == 10
 
+------
+
+dec_large = ::{
+  for a in $ {
+    if (#[0](a)) {      // #.0 == #[0]
+      % ++= #.potato(a) // #.1 == #.potato
+    }else{
+      % ++= a
+    }
+  }
+}
+
+(1, 2, 3) |> dec_large ::{ $0 > 3 } potato { $0-1 }
 
