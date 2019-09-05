@@ -259,8 +259,8 @@ endmodule
 ### Pyrope unit test
 ```coffeescript
 // code/counter_test.prp file
-b as counter ++ (__stage:true) // pipeline type
-b.total as (__bits:4)
+b as counter ++ (__stage as true) // pipeline type
+b.total as (__bits as 4)
 b.enable = 0
 I(b.total == 0)                // assertion
 yield                          // advance clock
@@ -290,8 +290,8 @@ if $enable {
 ### Pyrope unit test
 ```coffeescript
 // code/counter_test.prp file
-*b as counter // ++ (__stage:true) // combination type
-b.total as (__bits:4)
+*b as counter // ++ (__stage as true) // combination type
+b.total as (__bits as 4)
 b.enable = 0
 I(b.total == 0)                // assertion
 yield                          // advance clock
@@ -391,7 +391,7 @@ task: Quick Dive to Pyrope
 
 ```coffeescript
 // libs/adder/code/rca.prp file
-fa = :($a $b $cin %sum %cout):{    // method with explicit arguments
+fa = :($a,$b,$cin,%sum,%cout):{    // method with explicit arguments
   tmp   = $a  ^ $b
   %sum  = tmp ^ $cin
   %cout = (tmp & $cin) | ($a & $b)
@@ -407,7 +407,7 @@ for i in 0..a.__bits {             // iterate #bits
 
 test2 = ::{
   puts import io.puts
-  c = rca(a:32, b:4, cin:0)
+  c = rca(a=32, b=4, cin=0)
   puts("sum is {0:b} {0}",c.sum)   // puts has c++ fmt in prplib
 }
 ```
@@ -426,7 +426,7 @@ for i in (0..$a.__bits) {
 
 test = ::{
   for a in (1..100); b in (0..33); c in (0 1) {
-    d = rca2(a:a, b:b, cin:c)
+    d = rca2(a=a, b=b, cin=c)
     I(d.sum == (a+b+c))
   }
 }
@@ -446,7 +446,7 @@ task: Quick Dive to Pyrope
 ```coffeescript
 // libs/adder/code/cla.prp file
 and_red import lib.and_reduction
-%sum = rca(a:$a b:$b cin:0).sum
+%sum = rca(a=$a b=$b cin=0).sum
 
 g = $a & $b // Generate
 p = $a ^ $b // Propagate
@@ -464,8 +464,8 @@ for i in 0..a.__bits {
 
 test = ::{
   for a in (1..40) ; b in (1..100) {
-    c1 = cla(a:a,b:b,cin:0)
-    c2 = rca(a:a,b:b,cin:0)
+    c1 = cla(a=a, b=b, cin=0)
+    c2 = rca(a=a, b=b, cin=0)
     I(c1.cout == c2.cout)
   }
 }
@@ -478,22 +478,22 @@ task: Quick Dive to Pyrope
 
 ```coffeescript
 // libs/adder/code/scla.prp file
-cla = :($a $b) when $a.__bits==8:{           // specialize when bits == 8
-  s1 = cla($a[[0..3]],$b[[0..3]],cin:0)      // cla for 4 bits
+cla = :($a,$b) when $a.__bits==8:{           // specialize when bits == 8
+  s1 = cla(a=$a[[0..3]],b=$b[[0..3]],cin=0)  // cla for 4 bits
   t = generate($a[[0..3]],$b[[0..3]])        // generate carry method
-  s2 = cla($a[[4..7]],$b[[4..7]],cin:t)      // CLA with fast cin
+  s2 = cla(a=$a[[4..7]],b=$b[[4..7]],cin=t)  // CLA with fast cin
   %sum = (s2.sum,s1.sum)[[]]                 // bit concatenation
 }
 
 cla = :($a,$b) when $a.__bits==12:{          // specialize when bits == 12
-  s1 = cla($a[[0..7]],$b[[0..7]],cin:0)      // .. Ruby style ranges
+  s1 = cla(a=$a[[0..7]],b=$b[[0..7]],cin=0)  // .. Ruby style ranges
   t = generate($a[[0..6]],$b[[0..6]])        // generate carry method
-  s2 = cla($a[[6..11]] $b[[6..11]],cin:t)
+  s2 = cla(a=$a[[6..11]],b=$b[[6..11]],cin=t)
   %sum = (s2.sum,s1.sum)[[]]
 }
 
-cla = :($a $b):{                             // default CLA (not CLA, just RCA)
-  return rca($a,$b,cin:0)
+cla = :($a,$b):{                             // default CLA (not CLA, just RCA)
+  return rca(a=$a,b=$b,cin=0)
 }
 
 test = ::{
@@ -542,14 +542,14 @@ s1 import libs.adder.rca
 
 %sum.__stage = true
 %sum1.__stage as true
-%sum2 as (__stage:true)
+%sum2 as __stage=true
 
 sum1 = $a + $b
 sum2 = $c + $c
-%sum = s1(a:sum1.sum,b:sum2.sum,cin:0)
+%sum = s1(a=sum1.sum,b=sum2.sum,cin=0)
 
 test = ::{
-  b as add4(a:1,b:2,c:3,d:4)
+  b as add4(a=1,b=2,c=3,d=4)
   I(b.sum1 == 10 and b.sum2 ==  0 and b.sum ==  0)
   yield
   I(b.sum1 == 10 and b.sum2 == 10 and b.sum ==  0)
@@ -656,7 +656,7 @@ test = ::{
   puts import io.puts
   gcd as vschisel
   (a,b,z) as __bits:16
-  z = gcd(a:a.__rnd,b:b.__rnd)
+  z = gcd(a=a.__rnd,b=b.__rnd)
   waitfor z
   puts("gcd for {} and {} is {}", a, b, z)
 }
@@ -818,7 +818,7 @@ test = ::{
   seq = (0 1 1 2 3 5 8 13 21 34)
   for n in 0..9 {
     n as __bits:6     // 6 bit fibonacci
-    b = vspyrtl(n:n)
+    b = vspyrtl(n=n)
     waitfor b.result  // multiple clocks
     I(b.result == seq[n])
   }
@@ -860,12 +860,12 @@ module de.tuhh.ict.Timing {
 ```coffeescript
 // code/vspshdl.prp file
 // % is the output vector
-% = (a:1,b:2,c:3,d:4)
+% = (a=1,b=2,c=3,d=4)
 %a = %b
 %b = %c
 %c = %d
 %d = 5
-I(% == (a:2,b:3,c:4,d:5))
+I(% == (a=2,b=3,c=4,d=5))
 ```
 * Avoid hardware driven syntax
 ]
@@ -1041,7 +1041,7 @@ unique if isBig and animal.__obj == Dog {
   result = 2
 }elif isBig and animal.__obj == Bird {
   result = 3
-}elif !isBig and (animal.__obj == Bird 
+}elif !isBig and (animal.__obj == Bird
                 or animal.__obj == Cat) {
   result = 4
 }elif !isBig and animal.__obj == Bird {
@@ -1081,9 +1081,9 @@ eleven = 5 |> double |> increment
 
 add = :($x,$y):{$x + $y}
 addFive = \add  // add reference, no call
-addFive = ::{ super(x:5,y:$y) }
-eleven  = ::{ super(y:6) }
-twelve  = ::{ super(y:7) }
+addFive = ::{ super(x=5,y=$y) }
+eleven  = ::{ super(y=6) }
+twelve  = ::{ super(y=7) }
 ```
 * Pyrope has primitive currying
 ]
@@ -1269,10 +1269,10 @@ y = pow(10, floor(log10(x)))
 ```coffeescript
 puts import io.puts
 square = :($x):{$ * $}
-eat    = :($x):{puts(square($)) }
+eat    = :($x):{puts(square(x=$)) }
 
 for food in (1 2 3) {
-  if food !=2 { eat food }
+  if food !=2 { eat(x=food) }
 }
 
 r=square(3 + square(4))// 361
@@ -1340,17 +1340,19 @@ total = 0 // compact double nested loop
 for a in 1..3 ; b in (1, 2) { total += a }
 I(total == (1+2+3 + 1+2+3))
 
-// Powerful library. Simple reduce example
-reduce = ::{
-  t = $0
-  for a in $[1..] {
-    t = #(t, a)      // # access code block
-  }
-  return t
+// loop initialization assignments
+for a = 3 ; b in 0..3 {
+  I(a==3+b)
+  a = a + 1
 }
+I(a) // compile error: undefined
 
-a = (1, 2, 3) |> reduce ::{$0+$1}
-I(a == (1+2+3))
+total = 0
+while a=3 ; b=0 ; total < a {
+  a = a + 1
+  total = total + 2
+}
+I(b==0) // compile error: undefined
 ```
 ]
 
@@ -1468,7 +1470,7 @@ d = (1
     ,3)
 e = (,,1,,,
     ,3,,) // Extra empty commas have no meaning
-I(e==d) 
+I(e==d)
 
 bar = 3
     * 1 + 4
@@ -1499,40 +1501,34 @@ f = 1 ;+3                // Ugly legal syntax
 ]
 
 ---
-class: split-50
 # Single line syntax
 
-.column[
 ```coffeescript
 // code/singleline.prp
+// ; is same as a newline
 puts import io.puts
-if true { x = 3 }       // OK
+if true { x = 3 }
 if true {
-x = 3 }                 // OK
-//if true
-//{ x = 3 }             // parse error, no newline
+x = 3 }
+if true                       // parse error: extra newline
+{ x = 3 }
 
-if true ::{ puts(x)}     // error scope in block
-if true { puts(x) }      // OK
+if true { a = 3 puts(a) }     // compile error:
 
 if true ::{ a = 3 ; puts(a)}
 
-// parse error, no space between :: {
-//if true :: {puts(false})
+if true :: {puts(false})      // parse error: no space :: {
 
 c = 0
 d = 0
 if true ::{ c = 1 ; d = 2 }
-I(d == 0 and c == 0)      // :: is a new scope
+I(d == 0 and c == 0)          // :: is a new scope
 if true ::{ %c = 1 ; %d = 2 }
 I(d == 2 and c == 1)
 
 for a in (1..3) {puts(a)}
-I(a == 3)                // compile error
-
-// ; is same as a newline
+I(a == 3)                     // compile error
 ```
-]
 
 ---
 class: split-50
@@ -1566,7 +1562,7 @@ s = (1,2,3) |> map ::{$+1} |> map ::{$*$}
 I(s == (4,9,16))
 ```
 ]
---
+
 .column[
 ```coffeescript
 // code/reduce.prp file
@@ -1594,6 +1590,7 @@ a = (1,2,3) |> reduce ::{$0 + $1}
 I(a == 6)
 ```
 ]
+
 ---
 class: split-50
 # Code blocks II
@@ -1603,19 +1600,19 @@ class: split-50
 // code/codeblock2.prp file
 dec_large = ::{
   for a in $ {
-    if (#[0](a)) {      // #.0 == #[0]
-      % ++= #.potato(a) // #.1 == #.potato
+    if (#.0(a)) {     // #.0 == #[0]
+      % ++= #.bar(a)  // #.1 == #.bar
     }else{
       % ++= a
     }
   }
 }
 
-a = (1, 2, 3, 10) |> dec_large ::{ $0 > 3 } potato { $0-1 }
+a = (1,2,3,10) |> dec_large ::{ $0 > 3 } bar { $0-1 }
 I(a==(1,2,3,9))
 ```
 ]
---
+
 .column[
 ```coffeescript
 // code/codeblock3.prp file
@@ -1625,8 +1622,8 @@ tree_reduce as ::{
       % ++= #($[i..(i+$width)])
     }
   }
-  val = red_step($,\#)      // Pass code blocks too
-  I(val.__size<$.__size-1)  // Each pass should reduce elements
+  val = red_step($, \#)    // Also pass code block
+  I(val.__size<$.__size-1)
   while val.__size>1  {
     val = red_step($width, val, \#)
   }
@@ -1634,10 +1631,16 @@ tree_reduce as ::{
 }
 
 a = (1,1,1,2,2,2,0,1,0)
-a3 = a |> tree_reduce(width=3) ::{ for i in ${ % += i } }
-I(a3==10) # 2 levels: ((1+1+1) + (2+2+2) + (0+1+0))
-a2 = a |> tree_reduce(width=2) ::{ for i in ${ % += i } }
-I(a2==10) # 4 levels: ((((1+1) + (1+2)) + ((2+2) + (0+1))) + ((0)))
+a3 = a |> tree_reduce(width=3) ::{ // 2 levels
+  for i in ${ % += i }
+}
+// ((1+1+1) + (2+2+2) + (0+1+0))
+I(a3==10)
+a2 = a |> tree_reduce(width=2) ::{ // 4 levels
+  for i in ${ % += i }
+}
+// ((((1+1) + (1+2)) + ((2+2) + (0+1))) + ((0)))
+I(a2==10)
 ```
 ]
 
@@ -1666,7 +1669,6 @@ I(c.out == 2)
 ```
 ]
 
---
 
 .column[
 ### Control flow constructs
@@ -1795,31 +1797,65 @@ I(a == 4 and b == 3)
 ]
 
 ---
+# Namespace
+
+```coffeescript
+// dir1/code/scope1.prp file
+// directories are namespaces (dir1 in dir1/code/scope1.prp)
+// code*, src*, test*, _*, and *_ do not create namespace
+
+puts import io.puts  // puts only visible to this file
+export puts          // export puts to every file in directory/namespace
+scope1_m1 = ::{ 1 }
+scope1_m2 = ::{ 1 }
+
+export scope1_m1
+```
+
+```coffeescript
+// dir1/code/scope2.prp file
+puts import io.puts         // redundant (exported in scope1.prp)
+puts("{} == 1", scope1_m1)  // exported in scope1.prp
+```
+
+```coffeescript
+// dir2/code/scope1.prp file
+puts import io.puts
+export puts
+puts("{} == 1", scope1_m1)  // compile error: exported in dir1
+```
+
+```coffeescript
+// dir2/_hid/src3/code/dir73_/scope2.prp file
+sc1 import dir1.scope1_m1
+puts("{} == 1", sc1)        // calls scope1_m1
+```
+
+---
 # Function call arguments
 
 ```coffeescript
 // code/fcalls.prp file
 puts import io.puts  // puts only visible to this file
-export puts          // export puts to all the files in this directory
 
-square = :($x):{$ * $}
+square = :($x):{$x * $}     // $ has a single element, so $x == $
 //r=square 3 + square 4     // parse error, complex argument
 //r=square(3 + square(4))   // parse error, space required for arguments
 //r=square (3 + square (4)) // parse error, missing explicit argument
-r=square(square, 4)           // compile error, square has 1 argument, 2 passed
+r=square(square, 4)         // compile error, square has 1 argument, 2 passed
 r=square (3 + (square(4)))  // compile error, two args, but first reqs argument
-r=square (3 + square(4))   // OK, 361 = (3+4^2)^2 ; ^ is exp, not power
-r=square(3 + square(4))   // OK, 361
-r=square(3) + square(4)   // OK, 25
+r=square (3 + square(4))    // OK, 361 = (3+4^2)^2 ; ^ is exp, not power
+r=square(3 + square(4))     // OK, 361
+r=square(3) + square(4)     // OK, 25
 pass  = ::{
   if $.__size == 1 { return 7 }
   if $.__size == 2 { return 9 }
   11
 }
-puts(3,square,4,5)         // OK, prints "3 4 5"
-puts(3,square(4),5)        // OK, prints "3 16 5"
-puts(,,3,,,,pass,,,,5,,)   // OK, prints "3 11 5"
-puts(3,pass(4),5)          // OK, prints "3 7 5"
+puts(3,square,4,5)          // OK, prints "3 4 5"
+puts(3,square(4),5)         // OK, prints "3 16 5"
+puts(,,3,,,,pass,,,,5,,)    // OK, prints "3 11 5"
+puts(3,pass(4),5)           // OK, prints "3 7 5"
 ```
 
 ---
@@ -1856,21 +1892,23 @@ class: split-50
 ### Basic tuples
 ```coffeescript
 // code/tuples1.prp
-a = (b:1,c:2)  // ordered, named
+a = (b=1,c=2)              // ordered, named
 I(a.b == 1 and a.c == 2)
 I(a.0 == 1 and a.2 == 2)
 
-b =(3,false)   // ordered, unnamed
+b =(3,false)               // ordered, unnamed
 I(b.0 == 3 and b[1] == false)
 
-c1 as (__bits:1, __bits:3) // final ordered unnamed
+c1.b.__bits = 1
+c1.c.__bits = 3
 c as c1
-c as (b:, c:)  // final ordered named
+c as (c=0, b=1)            // final ordered named
+I(c.c==0 and c.b==1)
 c = (true,2)
 c = (false,33) // compile error
 c.bar = 3      // compile error
 
-d as (a:3,5)   // final, ordered, unnamed
+d as (a=3,5)   // final, ordered, unnamed
 I(d.a == 3 and d[1] == 5)
 
 g = (1,2,3)
@@ -1885,12 +1923,38 @@ I(e.0 == 3 and e == 3)
 .column[
 ### Complex tuples
 ```coffeescript
-(e1, e2) = 3
-I(e1 == 3 and e2 == 3)
-//(e1, e2) = (3) // Compile error
-(e1, e2)= (1, 2)
-I(e1 == 1 and e2 == 2)
+(e1, e2) = (1, 2)
+I(e1==1 and e2==2)
+(e1, e2) = (3)        // Compile error
 
+(f,g) = 3
+I(f==3 and g==3)
+(f,g) as field=1
+I(f.field==1 and g.field=1)
+
+a = (b=1, c as 2)
+a.b=3                 // OK to change
+a.c=3                 // compile error
+a.d=3                 // OK, new field
+
+a ++= (d=4)
+I(a.d==4 and a.b==1)
+
+d as (b=1, c=2)
+d.b = 10             // OK
+d.e = 1              // compile error
+d ++= (e=4)          // compile error
+```
+]
+
+---
+class: split-50
+# Sets and Enums
+
+.column[
+### Sets
+```coffeescript
+// code/sets1.prp
 s as __set:true
 s = (1, 2, 3, 3)
 I(s == (1,2,3))
@@ -1898,15 +1962,28 @@ s ++= 4  // add to tuple
 s = s ++ (1,4,5)
 I(s == (1,2,3,4,5))
 
-x = __size:32
-x[(1, 3)] = (3, 1)
-x[(1, 2)] = (1, 1)
-I(x[(1, 3)] == (3, 1))
-I(x[(0b1, 0b11)][0] == 3)
-I(x[0b1_11][1] == 1)
+```
+]
 
-a = (a:1,b:2) ++ (b:5,c:6)
-I(a == (a:1,b:5,c:6))
+.column[
+### Enumerate
+```coffeescript
+// code/enums1.prp
+
+// Plain tuple with fixed (as) fields
+tup = (Red as 1,Blue as 2,Purple as 3)
+I(tup.Red == 1)
+(a,b,c) as __allowed=tup
+c = tup.Red              // OK
+b = 3                    // OK, allowed value
+a = 5                    // Compile error
+
+tup2 as tup
+a.__enum as tup2
+a = tup2.Red             // OK
+a = tup.Red              // Compile error
+a = 3                    // Compile error
+
 ```
 ]
 
@@ -2021,12 +2098,11 @@ class: split-50
 ```coffeescript
 // code/mem5.prp
  __bits          Number of bits
- __allowed       Allowed values
  __posedge       Posedge or negedge (true)
- __last          Beginning of cycle value (only flops/srams)
- __size          number of entries in a SRAM or tuple
+ __last          Beginning of cycle data (flops/SRAMs)
+ __size          number of entries (SRAMs/tuple)
  __latch         Latch not flop based (false)
- __clk_pin       Wire signal to control clk pin (rd and wr)
+ __clk_pin       Wire signal to control clk pin
  __clk_rd_pin    Wire signal to read clk pin
  __clk_wr_pin    Wire signal to write clk pin
  __reset         Code block to execute during reset
@@ -2040,11 +2116,13 @@ class: split-50
 ### Generic
 ```coffeescript
 // code/generic.prp
+ __allowed       Allowed values in variable
+ __enum          Tuple values become an enum
+ __set           Tuple behaves like a set (false)
  __rnd           Generate an allowed random number
  __obj           ID for each module hierarchy
  __index         Loop iteration position
  __io_pos        io possition for generated verilog
- __set           Tuple behaves like a set (false)
  __rnd_bias      Controls random generation
  __stage         stage or comb submodule (false)
  __fluid         Outputs in module handled as fluid
@@ -2153,15 +2231,15 @@ $prp --run rndtest
 @mem0 as __bits:4 __size:16
 @mem0.__reset = ::{ this = 3 }
 
-@mem1 as (__bits:4,__size:16, __reset_pin:0)
+@mem1 as (__bits=4,__size=16, __reset_pin=0)
 
-@mem2 as (__bits:2,__size:32)
+@mem2 as (__bits=2,__size=32)
 
 // complex custom reset
 @mem2.__reset_cycles = @mem2.__size + 4
 @mem2.__reset = ::{
   // Called during reset or after clear (!!)
-  @_reset_pos as __bits:log2(@this.__size) __reset:false
+  @_reset_pos as (__bits=log2(@this.__size),__reset=false)
   @this[@_reset_pos] = @_reset_pos
   @_reset_pos += 1
 }
@@ -2246,7 +2324,7 @@ I(b == 0)   // 4u2bits -> 0b100[[0..1]] == 0
 // implicit unless all values explicit
 c = 3 - 1u1bits // implicit, __bits:2 __allowed:2u2bits
 
-@d as __allowed:(0, 1, 7) // allowed values
+@d.__allowed as (0, 1, 7) // allowed values
 @d = 1      // OK
 @d += 1
 @d += 1     // compile error
@@ -2259,7 +2337,7 @@ I(0b11_1100 == (a, 0b1100)[[]]) // bit concatenation
 ### Conditions
 ```coffeescript
 // code/precission2.prp
-a as __allowed:(1..6)
+a.__allowed as 1..6
 a = 5
 c = 5
 if xx {
@@ -2440,24 +2518,27 @@ class: split-50
 sadd = ::{ %sum = $a + $b }
 sinc = ::{ % = $ + 1 }
 combinational = ::{
-  % = ssum(a:sinc($a), b:sinc($b))
+  % = ssum(a=sinc($a), b=sinc($b))
 }
 
 one_stage_flop_out  = ::{ // The output is flopped
-  % = ssum(a:sinc($a), b:sinc($b))
-  % as __stage:true
+  % = ssum(a=sinc($a), b=sinc($b))
+  % as __stage=true
 }
 
 one_stage_comb_out = ::{  // Not flopped output
-  a1 as sinc
-  a2 as ssum __stage:true
-  % = a2(a:a1($a), b:a1($b))
+  a1 as \sinc
+  a2 = \ssum
+  a2 as __stage=true
+  % = a2(a=a1($a), b=a1($b))
 }
 
 two_stage_comb_out = ::{  // Not flopped output
-  a1 as sinc __stage:true
-  a2 as ssum __stage:true
-  % = a2(a:a1($a), b:a1($b))
+  a1 = \sinc
+  a1.__stage as true
+  a2 = \ssum
+  a2 as __stage=true
+  % = a2(a=a1($a), b=a1($b))
 }
 ```
 ]
@@ -2468,24 +2549,24 @@ two_stage_comb_out = ::{  // Not flopped output
 // code/fluid8.prp file
 
 combinational = ::{
-  % = ssum(a:sinc($a), b:sinc($b))
+  % = ssum(a=sinc($a), b=sinc($b))
 }
-incsum = combinational(a:$a,b:$b)
+incsum = combinational(a=$a,b=$b)
 incsum as __fluid:true    // instance is fluid
 
 one_stage_fluid  = ::{    // Same as incsum
-  % = ssum(a:sinc($a), b:sinc($b))
-  % as __fluid:true
+  % = ssum(a=sinc($a), b=sinc($b))
+  % as __fluid=true
 }
 
 mixed_weird_fluid = ::{
-  %out1 = a2(a:a1($a), b:a1($b))
-  %out2 = a2(a:$a b:$b)
-  %out2 as __fluid:true
+  %out1 = a2(a=a1($a), b=a1($b))
+  %out2.__fluid=true
+  %out2 = a2(a=$a b=$b)
 }
 
 allfluid = mixed_weird_fluid
-allfuild as __fluid:true  // both out1 and out2
+allfuild as __fluid=true  // both out1 and out2
 ```
 ]
 
@@ -2502,18 +2583,18 @@ sinc = ::{ % = $ + 1 }
 opt1_2stages = ::{
   s1_a = sinc($a)
   s1_b = sinc($b)
-  s1_a as __stage:true
-  s1_b as __stage:true
-  % = sadd(a:s1_a, b:s1_b)
-  % as __stage:true
+  s1_a as __stage=true
+  s1_b as __stage=true
+  % = sadd(a=s1_a, b=s1_b)
+  % as __stage=true
 }
 
 opt2_2stages = ::{
   s1_a = sinc($a)
   s1_b = sinc($b)
-  % = sadd(a:s1_a, b:s1_b)
+  % = sadd(a=s1_a, b=s1_b)
 
-  (s1_a, s1_b, %) as __stage:true
+  (s1_a, s1_b, %) as __stage=true
 }
 ```
 ]
@@ -2524,14 +2605,16 @@ opt2_2stages = ::{
 opt3_2stages = ::{
   s1.a = sinc($a)
   s1.b = sinc($b)
-  % = sadd(a:s1.a, b:s1.b)
+  % = sadd(a=s1.a, b=s1.b)
 
-  (s1, %) as __stage:true
+  (s1, %) as __stage=true
 }
 
 opt4_2stages = ::{
-  s1 = (a:sinc($a), b:sinc($b)) __stage:true
-  %  = sadd(s1) __stage:true
+  s1 = (a=sinc($a), b=sinc($b))
+  s1.__stage=true
+  %  = sadd(s1)
+  %.__stage=true
 }
 ```
 ]
@@ -2846,7 +2929,7 @@ void prp_myprint(const prp_tuple inp, prp_tuple &out) {
 ```coffeescript
 // code/test_call2.prp
 my_c_code import my_c_code
-a = (b:1, c:true, d:"hello")
+a = (b=1, c=true, d="hello")
 %foo = my_c_code(a)
 
 // code/test_call2.cpp
