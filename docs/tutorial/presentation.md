@@ -178,6 +178,9 @@ none
 
   * Allows Pyrope 2 Verilog, edit Verilog, Verilog 2 Pyrope, edit Pyrope...
 
+  * Zero cost abstraction
+
+
 ---
 
 # Fast/Live Pyrope
