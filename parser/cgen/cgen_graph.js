@@ -756,6 +756,10 @@ function cfg_gen(data){
     if(i == "property"){ //for x = a:1 (or) foo.(b, a:1)// handles identifier with property
       arr.push(":");
     }
+    if(i == "iter") {
+      arr.push("in");
+    }
+
     if(i == "operator" && !(typeof(data[i])=="object")){
       arr.push(data[i]);  //handles "=" push into CFG array
     }
@@ -830,6 +834,11 @@ function cfg_gen(data){
         str_join.push('"');
         arr.push(str_join.join(''));
       }else if(data[i]["type"] == ":"){
+        arr.push(convertToNumberingScheme(tmp_count));
+        tmp_count = tmp_count + 1;
+        tmp_count_track = 1;
+        cfg_gen(data[i]);
+      }else if(data[i]["type"] == "in"){
         arr.push(convertToNumberingScheme(tmp_count));
         tmp_count = tmp_count + 1;
         tmp_count_track = 1;
