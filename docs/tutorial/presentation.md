@@ -2130,6 +2130,7 @@ class: split-50
  __stage         stage or comb submodule (false)
  __fluid         Outputs in module handled as fluid
  __comptime      Statement known at compile time
+ __const         Variables are constant at run time
  __debug         Debug statment, no side effects
 ```
 ]
@@ -2299,7 +2300,7 @@ if a==3 {  // compile time if condition
   %d = $0+a // no constant
 }
 
-{.constexpr:true
+{.__comptime=true
 I(a == b)   // Compile time assertion
 }
 I(%d != a)  // runtime assertion
@@ -2630,6 +2631,8 @@ opt4_2stages = ::{
 // code/assign1.prp
 a = b         // potential restart in fluid
 a as c        // alias a as c, no real read for fluid
+e = c
+e.__const = true  // e is same as c, constant
 
 b = __bits:3  // explicit bits
 b = 3         // OK
