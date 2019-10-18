@@ -337,7 +337,7 @@ function peg$parse(input, options) {
           return {
             start_pos:location().start.offset,
             end_pos:location().end.offset,
-            type:"if",
+            type:"elif",
             condition:else_test,
             scope:tmp_sc[0],
             //scope_args:tmp_sc[1],

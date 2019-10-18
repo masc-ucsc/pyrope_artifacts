@@ -176,7 +176,10 @@ catch(err) {
     console.error('-'.dup(start_column) + '^');
     process.exit(4);
     //return;
+  }else {
+    console.log(err); //throw "non-pyrope syntax" errors
   }
+
 }
 
 console.log("END");
