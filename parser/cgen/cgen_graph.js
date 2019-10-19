@@ -215,11 +215,13 @@ function cfg_gen(data) {
     k_next_count++;
     if(else_scope == 1) { //SEQ of else part of code block must have same parent as TRUE part
       _parent = else_parent_arr[else_parent_arr.length - 1];
-      else_parent_arr.splice(else_parent_arr.length - (scope_count - scope_out_count), (scope_count - scope_out_count));
+      //else_parent_arr.splice(else_parent_arr.length - (scope_count - scope_out_count), (scope_count - scope_out_count));
+      if(scope_count > scope_out_count)
+        else_parent_arr.splice(else_parent_arr.length - 1, 1);
       seq_child = 1;
       else_scope = 0;
     }else {
-      else_parent_arr.push(_parent);
+      //else_parent_arr.push(_parent);
     }
     arr.push(k_count);
     arr.push(_parent);
@@ -426,6 +428,10 @@ function cfg_gen(data) {
         tmp_scope_count = scope_count;
         local_scope_count = scope_count;
 
+        if(data['scope_alt_body'] != null) {
+          else_parent_arr.push(k_count - 1);
+        }
+
         for(var j = 0; j < data[i].length; j++){
           if(j == data[i].length - 1){
             method_id_track = 1;
@@ -571,6 +577,10 @@ function cfg_gen(data) {
           scope_count++;
           tmp_scope_count = scope_count;
           local_scope_count = scope_count;
+        }
+
+        if(data['try_else'] != null) {
+          else_parent_arr.push(k_count - 1);
         }
 
         for(var j = 0; j < data[i].length; j++){
@@ -785,6 +795,9 @@ function cfg_gen(data) {
         scope_count++;
         tmp_scope_count = scope_count;
         local_scope_count = scope_count;
+        if(data['false_case'] != null) {
+          else_parent_arr.push(k_count - 1);
+        }
 
         for(var j = 0; j < data[i].length; j++){
           if(j == data[i].length - 1){
@@ -923,7 +936,13 @@ function cfg_gen(data) {
         arr.push(convertToNumberingScheme(tmp_count));
         tmp_count = tmp_count + 1;
         tmp_count_track = 1;
+        if(data['type'] == "elif") { //handle scope of elif with complex conditional expression
+          tmp_scope_count = tmp_scope_count + 1;
+        }
         cfg_gen(data[i]);
+        if(data['type'] == "elif") { //handle scope of elif with complex conditional expression
+          tmp_scope_count = tmp_scope_count - 1;
+        }
       }else if(data[i]["type"] == "not_op"){
         if(data[i]["not_arg"]["type"] == "number" || data[i]["not_arg"]["type"] == "identifier"){
           arr.push('!'+data[i]["not_arg"]["value"]);
