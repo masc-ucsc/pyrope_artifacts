@@ -2948,3 +2948,31 @@ void prp_my_c_code(const prp_tuple inp, prp_tuple &out) {
   fmt::print("b:{} c:{} d:{}\n", b.get_uint64(), c.get_bool(), d.get_sview());
 }
 ```
+
+---
+# Some sample zip/enumerate library code
+
+```coffeescript
+// code/zip.prp
+zip as ::{
+  conta = 0
+  for a in $ {
+    I(a.__size == $0.__size)
+    %res[conta] = a
+    conta = conta + 1
+  }
+}
+enumerate as ::{
+  for a in $ {
+    %res[a.__index].0 = a.__index
+    %res[a.__index].1 = a
+  }
+}
+
+total1= zip([0..2],["a","b","c"])
+total2= ["a","b","c"] |> enumerate
+I(total1==total2)
+
+tota1.each { puts("{} {}\n", $0, $1) }
+
+```
