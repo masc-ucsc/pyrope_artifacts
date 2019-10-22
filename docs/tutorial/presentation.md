@@ -1693,7 +1693,7 @@ I(i == 3) // compile error, undefined
 
 @val = 3
 @val_link punch @scope2.val
-I(@val_link.__id == @val.__id)
+I(@val_link.__obj == @val.__obj)
 I(@val_link == 3)
 @val = 1
 I(@val_link == 1)
@@ -1727,7 +1727,7 @@ n3 = ::{
 }
 $i1 punch %n2.n1.o
 $i2 punch %scope5.n2.n1.o
-I($i1.__id == $i2.__id)
+I($i1.__obj == $i2.__obj)
 I(n3.o2 == 2)
 I(n3.o4 == 4)
 ```
@@ -2123,7 +2123,7 @@ class: split-50
  __enum          Tuple values become an enum
  __set           Tuple behaves like a set (false)
  __rnd           Generate an allowed random number
- __obj           ID for each module hierarchy
+ __obj           object id
  __index         Loop iteration position
  __io_pos        io possition for generated verilog
  __rnd_bias      Controls random generation
@@ -2315,11 +2315,11 @@ class: split-50
 ### Explicit vs implicit
 ```coffeescript
 // code/precission1.prp
-a = 3       // implicit, __allowed:3u2bits
-a = a + 1   // OK
+a = 2       // implicit, __bits:2
+a = a - 1   // OK, implicit __bits:1
 
-b = 3u2bits // explicit, __bits:2 __allowed:3u2bits
-b = b - 1   // OK, __allowed:2u2bits
+b = 3u2bits // explicit, __bits:2
+b = b - 2   // OK, bits:2
 b = b + 2   // compile error, __bits explicit 2
 I(b == 2)
 b := b + 2  // OK (drop bits)
@@ -2329,9 +2329,9 @@ I(b == 0)   // 4u2bits -> 0b100[[0..1]] == 0
 c = 3 - 1u1bits // implicit, __bits:2 __allowed:2u2bits
 
 @d.__allowed as (0, 1, 7) // allowed values
-@d = 1      // OK
-@d += 1
-@d += 1     // compile error
+@d = 0      // OK
+@d += 1     // OK
+@d += 1     // error
 
 I(0b11_1100 == (a, 0b1100)[[]]) // bit concatenation
 ```
@@ -2881,7 +2881,7 @@ a = b + 4+c - d
 ]
 
 .column[
-### Strings must be known at compile time
+### Strings are immutable at execution time
 ```coffeescript
 // code/debug2.prp
 cond.__comptime as true
