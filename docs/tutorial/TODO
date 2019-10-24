@@ -1,4 +1,10 @@
 
+Create a website with markdown?
+https://github.com/tomjoht/documentation-theme-jekyll
+Ideally, same markdown can be used for a book
+
+--------
+
 try {
   a = $input
 }else{
