@@ -154,10 +154,10 @@ code_block_int
     }
 
 scope_declaration
-	= args:scope LBRACE sc:((EOS/__) __) 
+	= args:scope LBRACE sc:((EOS/__) __)
     body:(x:scope_body? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)})
    	RBRACE alt:(__ x:scope_else{return x})? {
-      
+     
       var i,j
       for(i=0;i<sc[1].length;i++){
         sc.push(sc[1][i])
@@ -186,7 +186,7 @@ scope_declaration
     }
 
 scope_else
-  = ELSE _ LBRACE sc:((EOS/__) __) 
+  = ELSE _ LBRACE sc:((EOS/__) __)
   else_true:(x:scope_body? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)}) RBRACE
   {
     var i,j
@@ -195,25 +195,25 @@ scope_else
     }
 
     sc.splice(1,1)
-    
+   
     if(sc[0]==null || (sc[0] instanceof Array)){
       sc.splice(0,1)
     }
     //return sc
-    
+   
     if(else_true==null){
       else_true=[]
     }
-    
+   
     j=sc.length-1
-    
+   
     while(sc.length>0 && j>=0){
       else_true.unshift(sc[j])
       j = j-1
     }
-    
+   
     if((else_true instanceof Array) && else_true.length==0) else_true=null
-    
+   
     return else_true;
   }
 
@@ -260,7 +260,7 @@ scope_argument
 
 scope_colon
 	= ((_ x:scope LBRACE y:(EOS/__) )/_ LBRACE x:(EOS/__) {return x})
-    
+   
 empty_scope_colon
 	= ((_ x:"::" LBRACE y:(EOS/__) )/_ LBRACE x:(EOS/__) {return x})
 
@@ -268,7 +268,7 @@ block_body
   = head:(x:code_blocks? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)}) RBRACE {
     if(head instanceof Array && head[0] == null)
       return head[0]
-    
+   
     return head
   }
 
@@ -327,11 +327,11 @@ if_statement
        		start_pos:location().start.offset,
         	end_pos:location().end.offset,
         	type:"if",
-			condition:{
-        		type:"number",
-            	value:"true"
-        	},       		
-            scope:null,
+			    condition:{
+        	  type:"number",
+            value:"true"
+        	},
+          scope:null,
        		true_case:assign,
        		false_case:null
      	}
@@ -350,7 +350,7 @@ if_statement
     }
     */
   }
-  / LBRACE body:block_body 
+  / LBRACE body:block_body
     { //unconditional block {.......}
    	return {
        	start_pos:location().start.offset,
@@ -376,7 +376,8 @@ else_statement
     return {
       start_pos:location().start.offset,
       end_pos:location().end.offset,
-      type:"if",
+      //type:"if",
+      type:"elif",
       condition:else_test,
       scope:tmp_sc[0],
       //scope_args:tmp_sc[1],
@@ -391,7 +392,7 @@ else_statement
   }
 
 for_statement
-  = FOR assign:(_ x:assignment_expression _ SEMI_COLON+{return x})* 
+  = FOR assign:(_ x:assignment_expression _ SEMI_COLON+{return x})*
   idx:for_index sc:empty_scope_colon body:block_body
   {
     var tmp_sc = prettyPrintBlocks(body, sc)
@@ -409,11 +410,11 @@ for_statement
        		start_pos:location().start.offset,
         	end_pos:location().end.offset,
         	type:"if",
-			condition:{
+			    condition:{
         		type:"number",
-            	value:"true"
-        	},       		
-            scope:null,
+            value:"true"
+        	},      
+          scope:null,
        		true_case:assign,
        		false_case:null
      	}
@@ -425,15 +426,15 @@ for_in_notation
 	= head:identifier IN tail:(fcall_explicit/tuple_notation) {
   		return {
         	type:"in",
-            iter:head,
-            iter_range:tail
-        }
+          iter:head,
+          iter_range:tail
+      }
 	}
-    
+   
 for_index "for index notation"
 	= head:for_in_notation tail:(SEMI_COLON+ x:for_in_notation)* {
     	var char = buildList(head, tail, 1);
-        return char
+      return char
     }
 /*
   head:rhs_expression_property tail:(_ rhs_expression_property)* {
@@ -447,8 +448,6 @@ for_index "for index notation"
     return char
   }
 */
-
-  
 
 while_statement
   = p:WHILE assign:(_ x:assignment_expression _ SEMI_COLON+{return x})* cond:logical_expression

@@ -174,7 +174,7 @@ function peg$parse(input, options) {
       peg$c5 = function(args, sc, x, y, z) {return prettyPrintScope(x,y,z)},
       peg$c6 = function(args, sc, body, x) {return x},
       peg$c7 = function(args, sc, body, alt) {
-            
+           
             var i,j
             for(i=0;i<sc[1].length;i++){
               sc.push(sc[1][i])
@@ -209,25 +209,25 @@ function peg$parse(input, options) {
           }
 
           sc.splice(1,1)
-          
+         
           if(sc[0]==null || (sc[0] instanceof Array)){
             sc.splice(0,1)
           }
           //return sc
-          
+         
           if(else_true==null){
             else_true=[]
           }
-          
+         
           j=sc.length-1
-          
+         
           while(sc.length>0 && j>=0){
             else_true.unshift(sc[j])
             j = j-1
           }
-          
+         
           if((else_true instanceof Array) && else_true.length==0) else_true=null
-          
+         
           return else_true;
         },
       peg$c10 = function(head, x) {return x},
@@ -270,7 +270,7 @@ function peg$parse(input, options) {
       peg$c19 = function(head) {
           if(head instanceof Array && head[0] == null)
             return head[0]
-          
+         
           return head
         },
       peg$c20 = function(sc, body, x) {return x},
@@ -323,11 +323,11 @@ function peg$parse(input, options) {
              		start_pos:location().start.offset,
               	end_pos:location().end.offset,
               	type:"if",
-      			condition:{
-              		type:"number",
-                  	value:"true"
-              	},       		
-                  scope:null,
+      			    condition:{
+              	  type:"number",
+                  value:"true"
+              	},
+                scope:null,
              		true_case:assign,
              		false_case:null
            	}
@@ -368,7 +368,8 @@ function peg$parse(input, options) {
           return {
             start_pos:location().start.offset,
             end_pos:location().end.offset,
-            type:"if",
+            //type:"if",
+            type:"elif",
             condition:else_test,
             scope:tmp_sc[0],
             //scope_args:tmp_sc[1],
@@ -395,11 +396,11 @@ function peg$parse(input, options) {
              		start_pos:location().start.offset,
               	end_pos:location().end.offset,
               	type:"if",
-      			condition:{
+      			    condition:{
               		type:"number",
-                  	value:"true"
-              	},       		
-                  scope:null,
+                  value:"true"
+              	},      
+                scope:null,
              		true_case:assign,
              		false_case:null
            	}
@@ -409,14 +410,14 @@ function peg$parse(input, options) {
       peg$c30 = function(head, tail) {
         		return {
               	type:"in",
-                  iter:head,
-                  iter_range:tail
-              }
+                iter:head,
+                iter_range:tail
+            }
       	},
       peg$c31 = peg$otherExpectation("for index notation"),
       peg$c32 = function(head, tail) {
           	var char = buildList(head, tail, 1);
-              return char
+            return char
           },
       peg$c33 = function(p, x) {return x},
       peg$c34 = function(p, assign, cond, sc, body) {
