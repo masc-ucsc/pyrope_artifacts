@@ -265,13 +265,19 @@ function cfg_gen(data) {
       if(data["type"] == "elif") {
         arr.push("elif");
       }else {
-        arr.push("if");
+        if(data["type"] == "if") {
+          arr.push("if");
+        }else {
+          arr.push("uif");
+        }
       }
     }
 
+    /*
     if(i == "uif_condition"){
       arr.push("uif");
     }
+    */
 
     if(i == "while_condition"){
       arr.push("while");
@@ -771,12 +777,14 @@ function cfg_gen(data) {
         var idx = scope_count - scope_out_count;
         if(scope_count > scope_out_count) {
           idx = scope_count;
-          elif_phi_mark = 0;
+          //#elif_phi_mark = 0;
           if(data["type"] == "elif") {
             idx = scope_arr[scope_arr.length - 1];
           }
         }
         child_arr[idx]++;
+        //arr.splice(1, 0, child_arr[idx]);
+        //arr.splice(1, 0, parent_arr[idx]);
         arr.unshift(child_arr[idx]);
         arr.unshift(parent_arr[idx]);
         arr.unshift('K'+k_count); // push k_id to arr
