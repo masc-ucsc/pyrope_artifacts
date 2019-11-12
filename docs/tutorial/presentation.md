@@ -222,7 +222,7 @@ class: split-40r
 ```coffeescript
 // code/counter.prp file
 if $enable {
-  @total := @total + 1
+  #total := #total + 1
 }
 ```
 ]
@@ -286,7 +286,7 @@ class: split-40
 ```coffeescript
 // code/counter.prp file
 if $enable {
-  @total := @total + 1
+  #total := #total + 1
 }
 ```
 
@@ -518,7 +518,7 @@ task: Quick Dive to Pyrope
 // code/ccounter.prp file
 ..+.. import libs.adder.scla.cla  // Overload + operator
 if $enable {
-  @total := @total + 1
+  #total := #total + 1
   I(3 ..+.. 4 == 7 == 3 + 4)      // + is an alias for ..+..
 }
 
@@ -647,11 +647,11 @@ object Example {
 ### Pyrope
 ```coffeescript
 if $a? and $b? {
-  (@x @y) = ($a $b)
+  (#x #y) = ($a $b)
 }else{
-  if   @x > @y { @x = @x - @y }
-  else         { @y = @y - @x }
-  if @y == 0   { %z = @x      }
+  if   #x > #y { #x = #x - #y }
+  else         { #y = #y - #x }
+  if #y == 0   { %z = #x      }
 }
 ```
 ```coffeescript
@@ -706,7 +706,7 @@ endmodule: mkTb
 ### Pyrope
 ```coffeescript
 // code/vsbsv.prp file
-@cycles = @cycles + 1
+#cycles = #cycles + 1
 x = 10
 a = x
 a = a * a
@@ -757,11 +757,11 @@ print(verilog.convert(my_blinker, ios={led}))
 ### Pyrope
 ```coffeescript
 // code/vsmigen.prp file
-if @counter {
-  @counter -= 1 // @counter-- does not work
+if #counter {
+  #counter -= 1 // #counter-- does not work
 }else{
-  @counter = $maxperiod
-  @led = ~@led // Not %, @ is always valid
+  #counter = $maxperiod
+  #led = ~#led // Not %, # is always valid
 }
 
 test = ::{
@@ -810,11 +810,11 @@ def fibonacci(n, req, bitwidth):
 ```coffeescript
 // code/vspyrtl.prp file
 if $n? {  // new request
-  (@a,@b,@i) = (0,0,n)
+  (#a,#b,#i) = (0,0,n)
 }else{
-  (@a,@b,@i) = (@b,@a+@b, @i-1)
+  (#a,#b,#i) = (#b,#a+#b, #i-1)
 }
-if @i == 0 { %result = @a }
+if #i == 0 { %result = #a }
 ```
 ```coffeescript
 test = ::{
@@ -892,9 +892,9 @@ upCounter enable = s
 ### Pyrope
 ```coffeescript
 // code/vsclash.prp file
-@upCounter as __bits:8
+#upCounter as __bits:8
 if $enable {
- @upCounter += 1
+ #upCounter += 1
 }
 ```
 * Easier to guess hw mapping
@@ -942,7 +942,7 @@ collector out.resolved on "gen" {
 // code/vsliberty.prp file
 puts import io.puts
 gen  = ::{
-  @data = @data + 1
+  #data = #data + 1
 }
 sink = ::{
   if $data? {
@@ -1083,7 +1083,7 @@ double    = :($x):{$x + $x}
 eleven = 5 |> double |> increment
 
 add = :($x,$y):{$x + $y}
-addFive = \add  // add reference, no call
+addFive = @add  // add reference, no call
 addFive = ::{ super(x=5,y=$y) }
 eleven  = ::{ super(y=6) }
 twelve  = ::{ super(y=7) }
@@ -1125,10 +1125,10 @@ total = [x*x for x in range(10) if x % 2]
 ```coffeescript
 // code/vspython.prp file
 objectTest.get_value = ::{
-  return @this.myvalue
+  return #this.myvalue
 }
 objectTest.set_value = :($a):{
-  @this.myvalue = $a
+  #this.myvalue = $a
   return this
 }
 
@@ -1413,7 +1413,7 @@ I((3, 2) ..sub1.. (2, 3) == (1, 0))
 class: split-50
 # Operator precedence
 
-* Unary operators (!,~,@,?,%...) bind stronger than binary operators (+,++,-,*...)
+* Unary operators (!,~,#,?,%...) bind stronger than binary operators (+,++,-,*...)
 * **Only** six levels of operator precedence (16 levels in c++)
 * Always left-to-right evaluation
 
@@ -1421,7 +1421,7 @@ class: split-50
 .small[
 | Priority | Category | Main operators in category |
 |:-----------:|:-----------:|-------------:|
-| 1          | Unary     | not ! ~ @ ? % $ |
+| 1          | Unary     | not ! ~ # ? % $ |
 | 2          | Mult/Div  | *, /         |
 | 3          | bitwise ops | ^, & |     |
 | 4          | other bin | +, ++, --, <<, >>, >>>, <<< |
@@ -1572,7 +1572,7 @@ I(s == (4,9,16))
 reduce = ::{
   if $.__size <= 1 { return $ }
 
-  redop = \#.0   // reference, not function call
+  redop = @#.0   // reference, not function call
   tmp = $
 
   while true {
@@ -1622,13 +1622,13 @@ I(a==(1,2,3,9))
 tree_reduce as ::{
   red_step as ::{
     for i in 1..$.__size by $width {
-      % ++= #($[i..(i+$width)])
+      % ++= $.__do($[i..(i+$width)])
     }
   }
-  val = red_step($, \#)    // Also pass code block
+  val = red_step($)    // Also pass code block
   I(val.__size<$.__size-1)
   while val.__size>1  {
-    val = red_step($width, val, \#)
+    val = red_step($width, val, @#)
   }
   return val
 }
@@ -1691,12 +1691,12 @@ for i in (1..3) { total += i }
 I(total == 1+2+3)
 I(i == 3) // compile error, undefined
 
-@val = 3
-@val_link punch @scope2.val
-I(@val_link.__obj == @val.__obj)
-I(@val_link == 3)
-@val = 1
-I(@val_link == 1)
+#val = 3
+#val_link punch #scope2.val
+I(#val_link.__obj == #val.__obj)
+I(#val_link == 3)
+#val = 1
+I(#val_link == 1)
 ```
 ]
 
@@ -1716,14 +1716,14 @@ class: split-50
 ```coffeescript
 // code/scope5.prp
 n2 = ::{
-  n1 = ::{ %o = 1 ; @r = 3 }
+  n1 = ::{ %o = 1 ; #r = 3 }
 }
 n3 = ::{
   // Punch a wire through n2/n1 hierarchy
   $p1 punch %n2.n1.o
   %o2 = $1 + 1
-  @p2 punch @n1.r
-  %o4 = @p2 + 1
+  #p2 punch #n1.r
+  %o4 = #p2 + 1
 }
 $i1 punch %n2.n1.o
 $i2 punch %scope5.n2.n1.o
@@ -1739,21 +1739,21 @@ I(n3.o4 == 4)
 // code/scope6.prp
 nested1_3b = ::{
   nested2 = ::{
-    @cycle as __bits:3
-    @cycle += @incr
+    #cycle as __bits:3
+    #cycle += #incr
   }
 nested1_5b = ::{
   nested2 = ::{
-    @cycle as __bits:5
-    @cycle += @incr
+    #cycle as __bits:5
+    #cycle += #incr
   }
 }
-@n2_links match @nested2
-for i in @n2_links {
+#n2_links match #nested2
+for i in #n2_links {
   i.incr = i.__index + 1
 }
-I(@n2_links[0].id == 1)
-I(@n2_links[1].id == 2)
+I(#n2_links[0].id == 1)
+I(#n2_links[1].id == 2)
 ```
 ]
 
@@ -1999,22 +1999,22 @@ class: split-50
 ### Clear SRAMs
 ```coffeescript
 // code/mem1.prp
-@a as __bits:3 __size:1024 __rdports:1
-@b as @a __fwd:false  // without cycle fowarding
-@cycle as __bits:8
+#a as __bits:3 __size:1024 __rdports:1
+#b as #a __fwd:false  // without cycle fowarding
+#cycle as __bits:8
 
-I(@a[0] == @cycle)
+I(#a[0] == #cycle)
 
-prev_val = @cycle
-@cycle += 1
-@a[0] = @cycle
-@b[0] = @cycle
+prev_val = #cycle
+#cycle += 1
+#a[0] = #cycle
+#b[0] = #cycle
 
-I(@a[0] == @cycle)
-I(@a[0].__last == prev_val)
-I(@b[0] == @b[0].__last == prev_val)
+I(#a[0] == #cycle)
+I(#a[0].__last == prev_val)
+I(#b[0] == #b[0].__last == prev_val)
 
-%out = @a[0] + @b.0
+%out = #a[0] + #b.0
 ```
 ]
 
@@ -2035,16 +2035,16 @@ class: split-50
 ```coffeescript
 // code/mem2.prp
 // Enforce #rd and wr ports in SRAM
-@a as __bits:8 __size:1024 __rdports:1 __wrports:1
-@cycle as __bits:8
+#a as __bits:8 __size:1024 __rdports:1 __wrports:1
+#cycle as __bits:8
 
-@cycle += 13
+#cycle += 13
 
 
 // ADDR must be stable at posedge. Push logic
-@a[@cycle] = @cycle-1
+#a[#cycle] = #cycle-1
 
-%out = @a[~@cycle]
+%out = #a[~#cycle]
 ```
 ]
 
@@ -2053,18 +2053,18 @@ class: split-50
 ```coffeescript
 // code/mem3.prp
 // Enforce #rd and wr ports in SRAM
-@a as __bits:8 __size:1024 __wrports:1
-@cycle     as __bits:8
+#a as __bits:8 __size:1024 __wrports:1
+#cycle     as __bits:8
 
-@cycle += 13
+#cycle += 13
 
-@_cycle_m1  = @cycle + 13 - 1
-@_cycle_p13 = @cycle + 13
-@_cycle_neg = ~(@cycle + 13)
+#_cycle_m1  = #cycle + 13 - 1
+#_cycle_p13 = #cycle + 13
+#_cycle_neg = ~(#cycle + 13)
 
-@a[@_cycle_p13] == @_cycle_m1
+#a[#_cycle_p13] == #_cycle_m1
 
-%out = @a[@_cycle_neg]
+%out = #a[#_cycle_neg]
 ```
 ]
 ---
@@ -2077,17 +2077,17 @@ class: split-50
 ```coffeescript
 // code/mem4.prp
 // Enforce #rd and wr ports in SRAM
-@a as __bits:8 __size:1024 __rdports:1 __wrports:1
-*@a as __posedge:false // posedge by default
-@cycle as __bits:8
+#a as __bits:8 __size:1024 __rdports:1 __wrports:1
+*#a as __posedge:false // posedge by default
+#cycle as __bits:8
 
-@cycle += 13
+#cycle += 13
 
 
 // SRAM can use pos/neg edge
-@a[@cycle] = @cycle-1
+#a[#cycle] = #cycle-1
 
-%out = @a[~@cycle]
+%out = #a[~#cycle]
 ```
 ]
 
@@ -2102,7 +2102,7 @@ class: split-50
 // code/mem5.prp
  __bits          Number of bits
  __posedge       Posedge or negedge (true)
- __last          Beginning of cycle data (flops/SRAMs)
+ __last          Value end last cycle (flops/SRAMs)
  __size          number of entries (SRAMs/tuple)
  __latch         Latch not flop based (false)
  __clk_pin       Wire signal to control clk pin
@@ -2112,6 +2112,7 @@ class: split-50
  __reset_pin     Wire signal to control reset pin
  __reset_cycles  Number of reset cycles required (1)
  __reset_async   Asynchronous reset (false)
+ __set           Tuple behaves like a set (false)
 ```
 ]
 
@@ -2121,7 +2122,6 @@ class: split-50
 // code/generic.prp
  __allowed       Allowed values in variable
  __enum          Tuple values become an enum
- __set           Tuple behaves like a set (false)
  __rnd           Generate an allowed random number
  __obj           object id
  __index         Loop iteration position
@@ -2132,6 +2132,8 @@ class: split-50
  __comptime      Statement known at compile time
  __const         Variables are constant at run time
  __debug         Debug statment, no side effects
+ __do            Code block passes as argument
+ __else          Else code block
 ```
 ]
 ---
@@ -2227,25 +2229,25 @@ $prp --run rndtest
 
 ```coffeescript
 // code/reset1.prp
-@a as __bits:3
-@a.__reset = ::{ this = 13 }
+#a as __bits:3
+#a.__reset = ::{ this = 13 }
 
-@b as __bits:3 __reset:false // disable reset
+#b as __bits:3 __reset:false // disable reset
 
-@mem0 as __bits:4 __size:16
-@mem0.__reset = ::{ this = 3 }
+#mem0 as __bits:4 __size:16
+#mem0.__reset = ::{ this = 3 }
 
-@mem1 as (__bits=4,__size=16, __reset_pin=0)
+#mem1 as (__bits=4,__size=16, __reset_pin=0)
 
-@mem2 as (__bits=2,__size=32)
+#mem2 as (__bits=2,__size=32)
 
 // complex custom reset
-@mem2.__reset_cycles = @mem2.__size + 4
-@mem2.__reset = ::{
+#mem2.__reset_cycles = #mem2.__size + 4
+#mem2.__reset = ::{
   // Called during reset or after clear (!!)
-  @_reset_pos as (__bits=log2(@this.__size),__reset=false)
-  @this[@_reset_pos] = @_reset_pos
-  @_reset_pos += 1
+  #_reset_pos as (__bits=log2(#this.__size),__reset=false)
+  #this[#_reset_pos] = #_reset_pos
+  #_reset_pos += 1
 }
 ```
 
@@ -2257,12 +2259,12 @@ $prp --run rndtest
 ```coffeescript
 // code/clk1.prp
 
-@clk_flop = $inp
-// implicit @clk_flop as __clk_pin:$clk
-@clk2_flop as __clk_pin:$clk2
-@clk2_flop = @clk_flop
+#clk_flop = $inp
+// implicit #clk_flop as __clk_pin:$clk
+#clk2_flop as __clk_pin:$clk2
+#clk2_flop = #clk_flop
 
-%out = @clk2_flop
+%out = #clk2_flop
 %out as __fluid:true
 %out as __clk_pin:$clk3  // 3rd clock for output
 ```
@@ -2328,10 +2330,10 @@ I(b == 0)   // 4u2bits -> 0b100[[0..1]] == 0
 // implicit unless all values explicit
 c = 3 - 1u1bits // implicit, __bits:2 __allowed:2u2bits
 
-@d.__allowed as (0, 1, 7) // allowed values
-@d = 0      // OK
-@d += 1     // OK
-@d += 1     // error
+#d.__allowed as (0, 1, 7) // allowed values
+#d = 0      // OK
+#d += 1     // OK
+#d += 1     // error
 
 I(0b11_1100 == (a, 0b1100)[[]]) // bit concatenation
 ```
@@ -2426,17 +2428,17 @@ class: split-50
 ```coffeescript
 // code/fluid2.prp file
 if a? and a.counter>0 {   // Option 1
-  @total += a.counter
+  #total += a.counter
 }
 try {                   // Option 2 (same behavor)
   if a.counter>0 {
-    @total += a.counter
+    #total += a.counter
   }
 }
 if a?.counter>0 {         // Option 3 (same)
-  @total += a.counter
+  #total += a.counter
 }
-@total += a?.counter      // Option 4 (same)
+#total += a?.counter      // Option 4 (same)
 ```
 ```coffeescript
 // code/fluid3.prp file
@@ -2455,22 +2457,22 @@ puts("prints every cycle")
 ```coffeescript
 // code/fluid4.prp file
 everyother = ::{
-  if @conta {
+  if #conta {
     yield
   }
-  @conta = ~@conta
+  #conta = ~#conta
   return 1
 }
 
-@total_all   += 1
-@total_yield += everyother
-I(@total_all == @total_yield)
+#total_all   += 1
+#total_yield += everyother
+I(#total_all == #total_yield)
 try {
-   @total2_all += 1
+   #total2_all += 1
 }
 try {
-   @total2_yield += everyother()
-   I(@total2_all == 2 then @total2_yield == 1)
+   #total2_yield += everyother()
+   I(#total2_all == 2 then #total2_yield == 1)
 }
 ```
 ]
@@ -2531,16 +2533,16 @@ one_stage_flop_out  = ::{ // The output is flopped
 }
 
 one_stage_comb_out = ::{  // Not flopped output
-  a1 as \sinc
-  a2 = \ssum
+  a1 as @sinc
+  a2 =  @ssum
   a2 as __stage=true
   % = a2(a=a1($a), b=a1($b))
 }
 
 two_stage_comb_out = ::{  // Not flopped output
-  a1 = \sinc
+  a1 = @sinc
   a1.__stage as true
-  a2 = \ssum
+  a2 = @ssum
   a2 as __stage=true
   % = a2(a=a1($a), b=a1($b))
 }
@@ -2683,7 +2685,7 @@ try {
 ```coffeescript
 // code/assign5.prp
 _tmp1 as $a // alias, no restart trigger
-_tmp2 = \$b // pass reference, no restart
+_tmp2 = @$b // pass reference, no restart
 try {
   %out1 = _tmp1 + 1  // can trigger resart
 }
@@ -2736,7 +2738,7 @@ child = parent  // copy
 I(child.__obj == parent.__obj)
 child.dox = ::{
   _tmp = super($)
-  %o3 = punch @this.v2 // add new field in child
+  %o3 = punch #this.v2 // add new field in child
   %o3 = 3              // set a value
   return tmp + 7
 }
