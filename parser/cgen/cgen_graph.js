@@ -21,7 +21,10 @@ var scope_arr = [];
 var curr_scope = 0, prev_scope = -1, scope_counter = 0;
 var else_scope = 0, elif_scope = 0;
 var _parent = 0, _child = 0;
+var child_tracker = 0, parent_tracker = null; //parent ID for if/while/for
 var seq_count = 0;
+var loop_parent = []; //tracks top-most parent of if/while/for
+var extended_expr = 0;
 
 cfg_gen_setup = function(input){ //enable this to pass AST to cfg_gen_setup; also change tmp_count -> tmp_count_track
   for(var i = 0; i < input.length; i++){
@@ -202,18 +205,33 @@ function pretty_print_predicates(read_arr, read_var){
   }
 }
 
-function cfg_gen(data) {
+function cfg_gen(data, obj_name = null) {
   var arr = [];
+  var obj = obj_name;
+  var obj2 = obj;
   var prp_type = null;
-  if(curr_scope > prev_scope) { //create SEQ block
+  if((curr_scope > prev_scope) || obj_name != null) { //create SEQ block
     var seq_child = 0;
     _parent = k_count - 1;
+    if(obj_name != null) {
+      //_parent = k_count;
+      _parent = loop_parent[loop_parent.length - 1];
+      parent_tracker = k_count + 1;
+      //console.log(data);
+      obj = null;
+    }else {
+      parent_tracker = null;
+      child_tracker = 0;
+    }
     if(k_count == 0) {
       _parent = 0;
     }
+    if(loop_parent.length != 0) {
+      _parent = loop_parent[loop_parent.length - 1];
+    }
     k_count++;
     k_next_count++;
-    if(else_scope == 1) { //SEQ of else part of code block must have same parent as TRUE part
+    if(0 && else_scope == 1) { //SEQ of else part of code block must have same parent as TRUE part
       _parent = else_parent_arr[else_parent_arr.length - 1];
       //else_parent_arr.splice(else_parent_arr.length - (scope_count - scope_out_count), (scope_count - scope_out_count));
       if(scope_count > scope_out_count)
@@ -227,12 +245,13 @@ function cfg_gen(data) {
     arr.push(_parent);
     arr.push(seq_child);  // child # for SEQ
     arr.push("SEQ"+seq_count);
-    parent_arr.push(k_count);
-    //parent_arr.push(_parent);
-    child_arr.push(-1);
-    seq_count++;
+    if(obj_name == null) {
+      parent_arr.push(k_count);
+      child_arr.push(-1);
+    }
     prev_scope = curr_scope;
-    _parent = k_count;
+    //##_parent = k_count;
+    seq_count++;
     console.log(arr.join('\t'));
     arr = [];
   }
@@ -261,7 +280,7 @@ function cfg_gen(data) {
       arr.push(data[i]);
     }
 
-    if(i == "condition"){
+    if(i == "condition") {
       if(data["type"] == "elif") {
         arr.push("elif");
       }else {
@@ -270,6 +289,29 @@ function cfg_gen(data) {
         }else {
           arr.push("uif");
         }
+        loop_parent.push(k_count+1);
+      }
+      obj = i;
+
+      k_count++;
+      if(data["type"] == "if") {
+        scope_arr.push(scope_count);
+      }
+      var idx = scope_count - scope_out_count;
+      if(scope_count > scope_out_count) {
+        idx = scope_count;
+        //##elif_phi_mark = 0;
+        if(data["type"] == "elif") {
+          idx = scope_arr[scope_arr.length - 1];
+        }
+      }
+      arr.unshift('K'+k_count);
+      child_arr[idx]++;
+      arr.splice(1, 0, child_arr[idx]);
+      if(data["type"] != "elif") {
+        arr.splice(1, 0, parent_arr[idx]);
+      }else {
+        arr.splice(1, 0, loop_parent[loop_parent.length - 1]);
       }
     }
 
@@ -281,6 +323,7 @@ function cfg_gen(data) {
 
     if(i == "while_condition"){
       arr.push("while");
+      obj = i;
     }
 
     if(i == "function"){
@@ -289,6 +332,7 @@ function cfg_gen(data) {
 
     if(i == "for_index"){
       arr.push("for");
+      obj = i;
     }
 
     if(i == "type" && data[i] == "try"){
@@ -360,7 +404,7 @@ function cfg_gen(data) {
             arr.push(convertToNumberingScheme(tmp_count));
             tmp_count = tmp_count + 1;
             tmp_count_track = 1;
-            cfg_gen(data[i][j]);
+            cfg_gen(data[i][j], obj);
           }
         }
       }
@@ -445,7 +489,7 @@ function cfg_gen(data) {
           tmp_scope_count = local_scope_count;
           curr_scope = tmp_scope_count;
           if(typeof(data[i][j])=="object" && data[i][j] != null && data[i][j]["type"] != "comment"){
-            cfg_gen(data[i][j]);
+            cfg_gen(data[i][j], obj);
           }
         }
         scope_out_count++;
@@ -499,13 +543,6 @@ function cfg_gen(data) {
       }
     }
 
-    /*##
-    if(arr[4] == '::{' && i == "scope_alt_body"){
-      k_count = k_count + 1;
-      k_next_count = k_next_count + 1;
-      arr.splice(1, 0, 'K'+k_next_count); //push k_next to arr
-    }
-    */
 
     if(i == "compile_body") {
       k_count++;
@@ -672,11 +709,11 @@ function cfg_gen(data) {
     */
 
     if(i == "for_index"){
-      for(var j = 0; j < data[i].length; j++){
+      for(var j = 0; j < data[i].length; j++) {
         arr.push(convertToNumberingScheme(tmp_count));
         tmp_count = tmp_count + 1;
         tmp_count_track = 1;
-        cfg_gen(data[i][j]);
+        cfg_gen(data[i][j], obj);
       }
     }
 
@@ -768,6 +805,7 @@ function cfg_gen(data) {
         //#arr.push("null");
       }else if(Array.isArray(data[i])){
         var local_scope_count = -1;
+        /*###
         k_count++;      //k_count for "if"
         k_next_count++;
 
@@ -789,6 +827,7 @@ function cfg_gen(data) {
         arr.unshift(parent_arr[idx]);
         arr.unshift('K'+k_count); // push k_id to arr
         //#arr.push('K'+(k_count+2)); //index for true case
+        */
 
         k_count++;
         k_next_count++;
@@ -861,6 +900,7 @@ function cfg_gen(data) {
           }
           curr_scope = tmp_scope_count;
 
+          //console.log(data[i]);
           if(typeof(data[i][j])=="object" && data[i][j] != null && data[i][j]["type"] != "comment"){
             cfg_gen(data[i][j]);
           }
@@ -947,7 +987,10 @@ function cfg_gen(data) {
         if(data['type'] == "elif") { //handle scope of elif with complex conditional expression
           tmp_scope_count = tmp_scope_count + 1;
         }
-        cfg_gen(data[i]);
+        if(obj_name == "condition") { //FIXME add for for and while also
+          extended_expr = 1;
+        }
+        cfg_gen(data[i], obj);
         if(data['type'] == "elif") { //handle scope of elif with complex conditional expression
           tmp_scope_count = tmp_scope_count - 1;
         }
@@ -958,7 +1001,7 @@ function cfg_gen(data) {
           arr.push('!'+convertToNumberingScheme(tmp_count));
           tmp_count = tmp_count + 1;
           tmp_count_track = 1;
-          cfg_gen(data[i]["not_arg"]);
+          cfg_gen(data[i]["not_arg"], obj);
         }
       }else if(data[i]["type"] == "bitwise_not_op"){
         if(data[i]["not_arg"]["type"] == "number" || data[i]["not_arg"]["type"] == "identifier"){
@@ -967,7 +1010,7 @@ function cfg_gen(data) {
           arr.push('~'+convertToNumberingScheme(tmp_count));
           tmp_count = tmp_count + 1;
           tmp_count_track = 1;
-          cfg_gen(data[i]["not_arg"]);
+          cfg_gen(data[i]["not_arg"], obj);
         }
       }else if(data[i]["type"] == "number" || data[i]["type"] == "identifier"){
         arr.push(data[i]["value"]);
@@ -977,37 +1020,37 @@ function cfg_gen(data) {
         arr.push(convertToNumberingScheme(tmp_count));
         tmp_count = tmp_count + 1;
         tmp_count_track = 1;
-        cfg_gen(data[i]);
+        cfg_gen(data[i], obj);
       }else if(data[i]["type"] == "function_call"){
         arr.push(convertToNumberingScheme(tmp_count));
         tmp_count = tmp_count + 1;
         tmp_count_track = 1;
-        cfg_gen(data[i]);
+        cfg_gen(data[i], obj);
       }else if(data[i]["type"] == "tuple_dot"){
         arr.push(convertToNumberingScheme(tmp_count));
         tmp_count = tmp_count + 1;
         tmp_count_track = 1;
-        cfg_gen(data[i]);
+        cfg_gen(data[i], obj);
       }else if(data[i]["type"] == "tuple_array"){
         arr.push(convertToNumberingScheme(tmp_count));
         tmp_count = tmp_count + 1;
         tmp_count_track = 1;
-        cfg_gen(data[i]);
+        cfg_gen(data[i], obj);
       }else if(data[i]["type"] == "bit_select"){
         arr.push(convertToNumberingScheme(tmp_count));
         tmp_count = tmp_count + 1;
         tmp_count_track = 1;
-        cfg_gen(data[i]);
+        cfg_gen(data[i], obj);
       }else if(data[i]["type"] == "range"){
         arr.push(convertToNumberingScheme(tmp_count));
         tmp_count = tmp_count + 1;
         tmp_count_track = 1;
-        cfg_gen(data[i]);
+        cfg_gen(data[i], obj);
       }else if(data[i]["type"] == "tuple_list"){
         arr.push(convertToNumberingScheme(tmp_count));
         tmp_count = tmp_count + 1;
         tmp_count_track = 1;
-        cfg_gen(data[i]);
+        cfg_gen(data[i], obj);
       }else if(data[i]["type"] == "string"){
         var str_join = [];
         str_join.push('"');
@@ -1018,22 +1061,29 @@ function cfg_gen(data) {
         arr.push(convertToNumberingScheme(tmp_count));
         tmp_count = tmp_count + 1;
         tmp_count_track = 1;
-        cfg_gen(data[i]);
+        cfg_gen(data[i], obj);
       }else if(data[i]["type"] == "in"){
         arr.push(convertToNumberingScheme(tmp_count));
         tmp_count = tmp_count + 1;
         tmp_count_track = 1;
-        cfg_gen(data[i]);
+        cfg_gen(data[i], obj);
       }else if(data[i]["type"] == "func_decl"){
         arr.push("\\"+convertToNumberingScheme(tmp_count));
         tmp_count = tmp_count + 1;
         tmp_count_track = 1;
-        cfg_gen(data[i]);
+        cfg_gen(data[i], obj);
       }
 
       if(i == "condition" && arr[0] == "F"+false_count_track && elif_condition_track){
         arr[0] = "F"+(false_count_track+1);
         elif_condition_track = 0;
+      }
+    }
+    if(i == "false_case") {
+      //console.log(loop_parent);
+      //console.log(data[i]);
+      if(!(Array.isArray(data[i]) && data["type"] == "elif")) {
+        loop_parent.pop();
       }
     }
   }
@@ -1045,8 +1095,18 @@ function cfg_gen(data) {
     //#arr.unshift('K'+k_next_count);
     arr.unshift('K'+k_count);
     child_arr[tmp_scope_count]++;
-    arr.splice(1, 0, parent_arr[tmp_scope_count]);
-    arr.splice(2, 0, child_arr[tmp_scope_count]);
+    if(obj_name == null) {
+      if(extended_expr == 0) {
+        arr.splice(1, 0, parent_arr[tmp_scope_count]);
+      }else {
+        arr.splice(1, 0, parent_tracker);
+        extended_expr = 0;
+      }
+      arr.splice(2, 0, child_arr[tmp_scope_count]);
+    }else {
+      arr.splice(1, 0, parent_tracker);
+      arr.splice(2, 0, child_tracker++);
+    }
   }
 
   if(arr[2] == "null"){  //this loop handles k_next = null for last element in a block
