@@ -1,5 +1,5 @@
 require('./tmp_var_generator.js');
-var tmp_count = 1;
+var tmp_count = 1, foo_tmp_count = 0;
 var tmp_count_track = 0;
 var start = 0, end = 0;
 var k_count = 0, k_next_count = 1;
@@ -32,6 +32,7 @@ cfg_gen_setup = function(input){ //enable this to pass AST to cfg_gen_setup; als
     tmp_count_track = 0;
     if(input[i]["type"] != "comment"){
       scope_arr = [];
+      foo_tmp_count = 0; // tmp counter variable
       cfg_gen(input[i]);
     }
     if(mark_read.length > 0){
@@ -323,7 +324,7 @@ function cfg_gen(data, obj_name = null) {
 
     if(i == "while_condition"){
       arr.push("while");
-      obj = i;
+      //obj = i;
     }
 
     if(i == "function"){
@@ -332,7 +333,7 @@ function cfg_gen(data, obj_name = null) {
 
     if(i == "for_index"){
       arr.push("for");
-      obj = i;
+      //obj = i;
     }
 
     if(i == "type" && data[i] == "try"){
@@ -405,6 +406,18 @@ function cfg_gen(data, obj_name = null) {
             tmp_count = tmp_count + 1;
             tmp_count_track = 1;
             cfg_gen(data[i][j], obj);
+          }else if(data[i][j]["type"] == "assignment_expression") {
+            //arr.push(convertToNumberingScheme(tmp_count));
+            tmp_count = tmp_count + 1;
+            foo_tmp_count = tmp_count;
+            tmp_count_track = 1;
+            cfg_gen(data[i][j], obj);
+            if(data[i][j]["left"]["type"] == "identifier") {
+              arr.push(data[i][j]["left"]["value"]);
+            }else {
+              arr.push(convertToNumberingScheme(foo_tmp_count));
+            }
+            //arr.push()
           }
         }
       }

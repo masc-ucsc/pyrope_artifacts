@@ -1,3 +1,4 @@
+// GRAMMARKIT -> http://dundalek.com/GrammKit/
 {
   function buildBinaryExpression(head, tail) {
     return tail.reduce(function(result, element) {
