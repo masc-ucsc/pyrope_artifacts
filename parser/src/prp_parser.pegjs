@@ -47,7 +47,7 @@
   }
 
   function prettyPrintScope(head,tail,end){
- 	  var i,tmp=[]
+    var i,tmp=[]
 
     if(!(tail instanceof Array) && head==null){
       tmp.push(tail)
@@ -65,13 +65,13 @@
     if(end){
       for(i=0;i<end.length;i++){
         head.push(end[i])
-    	}
+      }
     }
     return head
   }
 
   function prettyPrintArray(head,tail){
- 	  var tmp
+    var tmp
     tmp = tail.reduce(function flat(a,b) {
       if(Array.isArray(b)){
         return b.reduce(flat,a)
@@ -79,18 +79,18 @@
       if(b instanceof Object){
         b = b.value
       }
-     	a.push(b)
+      a.push(b)
       return a
     },[]);
     tmp.unshift(head.value)
     return tmp.join('')
   }
 
- 	function prettyPrintBlocks(if_true, sc) {
+  function prettyPrintBlocks(if_true, sc) {
     var tmp_sc = []
     var sc_colon = null
     var sc_args = null
- 		if((sc instanceof Array) && sc.length==0) {
+    if((sc instanceof Array) && sc.length==0) {
       sc = null
     }
     if(if_true != null){
@@ -137,12 +137,12 @@ code_blocks
     tail.unshift(head)
     var i,j,tmp=[]
     for(i=0;i<tail.length;i++){
-    	for(j=0;j<tail[i].length;j++){
+      for(j=0;j<tail[i].length;j++){
         tmp.push(tail[i][j])
       }
     }
     return tmp
-  	//return tail
+    //return tail
   }
 
 code_block_int
@@ -155,10 +155,10 @@ code_block_int
     }
 
 scope_declaration
-	= args:scope LBRACE sc:((EOS/__) __)
+  = args:scope LBRACE sc:((EOS/__) __)
     body:(x:scope_body? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)})
-   	RBRACE alt:(__ x:scope_else{return x})? {
-     
+    RBRACE alt:(__ x:scope_else{return x})? {
+
       var i,j
       for(i=0;i<sc[1].length;i++){
         sc.push(sc[1][i])
@@ -178,8 +178,8 @@ scope_declaration
       }
       if((body instanceof Array) && body.length==0) body=null
 
-  		return {
-     		type:"func_decl",
+      return {
+        type:"func_decl",
         scope_args:args,
         scope_body:body,
         scope_alt_body:alt
@@ -196,39 +196,39 @@ scope_else
     }
 
     sc.splice(1,1)
-   
+
     if(sc[0]==null || (sc[0] instanceof Array)){
       sc.splice(0,1)
     }
     //return sc
-   
+
     if(else_true==null){
       else_true=[]
     }
-   
+
     j=sc.length-1
-   
+
     while(sc.length>0 && j>=0){
       else_true.unshift(sc[j])
       j = j-1
     }
-   
+
     if((else_true instanceof Array) && else_true.length==0) else_true=null
-   
+
     return else_true;
   }
 
 scope_body
   = head:code_blocks tail:(EOS x:logical_expression __ {return x})? {
     if(tail){
-    	var tmp_tail = {
+      var tmp_tail = {
         start_pos:location().start.offset,
         end_pos:location().end.offset,
         type:"return",
         r_arg:tail
       }
-    	head.push(tmp_tail)
-   	}
+      head.push(tmp_tail)
+    }
     return head
   }
   / head:logical_expression __ {
@@ -257,29 +257,29 @@ scope_condition
   }
 
 scope_argument
-	= fcall_arg_notation
+  = fcall_arg_notation
 
 scope_colon
-	= ((_ x:scope LBRACE y:(EOS/__) )/_ LBRACE x:(EOS/__) {return x})
-   
+  = ((_ x:scope LBRACE y:(EOS/__) )/_ LBRACE x:(EOS/__) {return x})
+
 empty_scope_colon
-	= ((_ x:"::" LBRACE y:(EOS/__) )/_ LBRACE x:(EOS/__) {return x})
+  = ((_ x:"::" LBRACE y:(EOS/__) )/_ LBRACE x:(EOS/__) {return x})
 
 block_body
   = head:(x:code_blocks? y:(EOS/__) z:__ {return prettyPrintScope(x,y,z)}) RBRACE {
     if(head instanceof Array && head[0] == null)
       return head[0]
-   
+
     return head
   }
 
 try_statement
-	= TRY sc:empty_scope_colon
+  = TRY sc:empty_scope_colon
     body:block_body ELSE:(__ x:scope_else{return x})?
     {
-    	var tmp_sc = prettyPrintBlocks(body, sc)
+      var tmp_sc = prettyPrintBlocks(body, sc)
 
- 		  return {
+      return {
         start_pos:location().start.offset,
         end_pos:location().end.offset,
         type:"try",
@@ -287,11 +287,11 @@ try_statement
         //scope_args:tmp_sc[1],
         try_body:body,
         try_else:ELSE
-    	}
+      }
     }
 
 if_statement
-  = if_type:(UNIQUE_IF/IF) assign:(_ x:assignment_expression _ SEMI_COLON+{return x})* 
+  = if_type:(UNIQUE_IF/IF) assign:(_ x:assignment_expression _ SEMI_COLON+{return x})*
   if_test:logical_expression sc:empty_scope_colon
   if_true:block_body ELSE:(__ x:else_statement{return x})?
   {
@@ -324,19 +324,19 @@ if_statement
         false_case:ELSE
     }
     if(assign instanceof Array && assign.length > 0) {
-    	assign.push(if_obj);
-    	return {
-       		start_pos:location().start.offset,
-        	end_pos:location().end.offset,
-        	type:"if",
-			    condition:{
-        	  type:"number",
+      assign.push(if_obj);
+      return {
+          start_pos:location().start.offset,
+          end_pos:location().end.offset,
+          type:"if",
+          condition:{
+            type:"number",
             value:"true"
-        	},
+          },
           scope:null,
-       		true_case:assign,
-       		false_case:null
-     	}
+          true_case:assign,
+          false_case:null
+      }
     }
     return if_obj;
     /*
@@ -354,17 +354,17 @@ if_statement
   }
   / LBRACE body:block_body
     { //unconditional block {.......}
-   	return {
-       	start_pos:location().start.offset,
+    return {
+        start_pos:location().start.offset,
         end_pos:location().end.offset,
         type:"if",
         condition:{
-        	type:"number",
+          type:"number",
             value:"true"
         },
-       	scope:null,
-       	true_case:body,
-       	false_case:null
+        scope:null,
+        true_case:body,
+        false_case:null
      }
     return body
     }
@@ -407,35 +407,35 @@ for_statement
       for_body:body
     }
     if(assign instanceof Array && assign.length > 0) {
-    	assign.push(for_obj);
-    	return {
-       		start_pos:location().start.offset,
-        	end_pos:location().end.offset,
-        	type:"if",
-			    condition:{
-        		type:"number",
+      assign.push(for_obj);
+      return {
+          start_pos:location().start.offset,
+          end_pos:location().end.offset,
+          type:"if",
+          condition:{
+            type:"number",
             value:"true"
-        	},      
+          },
           scope:null,
-       		true_case:assign,
-       		false_case:null
-     	}
+          true_case:assign,
+          false_case:null
+      }
     }
     return for_obj
   }
 
 for_in_notation
-	= head:identifier IN tail:(fcall_explicit/tuple_notation) {
-  		return {
-        	type:"in",
+  = head:identifier IN tail:(fcall_explicit/tuple_notation) {
+      return {
+          type:"in",
           iter:head,
           iter_range:tail
       }
-	}
-   
+  }
+
 for_index "for index notation"
-	= head:for_in_notation tail:(SEMI_COLON+ x:for_in_notation)* {
-    	var char = buildList(head, tail, 1);
+  = head:for_in_notation tail:(SEMI_COLON+ x:for_in_notation)* {
+      var char = buildList(head, tail, 1);
       return char
     }
 /*
@@ -453,33 +453,33 @@ for_index "for index notation"
 
 while_statement
   = p:WHILE assign:(_ x:assignment_expression _ SEMI_COLON+{return x})* cond:logical_expression
-  	sc:empty_scope_colon body:block_body
+    sc:empty_scope_colon body:block_body
   {
     var tmp_sc = prettyPrintBlocks(body, sc)
 
-	var while_obj = {
-    	start_pos:location().start.offset,
-      	end_pos:location().end.offset,
-      	type:"while",
-      	while_condition:cond,
-      	scope:tmp_sc[0],
-      	//scope_args:tmp_sc[1],
-      	while_body:body
+  var while_obj = {
+      start_pos:location().start.offset,
+        end_pos:location().end.offset,
+        type:"while",
+        while_condition:cond,
+        scope:tmp_sc[0],
+        //scope_args:tmp_sc[1],
+        while_body:body
     }
-	if(assign instanceof Array && assign.length > 0) {
-    	assign.push(while_obj);
-    	return {
-       		start_pos:location().start.offset,
-        	end_pos:location().end.offset,
-        	type:"if",
-			condition:{
-        		type:"number",
-            	value:"true"
-        	},       		
+  if(assign instanceof Array && assign.length > 0) {
+      assign.push(while_obj);
+      return {
+          start_pos:location().start.offset,
+          end_pos:location().end.offset,
+          type:"if",
+      condition:{
+            type:"number",
+              value:"true"
+          },
             scope:null,
-       		true_case:assign,
-       		false_case:null
-     	}
+          true_case:assign,
+          false_case:null
+      }
     }
     return while_obj
   }
@@ -502,7 +502,7 @@ assertion_statement "assertion"
       type:"assertion",
       i_condition:head
     }
-	}
+  }
 
 negation_statement "negation"
   = NEGATION head:logical_expression {
@@ -529,13 +529,13 @@ assignment_expression
   = !constant head:(overload_notation/lhs_expression) __ op:(assignment_operator/*/FUNC_PIPE*/) __
   tail:(rhs_expression_property/fcall_implicit/logical_expression) {
     return {
-    	start_pos:location().start.offset,
+      start_pos:location().start.offset,
       end_pos:location().end.offset,
       type:"assignment_expression",
       operator:op,
       left:head,
       right:tail
-   	}
+    }
   }
 
 function_pipe
@@ -545,10 +545,10 @@ function_pipe
     return char[0]
 /*
         return tail.reduce(function(result,element){
-        	return{
-            	start_pos:location().start.offset,
-        		end_pos:location().end.offset,
-            	type:"func_pipe",
+          return{
+              start_pos:location().start.offset,
+            end_pos:location().end.offset,
+              type:"func_pipe",
                 pipe_arg:result,
                 pipe_func:element.f
             }
@@ -560,7 +560,7 @@ fcall_implicit
   = !constant func:tuple_dot_notation _ head:scope_declaration /*pipe:function_pipe?*/ { //remove "!not_in_implicit" to support foo::{}
     var arg = [];
     arg.push(head);
-    
+
     /*if(pipe){
       return {
         start_pos:location().start.offset,
@@ -570,7 +570,7 @@ fcall_implicit
           pipe_func:pipe,
       }
     }*/
-    
+
     return {
       start_pos:location().start.offset,
       end_pos:location().end.offset,
@@ -632,16 +632,16 @@ not_in_implicit
    / __ PIPE
 
 fcall_explicit
-  = !constant head:(x:(tuple_notation) DOT{return x})? func:tuple_dot_notation 
-  arg:fcall_arg_notation scope:scope_declaration? 
+  = !constant head:(x:(tuple_notation) DOT{return x})? func:tuple_dot_notation
+  arg:fcall_arg_notation scope:scope_declaration?
   chain:(DOT x:(fcall_explicit/tuple_dot_notation){return x})* /*pipe:function_pipe?*/ {
-        
+
     if(arg == null && (scope || head)){
       arg = [];
     }
 
-		if(head) arg.push(head)
-		if(scope) arg.push(scope)
+    if(head) arg.push(head)
+    if(scope) arg.push(scope)
 
     var fcall_return = {
       start_pos:location().start.offset,
@@ -660,7 +660,7 @@ fcall_explicit
       }, fcall_return);
 
     }
-        
+
     /*if(pipe){
       return {
         start_pos:location().start.offset,
@@ -675,7 +675,7 @@ fcall_explicit
   }
 
 fcall_arg_notation
-  = LPAR head:(rhs_expression_property/logical_expression) 
+  = LPAR head:(rhs_expression_property/logical_expression)
   tail:(COMMA (rhs_expression_property/logical_expression))* COMMA? RPAR {
     var char = buildList(head, tail, 1);
     return char
@@ -695,7 +695,7 @@ punch_format
   }
 
 punch_rhs
-	= first:"/" x:(a:identifier b:(DOT identifier)*)? "/" y:((DOT identifier)+/(DOT identifier)*) {
+  = first:"/" x:(a:identifier b:(DOT identifier)*)? "/" y:((DOT identifier)+/(DOT identifier)*) {
     var arr = [], arr2 = [], foo = [];
     if(x != null){
     var tmp1 = buildList(x[0],x[1],1);
@@ -746,19 +746,19 @@ additive_expression
   }
 
 bitwise_expression
-	= head:multiplicative_expression
+  = head:multiplicative_expression
   tail:(__ (PIPE/HAT/AMPERSAND) _ multiplicative_expression)* {
-    
+
     return buildBinaryExpression(head, tail);
   }
 
 multiplicative_expression
-	= head:unary_expression tail:(__ (STAR/DIV) _ unary_expression)* {
+  = head:unary_expression tail:(__ (STAR/DIV) _ unary_expression)* {
     return buildBinaryExpression(head, tail);
   }
 
 unary_expression
-	= factor
+  = factor
   / op:(NOT/TILDA) arg:factor {
     var t_op = "~"
     var op_type = "bitwise_not_op"
@@ -773,7 +773,7 @@ unary_expression
   }
 
 factor
-	= LPAR __ head:logical_expression __ RPAR xhead:bit_selection_bracket? {
+  = LPAR __ head:logical_expression __ RPAR xhead:bit_selection_bracket? {
     if(xhead){ //rule and ast for '(' expr ')'[[ ]] - bit sel statements
       return xhead.reduce(function(result, element) {
         return {
@@ -791,8 +791,8 @@ tuple_by_notation
   = BY head:lhs_var_name {return head}
 
 tuple_notation
-	= LPAR head:(assignment_expression/rhs_expression_property/logical_expression) _
-  tail:(COMMA (assignment_expression/rhs_expression_property/logical_expression) __)* COMMA? RPAR 
+  = LPAR head:(assignment_expression/rhs_expression_property/logical_expression) _
+  tail:(COMMA (assignment_expression/rhs_expression_property/logical_expression) __)* COMMA? RPAR
   by:(tuple_by_notation/bit_selection_bracket)?
   {
     var char = buildList(head, tail, 1);
@@ -851,10 +851,10 @@ range_notation
   }
 
 bit_selection_bracket
-	= tail:(LBRK LBRK property:(logical_expression)? RBRK RBRK {return {bit_property:property}})*
+  = tail:(LBRK LBRK property:(logical_expression)? RBRK RBRK {return {bit_property:property}})*
 
 bit_selection_notation
-	= head:(tuple_dot_notation) tail:bit_selection_bracket {
+  = head:(tuple_dot_notation) tail:bit_selection_bracket {
     return tail.reduce(function(result, element) {
       return {
         type: "bit_select",
@@ -865,24 +865,24 @@ bit_selection_notation
   }
 
 tuple_dot_dot
-	= tail:(DOT property:(tuple_array_notation) {return {dot_property:property}})*
+  = tail:(DOT property:(tuple_array_notation) {return {dot_property:property}})*
 
 tuple_dot_notation
-	= head:(tuple_array_notation) tail:tuple_dot_dot {
- 		return tail.reduce(function(result, element) {
+  = head:(tuple_array_notation) tail:tuple_dot_dot {
+    return tail.reduce(function(result, element) {
       return {
         type: "tuple_dot",
         dot_obj: result,
         dot_prop: element.dot_property,
       }
- 	  }, head)
+    }, head)
   }
 
 tuple_array_bracket
-	= tail:(LBRK property:(logical_expression) RBRK {return {arr_property:property}})*
+  = tail:(LBRK property:(logical_expression) RBRK {return {arr_property:property}})*
 
 tuple_array_notation
-	= head:(lhs_var_name) tail:tuple_array_bracket {
+  = head:(lhs_var_name) tail:tuple_array_bracket {
     return tail.reduce(function(result, element) {
       return {
         type: "tuple_array",
@@ -1019,7 +1019,7 @@ id_prefix
   // AMPERSAND
 
 id_postfix
-	= "?"
+  = "?"
 
 string_constant
   = '"' char:double_string* '"'  {
@@ -1096,8 +1096,8 @@ binary
       }
     }
     return {
-     	type:"number",
-    	value:head+tail.join('')
+      type:"number",
+      value:head+tail.join('')
     }
   }
 
@@ -1116,7 +1116,7 @@ boolean "true or false"
 decimal_signed
   = head:decimal_digit tail:(("s"/"u") ([0-9_]+ ("bits"/"bit"))?) {
     if (tail) {
-    	if (tail[1]) {
+      if (tail[1]) {
         var tmp =[];
         tmp.push(head.value);
         tmp.push(tail[0]);
@@ -1125,7 +1125,7 @@ decimal_signed
           type:"number",
           value:tmp.join(''),
         }
-     	}
+      }
       var tmp =[];
       tmp.push(head.value);
       tmp.push(tail[0]);
@@ -1150,8 +1150,8 @@ decimal_digit "integer greater than or equal to zero"
       type:"number",
       value:tmp+tail+tail2.join(''),
     }
-	}
-	/ head:"?" {
+  }
+  / head:"?" {
     var tmp = ["0d"];
     tmp.push(head);
     return {
@@ -1221,19 +1221,19 @@ __
   }
 
 _
- 	= (white_space
+  = (white_space
   / multi_line_comment_no_line_terminator)*
 
 white_space "white space"
   = "\t"
- 	/ "\v"
- 	/ "\f"
- 	/ " "
- 	/ "\u00A0"
- 	/ "\uFEFF"
+  / "\v"
+  / "\f"
+  / " "
+  / "\u00A0"
+  / "\uFEFF"
 
 EOS "end of statement"
-	= head:(__ SEMI_COLON+ {return }
+  = head:(__ SEMI_COLON+ {return }
   / _ x:single_line_comment? line_terminator_sequence {return x}
   / __ EOF)
 
@@ -1260,9 +1260,9 @@ comment "comments"
 single_line_comment
   = "//" (!line_terminator .)* {//return "comment"
     return {
-    	type:"comment",
+      type:"comment",
       start_pos:location().start.offset,
-    	end_pos:location().end.offset,
+      end_pos:location().end.offset,
       comment:text()
     }
   }
@@ -1299,7 +1299,7 @@ T_PLUS     =  x:"++"                {return {type:"tuple_operator",va
 T_STAR     =  x:"**"                {return {type:"tuple_operator",value:x};}
 UNION      = x:"union"          {return {type:"tuple_operator",value:x};}
 INTERSECT      = x:"intersect"         {return {type:"tuple_operator",value:x};}
-NOT			= x:"!"     {return {type:"not_operator",value:x};}
+NOT     = x:"!"     {return {type:"not_operator",value:x};}
 LT         =  x:("<"/":<")  ![=]   {return {type:"relational_operator",value:x};}
 GT         =  x:(">"/":>")  ![=]    {return {type:"relational_operator",value:x};}
 LE         =  x:("<="/":<=")         {return {type:"relational_operator",value:x};}
@@ -1312,7 +1312,7 @@ AS                 = x:"as"                     white_space* {
 HAT        =  x:"^"  ![=]        {return {type:"bitwise_operator",value:x};}
 OR         =  x:("or")           {return {type:"logical_operator",value:x};}
 AND        =  x:("and")          {return {type:"logical_operator",value:x};}
-XOR 	   = x:("xor")    		 {return {type:"logical_operator",value:x};}
+XOR      = x:("xor")         {return {type:"logical_operator",value:x};}
 IN         = white_space* x:"in" white_space+            {return {type:"in_operator",value:x};}
 T_PLUSEQU  =  head:T_PLUS tail:EQU  {return head}
 STAREQU    =  x:STAR EQU         {return x}
@@ -1339,4 +1339,4 @@ ASSERTION        = "I"         white_space+
 NEGATION         = "N"         white_space+
 RETURN                             = "return" _
 PIPE                    = x:"|"  {return {type:"bitwise_operator",value:x};}
-PUNCH 			= "punch" white_space+
+PUNCH       = "punch" white_space+
