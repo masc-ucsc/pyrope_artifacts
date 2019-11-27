@@ -557,47 +557,51 @@ function_pipe
   }
 
 fcall_implicit
-  = !constant func:tuple_dot_notation _ head:scope_declaration /*pipe:function_pipe?*/ { //remove "!not_in_implicit" to support foo::{}
+  = !constant func:tuple_dot_notation _ head:scope_declaration pipe:function_pipe? { //remove "!not_in_implicit" to support foo::{}
     var arg = [];
     arg.push(head);
 
-    /*if(pipe){
-      return {
-        start_pos:location().start.offset,
-        end_pos:location().end.offset,
-        type:"func_pipe",
-        pipe_arg:func,
-          pipe_func:pipe,
-      }
-    }*/
-
-    return {
+    var fcall_return = {
       start_pos:location().start.offset,
       end_pos:location().end.offset,
       type:"function_call",
       function:func,
       arguments:arg
     }
-  }
-  / !constant func:tuple_dot_notation /*pipe:function_pipe?*/ !not_in_implicit  {
-    //var char = buildList(head, tail, 1);
-    /*if(pipe){
+
+    if(pipe){
       return {
         start_pos:location().start.offset,
         end_pos:location().end.offset,
         type:"func_pipe",
-        pipe_arg:func,
-          pipe_func:pipe,
+        pipe_arg:fcall_return,
+        pipe_func:pipe,
       }
-    }*/
+    }
 
-    return {
+    return fcall_return
+
+  }
+  / !constant func:tuple_dot_notation pipe:function_pipe? !not_in_implicit  {
+    //var char = buildList(head, tail, 1);
+    var fcall_return = {
       start_pos:location().start.offset,
       end_pos:location().end.offset,
       type:"function_call",
       function:func,
       arguments:null
     }
+    if(pipe){
+      return {
+        start_pos:location().start.offset,
+        end_pos:location().end.offset,
+        type:"func_pipe",
+        pipe_arg:fcall_return,
+        pipe_func:pipe,
+      }
+    }
+
+    return fcall_return
   }
 
 not_in_implicit
@@ -634,7 +638,7 @@ not_in_implicit
 fcall_explicit
   = !constant head:(x:(tuple_notation) DOT{return x})? func:tuple_dot_notation
   arg:fcall_arg_notation scope:scope_declaration?
-  chain:(DOT x:(fcall_explicit/tuple_dot_notation){return x})* /*pipe:function_pipe?*/ {
+  chain:(DOT x:(fcall_explicit/tuple_dot_notation){return x})* pipe:function_pipe? {
 
     if(arg == null && (scope || head)){
       arg = [];
@@ -661,7 +665,7 @@ fcall_explicit
 
     }
 
-    /*if(pipe){
+    if(pipe){
       return {
         start_pos:location().start.offset,
         end_pos:location().end.offset,
@@ -669,7 +673,7 @@ fcall_explicit
         pipe_arg:fcall_return,
         pipe_func:pipe,
       }
-    }*/
+    }
 
     return fcall_return
   }
