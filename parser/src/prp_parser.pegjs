@@ -147,8 +147,8 @@ code_blocks
 
 code_block_int
   = x:__ head:(if_statement/for_statement/while_statement/try_statement/punch_format/
-    assignment_expression/fcall_implicit/fcall_explicit/return_statement/compile_check_statement/
-    negation_statement/tail:assertion_statement {return tail}) {
+    assignment_expression/fcall_implicit/fcall_explicit/return_statement/*compile_check_statement/
+    /negation_statement*/ /tail:assertion_statement {return tail}) {
       x.push(head)
       return x
       //return head
@@ -504,6 +504,7 @@ assertion_statement "assertion"
     }
   }
 
+/*
 negation_statement "negation"
   = NEGATION head:logical_expression {
     return {
@@ -513,7 +514,9 @@ negation_statement "negation"
       n_condition:head
     }
   }
+*/
 
+/*
 compile_check_statement "compile check"
   = COMPILE_CHECK _ head:code_block_int {
     return {
@@ -523,7 +526,7 @@ compile_check_statement "compile check"
       compile_body:head
     }
   }
-
+*/
 
 assignment_expression
   = !constant head:(overload_notation/lhs_expression) __ op:(assignment_operator/*/FUNC_PIPE*/) __
@@ -1007,7 +1010,8 @@ id_non_digit
   / [_]
   / [%]
   / [$]
-  / [@]
+  / [#]
+  // [@]
   // [!]
 
 id_char
