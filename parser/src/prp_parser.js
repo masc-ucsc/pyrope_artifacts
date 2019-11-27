@@ -158,12 +158,12 @@ function peg$parse(input, options) {
           tail.unshift(head)
           var i,j,tmp=[]
           for(i=0;i<tail.length;i++){
-          	for(j=0;j<tail[i].length;j++){
+            for(j=0;j<tail[i].length;j++){
               tmp.push(tail[i][j])
             }
           }
           return tmp
-        	//return tail
+          //return tail
         },
       peg$c3 = function(x, tail) {return tail},
       peg$c4 = function(x, head) {
@@ -174,7 +174,7 @@ function peg$parse(input, options) {
       peg$c5 = function(args, sc, x, y, z) {return prettyPrintScope(x,y,z)},
       peg$c6 = function(args, sc, body, x) {return x},
       peg$c7 = function(args, sc, body, alt) {
-           
+
             var i,j
             for(i=0;i<sc[1].length;i++){
               sc.push(sc[1][i])
@@ -194,8 +194,8 @@ function peg$parse(input, options) {
             }
             if((body instanceof Array) && body.length==0) body=null
 
-        		return {
-           		type:"func_decl",
+            return {
+              type:"func_decl",
               scope_args:args,
               scope_body:body,
               scope_alt_body:alt
@@ -209,38 +209,38 @@ function peg$parse(input, options) {
           }
 
           sc.splice(1,1)
-         
+
           if(sc[0]==null || (sc[0] instanceof Array)){
             sc.splice(0,1)
           }
           //return sc
-         
+
           if(else_true==null){
             else_true=[]
           }
-         
+
           j=sc.length-1
-         
+
           while(sc.length>0 && j>=0){
             else_true.unshift(sc[j])
             j = j-1
           }
-         
+
           if((else_true instanceof Array) && else_true.length==0) else_true=null
-         
+
           return else_true;
         },
       peg$c10 = function(head, x) {return x},
       peg$c11 = function(head, tail) {
           if(tail){
-          	var tmp_tail = {
+            var tmp_tail = {
               start_pos:location().start.offset,
               end_pos:location().end.offset,
               type:"return",
               r_arg:tail
             }
-          	head.push(tmp_tail)
-         	}
+            head.push(tmp_tail)
+          }
           return head
         },
       peg$c12 = function(head) {
@@ -270,14 +270,14 @@ function peg$parse(input, options) {
       peg$c19 = function(head) {
           if(head instanceof Array && head[0] == null)
             return head[0]
-         
+
           return head
         },
       peg$c20 = function(sc, body, x) {return x},
       peg$c21 = function(sc, body, ELSE) {
-          	var tmp_sc = prettyPrintBlocks(body, sc)
+            var tmp_sc = prettyPrintBlocks(body, sc)
 
-       		  return {
+            return {
               start_pos:location().start.offset,
               end_pos:location().end.offset,
               type:"try",
@@ -285,7 +285,7 @@ function peg$parse(input, options) {
               //scope_args:tmp_sc[1],
               try_body:body,
               try_else:ELSE
-          	}
+            }
           },
       peg$c22 = function(if_type, x) {return x},
       peg$c23 = function(if_type, assign, if_test, sc, if_true, x) {return x},
@@ -319,19 +319,19 @@ function peg$parse(input, options) {
               false_case:ELSE
           }
           if(assign instanceof Array && assign.length > 0) {
-          	assign.push(if_obj);
-          	return {
-             		start_pos:location().start.offset,
-              	end_pos:location().end.offset,
-              	type:"if",
-      			    condition:{
-              	  type:"number",
+            assign.push(if_obj);
+            return {
+                start_pos:location().start.offset,
+                end_pos:location().end.offset,
+                type:"if",
+                condition:{
+                  type:"number",
                   value:"true"
-              	},
+                },
                 scope:null,
-             		true_case:assign,
-             		false_case:null
-           	}
+                true_case:assign,
+                false_case:null
+            }
           }
           return if_obj;
           /*
@@ -348,17 +348,17 @@ function peg$parse(input, options) {
           */
         },
       peg$c25 = function(body) { //unconditional block {.......}
-         	return {
-             	start_pos:location().start.offset,
+          return {
+              start_pos:location().start.offset,
               end_pos:location().end.offset,
               type:"if",
               condition:{
-              	type:"number",
+                type:"number",
                   value:"true"
               },
-             	scope:null,
-             	true_case:body,
-             	false_case:null
+              scope:null,
+              true_case:body,
+              false_case:null
            }
           return body
           },
@@ -392,61 +392,61 @@ function peg$parse(input, options) {
             for_body:body
           }
           if(assign instanceof Array && assign.length > 0) {
-          	assign.push(for_obj);
-          	return {
-             		start_pos:location().start.offset,
-              	end_pos:location().end.offset,
-              	type:"if",
-      			    condition:{
-              		type:"number",
+            assign.push(for_obj);
+            return {
+                start_pos:location().start.offset,
+                end_pos:location().end.offset,
+                type:"if",
+                condition:{
+                  type:"number",
                   value:"true"
-              	},      
+                },
                 scope:null,
-             		true_case:assign,
-             		false_case:null
-           	}
+                true_case:assign,
+                false_case:null
+            }
           }
           return for_obj
         },
       peg$c30 = function(head, tail) {
-        		return {
-              	type:"in",
+            return {
+                type:"in",
                 iter:head,
                 iter_range:tail
             }
-      	},
+        },
       peg$c31 = peg$otherExpectation("for index notation"),
       peg$c32 = function(head, tail) {
-          	var char = buildList(head, tail, 1);
+            var char = buildList(head, tail, 1);
             return char
           },
       peg$c33 = function(p, x) {return x},
       peg$c34 = function(p, assign, cond, sc, body) {
           var tmp_sc = prettyPrintBlocks(body, sc)
 
-      	var while_obj = {
-          	start_pos:location().start.offset,
-            	end_pos:location().end.offset,
-            	type:"while",
-            	while_condition:cond,
-            	scope:tmp_sc[0],
-            	//scope_args:tmp_sc[1],
-            	while_body:body
+        var while_obj = {
+            start_pos:location().start.offset,
+              end_pos:location().end.offset,
+              type:"while",
+              while_condition:cond,
+              scope:tmp_sc[0],
+              //scope_args:tmp_sc[1],
+              while_body:body
           }
-      	if(assign instanceof Array && assign.length > 0) {
-          	assign.push(while_obj);
-          	return {
-             		start_pos:location().start.offset,
-              	end_pos:location().end.offset,
-              	type:"if",
-      			condition:{
-              		type:"number",
-                  	value:"true"
-              	},       		
+        if(assign instanceof Array && assign.length > 0) {
+            assign.push(while_obj);
+            return {
+                start_pos:location().start.offset,
+                end_pos:location().end.offset,
+                type:"if",
+            condition:{
+                  type:"number",
+                    value:"true"
+                },
                   scope:null,
-             		true_case:assign,
-             		false_case:null
-           	}
+                true_case:assign,
+                false_case:null
+            }
           }
           return while_obj
         },
@@ -467,7 +467,7 @@ function peg$parse(input, options) {
             type:"assertion",
             i_condition:head
           }
-      	},
+        },
       peg$c39 = peg$otherExpectation("negation"),
       peg$c40 = function(head) {
           return {
@@ -488,13 +488,13 @@ function peg$parse(input, options) {
         },
       peg$c43 = function(head, op, tail) {
           return {
-          	start_pos:location().start.offset,
+            start_pos:location().start.offset,
             end_pos:location().end.offset,
             type:"assignment_expression",
             operator:op,
             left:head,
             right:tail
-         	}
+          }
         },
       peg$c44 = function(y, x) {return x},
       peg$c45 = function(head, y, x) {return x},
@@ -503,10 +503,10 @@ function peg$parse(input, options) {
           return char[0]
       /*
               return tail.reduce(function(result,element){
-              	return{
-                  	start_pos:location().start.offset,
-              		end_pos:location().end.offset,
-                  	type:"func_pipe",
+                return{
+                    start_pos:location().start.offset,
+                  end_pos:location().end.offset,
+                    type:"func_pipe",
                       pipe_arg:result,
                       pipe_func:element.f
                   }
@@ -516,7 +516,7 @@ function peg$parse(input, options) {
       peg$c47 = function(func, head) { //remove "!not_in_implicit" to support foo::{}
           var arg = [];
           arg.push(head);
-          
+
           /*if(pipe){
             return {
               start_pos:location().start.offset,
@@ -526,7 +526,7 @@ function peg$parse(input, options) {
                 pipe_func:pipe,
             }
           }*/
-          
+
           return {
             start_pos:location().start.offset,
             end_pos:location().end.offset,
@@ -567,13 +567,13 @@ function peg$parse(input, options) {
       peg$c58 = peg$literalExpectation("[[", false),
       peg$c59 = function(head, func, arg, scope, x) {return x},
       peg$c60 = function(head, func, arg, scope, chain) {
-              
+
           if(arg == null && (scope || head)){
             arg = [];
           }
 
-      		if(head) arg.push(head)
-      		if(scope) arg.push(scope)
+          if(head) arg.push(head)
+          if(scope) arg.push(scope)
 
           var fcall_return = {
             start_pos:location().start.offset,
@@ -592,7 +592,7 @@ function peg$parse(input, options) {
             }, fcall_return);
 
           }
-              
+
           /*if(pipe){
             return {
               start_pos:location().start.offset,
@@ -664,7 +664,7 @@ function peg$parse(input, options) {
           return buildBinaryExpression(head, tail);
         },
       peg$c73 = function(head, tail) {
-          
+
           return buildBinaryExpression(head, tail);
         },
       peg$c74 = function(op, arg) {
@@ -753,13 +753,13 @@ function peg$parse(input, options) {
         },
       peg$c82 = function(property) {return {dot_property:property}},
       peg$c83 = function(head, tail) {
-       		return tail.reduce(function(result, element) {
+          return tail.reduce(function(result, element) {
             return {
               type: "tuple_dot",
               dot_obj: result,
               dot_prop: element.dot_property,
             }
-       	  }, head)
+          }, head)
         },
       peg$c84 = function(property) {return {arr_property:property}},
       peg$c85 = function(head, tail) {
@@ -964,8 +964,8 @@ function peg$parse(input, options) {
             }
           }
           return {
-           	type:"number",
-          	value:head+tail.join('')
+            type:"number",
+            value:head+tail.join('')
           }
         },
       peg$c154 = peg$otherExpectation("true or false"),
@@ -987,7 +987,7 @@ function peg$parse(input, options) {
       peg$c165 = peg$classExpectation([["0", "9"], "_"], false, false),
       peg$c166 = function(head, tail) {
           if (tail) {
-          	if (tail[1]) {
+            if (tail[1]) {
               var tmp =[];
               tmp.push(head.value);
               tmp.push(tail[0]);
@@ -996,7 +996,7 @@ function peg$parse(input, options) {
                 type:"number",
                 value:tmp.join(''),
               }
-           	}
+            }
             var tmp =[];
             tmp.push(head.value);
             tmp.push(tail[0]);
@@ -1022,7 +1022,7 @@ function peg$parse(input, options) {
             type:"number",
             value:tmp+tail+tail2.join(''),
           }
-      	},
+        },
       peg$c171 = function(head) {
           var tmp = ["0d"];
           tmp.push(head);
@@ -1132,9 +1132,9 @@ function peg$parse(input, options) {
       peg$c262 = peg$literalExpectation("//", false),
       peg$c263 = function() {//return "comment"
           return {
-          	type:"comment",
+            type:"comment",
             start_pos:location().start.offset,
-          	end_pos:location().end.offset,
+            end_pos:location().end.offset,
             comment:text()
           }
         },
@@ -9427,7 +9427,7 @@ function peg$parse(input, options) {
     }
 
     function prettyPrintScope(head,tail,end){
-   	  var i,tmp=[]
+      var i,tmp=[]
 
       if(!(tail instanceof Array) && head==null){
         tmp.push(tail)
@@ -9445,13 +9445,13 @@ function peg$parse(input, options) {
       if(end){
         for(i=0;i<end.length;i++){
           head.push(end[i])
-      	}
+        }
       }
       return head
     }
 
     function prettyPrintArray(head,tail){
-   	  var tmp
+      var tmp
       tmp = tail.reduce(function flat(a,b) {
         if(Array.isArray(b)){
           return b.reduce(flat,a)
@@ -9459,18 +9459,18 @@ function peg$parse(input, options) {
         if(b instanceof Object){
           b = b.value
         }
-       	a.push(b)
+        a.push(b)
         return a
       },[]);
       tmp.unshift(head.value)
       return tmp.join('')
     }
 
-   	function prettyPrintBlocks(if_true, sc) {
+    function prettyPrintBlocks(if_true, sc) {
       var tmp_sc = []
       var sc_colon = null
       var sc_args = null
-   		if((sc instanceof Array) && sc.length==0) {
+      if((sc instanceof Array) && sc.length==0) {
         sc = null
       }
       if(if_true != null){
