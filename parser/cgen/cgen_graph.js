@@ -390,6 +390,17 @@ function cfg_gen(data, obj_name = null) {
             tmp_count = tmp_count + 1;
             tmp_count_track = 1;
             cfg_gen(data[i][j]);
+          }else if(data[i][j]["type"] == "assignment_expression") {
+            //arr.push(convertToNumberingScheme(tmp_count));
+            tmp_count = tmp_count + 1;
+            foo_tmp_count = tmp_count;
+            tmp_count_track = 1;
+            cfg_gen(data[i][j], obj);
+            if(data[i][j]["left"]["type"] == "identifier") {
+              arr.push(data[i][j]["left"]["value"]);
+            }else {
+              arr.push(convertToNumberingScheme(foo_tmp_count));
+            }
           }
         }
       }

@@ -530,7 +530,7 @@ compile_check_statement "compile check"
 
 assignment_expression
   = !constant head:(overload_notation/lhs_expression) __ op:(assignment_operator/*/FUNC_PIPE*/) __
-  tail:(rhs_expression_property/fcall_implicit/logical_expression) {
+  tail:(fcall_implicit/logical_expression) {
     return {
       start_pos:location().start.offset,
       end_pos:location().end.offset,
@@ -682,8 +682,8 @@ fcall_explicit
   }
 
 fcall_arg_notation
-  = LPAR head:(rhs_expression_property/logical_expression)
-  tail:(COMMA (rhs_expression_property/logical_expression))* COMMA? RPAR {
+  = LPAR head:(assignment_expression/logical_expression)
+  tail:(COMMA (assignment_expression/logical_expression))* COMMA? RPAR {
     var char = buildList(head, tail, 1);
     return char
   }
@@ -798,8 +798,8 @@ tuple_by_notation
   = BY head:lhs_var_name {return head}
 
 tuple_notation
-  = LPAR head:(assignment_expression/rhs_expression_property/logical_expression) _
-  tail:(COMMA (assignment_expression/rhs_expression_property/logical_expression) __)* COMMA? RPAR
+  = LPAR head:(assignment_expression/logical_expression) _
+  tail:(COMMA (assignment_expression/logical_expression) __)* COMMA? RPAR
   by:(tuple_by_notation/bit_selection_bracket)?
   {
     var char = buildList(head, tail, 1);
@@ -934,6 +934,7 @@ lhs_expression
 lhs_var_name
   = head:(identifier/constant) {return head}
 
+/*
 rhs_expression_property
   = arg:identifier COLON head:(fcall_explicit/tuple_notation)?
   {
@@ -950,6 +951,7 @@ rhs_expression_property
       var:null
     }
   }
+*/
 
 rhs_expression
   = head:(fcall_explicit/lhs_expression/scope_declaration) {return head}
@@ -1286,7 +1288,7 @@ multi_line_comment
   }
 
 SEMI_COLON = white_space* ";" white_space*
-LOCAL_REGISTER = x:"@"  {return x}
+//LOCAL_REGISTER = x:"@"  {return x}
 AMPERSAND       = x:"&" {return x}
 FUNC_PIPE       = "|>" white_space*
 BANG       =  x:"!"  ![=]   {return x}
@@ -1342,9 +1344,9 @@ FOR         = "for"         white_space+
 WHILE           = "while"               white_space+
 TRY         = "try"      white_space*
 WHEN         = "when"         white_space+
-COMPILE_CHECK    = "#"         white_space*
+//COMPILE_CHECK    = "#"         white_space*
 ASSERTION        = "I"         white_space+
-NEGATION         = "N"         white_space+
+//NEGATION         = "N"         white_space+
 RETURN                             = "return" _
 PIPE                    = x:"|"  {return {type:"bitwise_operator",value:x};}
 PUNCH       = "punch" white_space+
