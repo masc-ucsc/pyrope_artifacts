@@ -800,7 +800,64 @@ tuple_by_notation
 tuple_notation
   = LPAR head:(assignment_expression/logical_expression) _
   tail:(COMMA (assignment_expression/logical_expression) __)* COMMA? RPAR
-  by:(tuple_by_notation/bit_selection_bracket)?
+  by:(tuple_by_notation/bit_selection_bracket)? pipe:function_pipe?
+{
+    var char = buildList(head, tail, 1);
+    if(by.length == 0)
+      by = null
+
+    var tuple_by_return = {
+      type:"tuple_list",
+      elements:char,
+      skip_by:by
+    }
+    var tuple_return = {
+   	  type:"tuple_list",
+      elements:char
+    }
+
+    if(by instanceof Array){ //rule and ast for '(' expr ')'[[ ]] - bit sel statements
+      var by_tuple = {
+        type:"tuple_list",
+        elements:char,
+      }
+      return by.reduce(function(result, element) {
+        return {
+          type: "bit_select",
+          bit_obj: result,
+          bit_sel: element.bit_property,
+        }
+      }, by_tuple)
+    }else {
+      if(by == null)
+        tuple_by_return = tuple_return
+      if(pipe) {
+        return {
+          start_pos:location().start.offset,
+          end_pos:location().end.offset,
+          type:"func_pipe",
+          pipe_arg:tuple_by_return,
+          pipe_func:pipe,
+      	}
+      }
+      return tuple_by_return
+    }
+
+    var char = buildList(head, tail, 1);
+
+    if(pipe) {
+      return {
+        start_pos:location().start.offset,
+        end_pos:location().end.offset,
+        type:"func_pipe",
+        pipe_arg:tuple_return,
+        pipe_func:pipe,
+      }
+    }
+    return tuple_return
+  }
+
+/*
   {
     var char = buildList(head, tail, 1);
     if(by instanceof Array){ //rule and ast for '(' expr ')'[[ ]] - bit sel statements
@@ -829,6 +886,7 @@ tuple_notation
       elements:char
     }
   }
+*/
 
   / LPAR RPAR {
     return {

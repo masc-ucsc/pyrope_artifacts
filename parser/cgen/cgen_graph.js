@@ -365,16 +365,23 @@ function cfg_gen(data, obj_name = null) {
       arr.push(".()");
       if(data["pipe_func"]["type"] == "function_call"){
         if(data["pipe_func"]["arguments"] == null){
-          data["pipe_func"]["arguments"] = data[i];
+          data["pipe_func"]["arguments"] = [];
+          data["pipe_func"]["arguments"].push(data[i]);
           //data["pipe_func"]["arguments"].push(data[i][0]); //insert 0th element from array
           //data["pipe_func"]["arguments"][0] = data[i];
-        }else{
-          for(var j = 0; j < data[j].length; j++){
-            data["pipe_func"]["arguments"].push(data[i][j]);
-          }
+        }else {
+          data["pipe_func"]["arguments"].push(data[i]);
         }
       }else if(data["pipe_func"]["type"] == "func_pipe"){
-        data["pipe_func"]["pipe_arg"].push(data[i][0]);
+        //data["pipe_func"]["pipe_arg"].push(data[i][0]);
+        if(data["pipe_func"]["pipe_arg"]["arguments"] == null){
+          data["pipe_func"]["pipe_arg"]["arguments"] = [];
+          data["pipe_func"]["pipe_arg"]["arguments"].push(data[i]);
+          //data["pipe_func"]["arguments"].push(data[i][0]); //insert 0th element from array
+          //data["pipe_func"]["arguments"][0] = data[i];
+        }else {
+          data["pipe_func"]["pipe_arg"]["arguments"].push(data[i]);
+        }
       }
       data[i] = null;
     }

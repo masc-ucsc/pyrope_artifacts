@@ -678,34 +678,61 @@ function peg$parse(input, options) {
           return head;
         },
       peg$c72 = function(head) {return head},
-      peg$c73 = function(head, tail, by) {
-          var char = buildList(head, tail, 1);
-          if(by instanceof Array){ //rule and ast for '(' expr ')'[[ ]] - bit sel statements
-            var by_tuple = {
-              type:"tuple_list",
-              elements:char,
-            }
-            return by.reduce(function(result, element) {
-              return {
-                type: "bit_select",
-                bit_obj: result,
-                bit_sel: element.bit_property,
-              }
-            }, by_tuple)
-          }else{
-            return{
-              type:"tuple_list",
-              elements:char,
-              skip_by:by
-            }
-          }
+      peg$c73 = function(head, tail, by, pipe) {
+          var char = buildList(head, tail, 1);
+          if(by.length == 0)
+            by = null
 
-          var char = buildList(head, tail, 1);
-          return {
-            type:"tuple_list",
-            elements:char
-          }
-        },
+          var tuple_by_return = {
+            type:"tuple_list",
+            elements:char,
+            skip_by:by
+          }
+          var tuple_return = {
+         	  type:"tuple_list",
+            elements:char
+          }
+
+          if(by instanceof Array){ //rule and ast for '(' expr ')'[[ ]] - bit sel statements
+            var by_tuple = {
+              type:"tuple_list",
+              elements:char,
+            }
+            return by.reduce(function(result, element) {
+              return {
+                type: "bit_select",
+                bit_obj: result,
+                bit_sel: element.bit_property,
+              }
+            }, by_tuple)
+          }else {
+            if(by == null)
+              tuple_by_return = tuple_return
+            if(pipe) {
+              return {
+                start_pos:location().start.offset,
+                end_pos:location().end.offset,
+                type:"func_pipe",
+                pipe_arg:tuple_by_return,
+                pipe_func:pipe,
+            	}
+            }
+            return tuple_by_return
+          }
+
+          var char = buildList(head, tail, 1);
+
+          if(pipe) {
+            return {
+              start_pos:location().start.offset,
+              end_pos:location().end.offset,
+              type:"func_pipe",
+              pipe_arg:tuple_return,
+              pipe_func:pipe,
+            }
+          }
+          return tuple_return
+        },
       peg$c74 = function() {
           return {
             type:"tuple_list",
@@ -4636,9 +4663,18 @@ function peg$parse(input, options) {
                   s7 = null;
                 }
                 if (s7 !== peg$FAILED) {
-                  peg$savedPos = s0;
-                  s1 = peg$c73(s2, s4, s7);
-                  s0 = s1;
+                  s8 = peg$parsefunction_pipe();
+                  if (s8 === peg$FAILED) {
+                    s8 = null;
+                  }
+                  if (s8 !== peg$FAILED) {
+                    peg$savedPos = s0;
+                    s1 = peg$c73(s2, s4, s7, s8);
+                    s0 = s1;
+                  } else {
+                    peg$currPos = s0;
+                    s0 = peg$FAILED;
+                  }
                 } else {
                   peg$currPos = s0;
                   s0 = peg$FAILED;
