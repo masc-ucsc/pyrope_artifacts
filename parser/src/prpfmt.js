@@ -45,7 +45,7 @@ exports.prpfmt = function(prp_path, input_file_name, data) {
     var path = require("path");
     var fs = require("fs");
 
-    var parser = require(path.join(prp_path, "src/prp_parser.js"));
+    var parser = require(path.join(prp_path, "lib/prp_parser.js"));
     var jsonFile = fs.readFileSync(path.join(prp_path, "data/prplearn.json"));
     var jsonContent = JSON.parse(jsonFile);
 

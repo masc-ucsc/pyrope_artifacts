@@ -1,20 +1,20 @@
 String.prototype.dup = function(count) {
-  return new Array(count).join(this);
-};
+  return new Array(count).join(this)
+}
 
-const cgen = require('../cgen/cgen_graph.js');
-const common = require('./common.js');
+const cgen = require('../cgen/cgen_graph.js')
+const common = require('./common.js')
 
-var i, j, x;
-var errorLocation;
-var expectedDescs = [];
-var expectedDesc = [];
-var tmp_x;
-var prp_path = process.env.PRP_PATH;
-var fs = require('fs');
-var path = require('path');
-var _ = require('underscore');
-var filename = process.argv[2];
+var i, j, x
+var errorLocation
+var expectedDescs = []
+var expectedDesc = []
+var tmp_x
+var prp_path = process.env.PRP_PATH
+var fs = require('fs')
+var path = require('path')
+var _ = require('underscore')
+var filename = process.argv[2]
 var parser = require(path.join(prp_path,'lib/prp_parser.js'));
 
 common.valid_input_file(filename);  //check if input file is valid
