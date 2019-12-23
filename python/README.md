@@ -1,5 +1,0 @@
-
-# Pyrope Hardware Description Language
-
-
-

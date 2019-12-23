@@ -1,6 +1,0 @@
-[submodule "subs/inotify-cpp"]
-	path = subs/inotify-cpp
-	url = https://github.com/erikzenker/inotify-cpp.git
-[submodule "subs/lgraph"]
-	path = subs/lgraph
-	url = git@github.com:masc-ucsc/lgraph.git
