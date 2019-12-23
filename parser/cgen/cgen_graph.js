@@ -26,21 +26,6 @@ var seq_count = 0;
 var loop_parent = []; //tracks top-most parent of if/while/for
 var extended_expr = 0;
 
-cfg_gen_setup = function(input){ //enable this to pass AST to cfg_gen_setup; also change tmp_count -> tmp_count_track
-  for(var i = 0; i < input.length; i++){
-    mark_read = [];
-    tmp_count_track = 0;
-    if(input[i]["type"] != "comment"){
-      scope_arr = [];
-      foo_tmp_count = 0; // tmp counter variable
-      cfg_gen(input[i]);
-    }
-    if(mark_read.length > 0){
-      mark_variable_read(mark_read);
-    }
-  }
-}
-
 function mark_variable_read(mark_arr){
   //console.log(mark_arr);
   for(var i = 0; i < mark_arr.length; i++){
@@ -1187,5 +1172,20 @@ function cfg_gen(data, obj_name = null) {
   //console.log(tmp_scope_count);
 }
 
+cfg_gen_setup = function(input){ //enable this to pass AST to cfg_gen_setup; also change tmp_count -> tmp_count_track
+  for(var i = 0; i < input.length; i++){
+    mark_read = [];
+    tmp_count_track = 0;
+    if(input[i]["type"] != "comment"){
+      scope_arr = [];
+      foo_tmp_count = 0; // tmp counter variable
+      cfg_gen(input[i]);
+    }
+    if(mark_read.length > 0){
+      mark_variable_read(mark_read);
+    }
+  }
+}
 
+exports.cfg_gen_setup = cfg_gen_setup
 

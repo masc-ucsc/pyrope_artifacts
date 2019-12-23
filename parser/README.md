@@ -1,3 +1,11 @@
+
+# Setup
+
+```
+yarn install
+yarn build
+```
+
 # Usage for prpfmt
 	cd ./bin
     ./prpfmt [input_file]
@@ -7,7 +15,7 @@
 	cd ./bin
     ./prpfmt ../tests/fmt/inputs/test7.prp
     
-Befor prpfmt:
+Before prpfmt:
 
     b=::{}
     
@@ -61,8 +69,4 @@ After prpfmt:
 Current parser cannot parse comment and operator by(in test12.prp) and it will throw an exception(peg\$SyntaxError). And this formatter would not work if parser cannnot generate AST correctly. To pass tests you need to delete comments manually or by following command:
 
 	find . -name "*.prp" | xargs -I {} sed -i 's/^#[^\S]*//' {}
-
-
-yarn install
-./node_modules/pegjs-dev/node_modules/.bin/pegjs src/prp_parser.pegjs -o src/prp_parser.js 
 

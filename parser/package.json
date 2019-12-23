@@ -1,21 +1,29 @@
 {
-  "name": "LivePyrope",
-  "version": "0.1.0",
-  "description": "Pyrope Parsing Infrastructure",
+  "name": "pyrope",
+  "version": "0.2.0",
+  "description": "Pyrope Javascript Parsing Infrastructure",
   "main": "prp",
   "license": "BSD-3-Clause",
   "dependencies": {
-    "commander": "^2.11.0",
-    "pegjs-backtrace": "^0.1.1",
-    "pegjs-dev": "^0.11.0-dev",
-    "prettier": "^1.5.3",
-    "underscore": "^1.8.3"
+    "commander": "^2.20.3",
+    "pegjs-backtrace": "^0.2.0",
+    "underscore": "^1.9.0"
   },
   "scripts": {
+    "lint": "eslint src/*.js tests/*.js",
+    "build": "pegjs -o lib/prp_parser.js src/prp_parser.pegjs",
     "test": "ava"
   },
   "devDependencies": {
-    "ava": "^0.21.0"
+    "@babel/cli": "7.7.7",
+    "@babel/core": "7.7.7",
+    "@babel/preset-env": "7.7.7",
+    "ava": "^2.4.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "6.7.0",
+    "eslint-plugin-prettier": "3.1.2",
+    "prettier": "^1.19.1",
+    "pegjs": "^0.11.0-master.f69239d"
   },
   "ava": {
     "files": [

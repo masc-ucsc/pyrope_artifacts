@@ -2,8 +2,8 @@ String.prototype.dup = function(count) {
   return new Array(count).join(this);
 };
 
-require('../cgen/cgen_graph.js');
-require('./common.js');
+const cgen = require('../cgen/cgen_graph.js');
+const common = require('./common.js');
 
 var i, j, x;
 var errorLocation;
@@ -15,11 +15,10 @@ var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
 var filename = process.argv[2];
-var parser = require(path.join(prp_path,'src/prp_parser.js'));
+var parser = require(path.join(prp_path,'lib/prp_parser.js'));
 
-
-valid_input_file(filename);  //check if input file is valid
-create_directory(); //create local prp directory if it doesn't exist
+common.valid_input_file(filename);  //check if input file is valid
+common.create_directory(); //create local prp directory if it doesn't exist
 
 if(fs.existsSync(process.env.HOME+"/.cache/prp/parser/data/prplearn.json") == false) {
   fs.writeFileSync(process.env.HOME+"/.cache/prp/parser/data/prplearn.json", "[]");
@@ -72,7 +71,7 @@ console.log("START");
 
 try {
   tmp_x = parser.parse(data);
-  cfg_gen_setup(tmp_x); //passing AST to cfg_gen_setup - returns cfg
+  cgen.cfg_gen_setup(tmp_x); //passing AST to cfg_gen_setup - returns cfg
 }
 
 
