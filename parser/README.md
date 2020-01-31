@@ -2,8 +2,8 @@
 # Setup
 
 ```
-yarn install
-yarn build
+npm install
+npm run-script build
 ```
 
 # Usage for prpfmt

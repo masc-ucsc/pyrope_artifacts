@@ -1892,7 +1892,7 @@ class: split-50
 # Tuples
 
 .column[
-### Basic tuples
+### Tuples are ordered heterogeneous
 ```coffeescript
 // code/tuples1.prp
 a = (b=1,c=2)              // ordered, named
