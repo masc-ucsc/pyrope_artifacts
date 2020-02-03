@@ -148,7 +148,7 @@ code_blocks
 code_block_int
   = x:__ head:(if_statement/for_statement/while_statement/try_statement/punch_format/
     assignment_expression/fcall_implicit/fcall_explicit/return_statement/*compile_check_statement/
-    /negation_statement*/ /tail:assertion_statement {return tail}) {
+    /negation_statement /tail:assertion_statement {return tail}*/) {
       x.push(head)
       return x
       //return head
@@ -494,6 +494,7 @@ return_statement "return"
     }
   }
 
+/*
 assertion_statement "assertion"
   = ASSERTION head:logical_expression {
     return {
@@ -503,6 +504,7 @@ assertion_statement "assertion"
       i_condition:head
     }
   }
+*/
 
 /*
 negation_statement "negation"
@@ -1250,7 +1252,7 @@ keyword "keywords"
   / n:"try"
   / n:"punch"
   // n:"C"
-  / n:"I"
+  // n:"I"
   / n:"N"
   / n:"in"
   / n:"for"
