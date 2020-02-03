@@ -22,8 +22,9 @@ var curr_scope = 0, prev_scope = -1, scope_counter = 0;
 var else_scope = 0, elif_scope = 0;
 var _parent = 0, _child = 0;
 var child_tracker = 0, parent_tracker = null; //parent ID for if/while/for
-var seq_count = 0;
+var seq_count = 0, tuple_count = 0;
 var loop_parent = []; //tracks top-most parent of if/while/for
+var tuple_kid_list = []; //list of K_ID for tuple TUPs
 var extended_expr = 0;
 
 function mark_variable_read(mark_arr){
@@ -194,8 +195,31 @@ function pretty_print_predicates(read_arr, read_var){
 function cfg_gen(data, obj_name = null) {
   var arr = [];
   var obj = obj_name;
-  var obj2 = obj;
   var prp_type = null;
+  if(obj_name == "tuple_list") { // Build "TUP" trees for tuples
+    var idx = scope_count - scope_out_count;
+    if(scope_count > scope_out_count) {
+      idx = scope_count;
+    }
+    arr.push(++k_count);
+    var ___parent = parent_arr[idx];
+    if(tuple_kid_list.length > 0) {
+      ___parent = tuple_kid_list[tuple_kid_list.length - 1];
+    }
+    //arr.push(parent_arr[idx]);
+    arr.push(___parent);
+    arr.push(0);
+    arr.push("TUP"+tuple_count++);
+    arr.push(convertToNumberingScheme(tmp_count - 1));
+    obj = null;
+    obj_name = null;
+    tuple_kid_list.push(k_count);
+    console.log(arr.join('\t'));
+    arr = [];
+  }else if(obj_name == "tuple_element") {
+    obj_name = null;
+  }
+
   if((curr_scope > prev_scope) || obj_name != null) { //create SEQ block
     var seq_child = 0;
     _parent = k_count - 1;
@@ -203,7 +227,6 @@ function cfg_gen(data, obj_name = null) {
       //_parent = k_count;
       _parent = loop_parent[loop_parent.length - 1];
       parent_tracker = k_count + 1;
-      //console.log(data);
       obj = null;
     }else {
       parent_tracker = null;
@@ -264,6 +287,15 @@ function cfg_gen(data, obj_name = null) {
     }else if(i == "end_pos" && tmp_count_track == 0){
       end = data[i];
       arr.push(data[i]);
+    }
+
+    if(obj == "tuple_element") {
+      if(i == "type" && (data[i] == "number" || data[i] == "identifier" || data[i] == "string")) {
+        arr.pop(); //remove redundant "__tmp" variable in arr
+        arr.push("=");
+        arr.push("null");
+        arr.push(data["value"]);
+      }
     }
 
     if(i == "condition") {
@@ -399,31 +431,41 @@ function cfg_gen(data, obj_name = null) {
     }
 
     if(i == "elements" && Array.isArray(data[i])){ //handles elements in a tuple
-      arr.push("()");
+      //#arr.push("()");
       for(var j = 0; j < data[i].length; j++){
         if(typeof(data[i][j])=="object" && data[i][j] != null){
           if(data[i][j]["type"] == "number" || data[i][j]["type"] == "identifier" || data[i][j]["type"] == "string") {
-            arr.push(data[i][j]["value"]);
+            //#arr.push(data[i][j]["value"]);
+            obj = "tuple_element";
+            cfg_gen(data[i][j], obj);
           }else if(list.indexOf(data[i][j]["type"]) >= 0){
-            arr.push(convertToNumberingScheme(tmp_count));
+            //#arr.push(convertToNumberingScheme(tmp_count));
             tmp_count = tmp_count + 1;
             tmp_count_track = 1;
+            obj = "tuple_element";
+            if(data[i][j]["type"] == "tuple_list") {
+              obj = "tuple_list";
+            }
             cfg_gen(data[i][j], obj);
           }else if(data[i][j]["type"] == "assignment_expression") {
             //arr.push(convertToNumberingScheme(tmp_count));
             tmp_count = tmp_count + 1;
             foo_tmp_count = tmp_count;
             tmp_count_track = 1;
+            obj = "tuple_element";
             cfg_gen(data[i][j], obj);
             if(data[i][j]["left"]["type"] == "identifier") {
               arr.push(data[i][j]["left"]["value"]);
             }else {
+              //#obj = "tuple_element";
               arr.push(convertToNumberingScheme(foo_tmp_count));
             }
             //arr.push()
           }
         }
       }
+      arr = null;
+      tuple_kid_list.pop();
     }
 
     if(i == "scope_args"){
@@ -941,11 +983,11 @@ function cfg_gen(data, obj_name = null) {
       //#arr.push("'K"+if_phi);
     }
 
-    if((arr[3] == 'if' || arr[3] == 'uif') && i == "false_case"){
+    if(Array.isArray(arr) && (arr[3] == 'if' || arr[3] == 'uif') && i == "false_case"){
       k_count = k_count + 1;
       k_next_count = k_next_count + 1;
       //#arr.splice(1, 0, 'K'+k_next_count); //push k_next to arr
-    }else if((arr[3] == 'if' || arr[3] == 'uif') && i == "false_case"){ //this loop removes additional "tmp" in "if" cfg arr
+    }else if(Array.isArray(arr) && (arr[3] == 'if' || arr[3] == 'uif') && i == "false_case"){ //this loop removes additional "tmp" in "if" cfg arr
       k_count = k_count + 1;
       k_next_count = k_next_count + 1;
       //arr.splice(3,1);  // #FIXME this is causing a bug. Remove if not needed
@@ -1066,6 +1108,7 @@ function cfg_gen(data, obj_name = null) {
         arr.push(convertToNumberingScheme(tmp_count));
         tmp_count = tmp_count + 1;
         tmp_count_track = 1;
+        obj = "tuple_list";
         cfg_gen(data[i], obj);
       }else if(data[i]["type"] == "string"){
         var str_join = [];
@@ -1105,14 +1148,16 @@ function cfg_gen(data, obj_name = null) {
   }
 
   //#child_arr[tmp_scope_count]++;
-  if(arr[0][0] != 'K'){
+  if(Array.isArray(arr) && arr[0][0] != 'K'){
     k_count++;
     k_next_count++;
     //#arr.unshift('K'+k_next_count);
     arr.unshift('K'+k_count);
     child_arr[tmp_scope_count]++;
     if(obj_name == null) {
-      if(extended_expr == 0) {
+      if(obj == "tuple_element") {
+        arr.splice(1, 0, tuple_kid_list[tuple_kid_list.length - 1]);
+      }else if(extended_expr == 0) {
         arr.splice(1, 0, parent_arr[tmp_scope_count]);
       }else {
         arr.splice(1, 0, parent_tracker);
@@ -1125,28 +1170,28 @@ function cfg_gen(data, obj_name = null) {
     }
   }
 
-  if(arr[2] == "null"){  //this loop handles k_next = null for last element in a block
+  if(Array.isArray(arr) && arr[2] == "null"){  //this loop handles k_next = null for last element in a block
     //var tmp_x = arr[2];
     arr[1] = arr[2];
     arr.splice(2,1);
   }
 
-  if(arr[6] == '=' || arr[6] == ':=' || arr[6] == 'as'){  //remove additional "tmp" var in assign expressions
+  if(Array.isArray(arr) && (arr[6] == '=' || arr[6] == ':=' || arr[6] == 'as')) { //remove additional "tmp" var in assign expressions
     if(arr[5].match(/___/))
       arr.splice(5,1);
   }
 
-  if(arr[5].match(/___/)){  //swap 'tmp' to column no:4
+  if((Array.isArray(arr)) && arr[5].match(/___/)){  //swap 'tmp' to column no:4
     var tmp = arr[5];
     arr[5] = arr[6];
     arr[6] = tmp;
   }
 
-  if((arr[5] == "if" || arr[5] == "elif") && arr[6].match(/___/) && arr[7] != undefined) {
+  if(Array.isArray(arr) && ((arr[5] == "if" || arr[5] == "elif") && arr[6].match(/___/) && arr[7] != undefined)) {
     arr.splice(6, 1);
   }
 
-  if(arr[4] == ".()" && arr[5].match(/___/)){
+  if(Array.isArray(arr) && (arr[4] == ".()" && arr[5].match(/___/))) {
     //remove extra "tmp" variable in .() cfg within fcall/while blocks
     //FIXME: remove this if not needed
     //arr.splice(5,1);
@@ -1161,15 +1206,17 @@ function cfg_gen(data, obj_name = null) {
   //#arr.splice(2, 0, tmp_scope_count);  //insert scope_count in arr
   //tmp_scope_count = 0;
 
-  var aaa = arr[0].split('K');
-  arr[0] = aaa[1];
+  if(Array.isArray(arr)) {
+    var aaa = arr[0].split('K');
+    arr[0] = aaa[1];
 
-  if(arr[5] == "or" || arr[5] == "and"){
-    mark_read.push(arr);
+    if(arr[5] == "or" || arr[5] == "and"){
+      mark_read.push(arr);
+    }
+
+    console.log(arr.join('\t'));
+    //console.log(obj);
   }
-
-  console.log(arr.join('\t'));
-  //console.log(tmp_scope_count);
 }
 
 cfg_gen_setup = function(input){ //enable this to pass AST to cfg_gen_setup; also change tmp_count -> tmp_count_track
