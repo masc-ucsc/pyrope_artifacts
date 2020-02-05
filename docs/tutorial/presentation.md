@@ -2113,6 +2113,8 @@ class: split-50
  __reset_cycles  Number of reset cycles required (1)
  __reset_async   Asynchronous reset (false)
  __set           Tuple behaves like a set (false)
+ __range_begin   Force range beging value
+ __range_end     Force range end value
 ```
 ]
 
