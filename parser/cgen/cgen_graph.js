@@ -444,7 +444,6 @@ function cfg_gen(data, obj_name = null) {
             tmp_count = tmp_count + 1;
             tmp_count_track = 1;
             obj = "tuple_element";
-            var tmp_tuple_kid = null;
             if(data[i][j]["type"] == "tuple_list") {
               obj = "tuple_list";
               cfg_gen(data[i][j], obj);
