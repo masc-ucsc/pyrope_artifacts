@@ -1,5 +1,5 @@
 require('./tmp_var_generator.js');
-var tmp_count = 1, foo_tmp_count = 0;
+var tmp_count = 1, foo_tmp_count = 0, tmp_count_track = 0;
 var tmp_count_track = 0;
 var start = 0, end = 0;
 var k_count = 0, k_next_count = 1;
@@ -277,7 +277,10 @@ function cfg_gen(data, obj_name = null) {
     // x = 1+2*3 => tmp1 = 2*3 => tmp0 = 1 + tmp1 => x = tmp0
     arr.push(start);
     arr.push(end);
-    arr.push(convertToNumberingScheme(tmp_count-1));
+    if(tmp_count > tmp_count_track) {
+      arr.push(convertToNumberingScheme(tmp_count-1));
+      tmp_count_track = tmp_count;
+    }
   }
 
   //for loop traverses AST(in json format)
@@ -563,6 +566,7 @@ function cfg_gen(data, obj_name = null) {
           tmp_scope_count = local_scope_count;
           curr_scope = tmp_scope_count;
           if(typeof(data[i][j])=="object" && data[i][j] != null && data[i][j]["type"] != "comment"){
+            //console.log(data[i][j]);
             cfg_gen(data[i][j], obj);
           }
         }
@@ -1210,7 +1214,9 @@ function cfg_gen(data, obj_name = null) {
   if(Array.isArray(arr) && (arr[5] == ".()" && arr[6].match(/___/))) {
     //remove extra "tmp" variable in .() cfg within fcall/while blocks
     //FIXME: remove this if not needed
-    arr.splice(6,1);
+    if (arr[8] && arr[8].match(/___/)) {
+    //  arr.splice(6,1);
+    }
   }
 
   /*if(arr[4] == "=" || arr[4] == ":=" || arr[4] == ".()" || arr[4] == "as"){
