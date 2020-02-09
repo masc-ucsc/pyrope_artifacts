@@ -566,13 +566,17 @@ fcall_implicit
   = !constant func:tuple_dot_notation _ head:scope_declaration pipe:function_pipe? { //remove "!not_in_implicit" to support foo::{}
     var arg = [];
     arg.push(head);
-
+	
+    var arg_tuple = {
+      type:"tuple_list",
+      elements:arg
+    }
     var fcall_return = {
       start_pos:location().start.offset,
       end_pos:location().end.offset,
       type:"function_call",
       function:func,
-      arguments:arg
+      arguments:arg_tuple
     }
 
     if(pipe){

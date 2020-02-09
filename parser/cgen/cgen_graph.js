@@ -7,7 +7,7 @@ var scope_count = 0, scope_out_count = 0, tmp_scope_count = 0;
 var scope_pos_track = 0;
 var false_count_track = -2;
 var elif_condition_track = 0;
-var list = [":","func_pipe","binary_expression","tuple_array","range","bit_select","function_call","tuple_list","tuple_dot"];
+var list = [":","func_pipe","binary_expression","tuple_array","range","bit_select","function_call","tuple_list","tuple_dot", "func_decl"];
 var arg_list = [":","func_pipe","binary_expression","tuple_array","range","bit_select","func_decl","function_call","tuple_list","tuple_dot"];
 var operators = ["overload","arithmetic_operator","logical_operator","relational_operator","shift_operator","bitwise_operator","tuple_operator"];
 var method_id_track = 0;
@@ -26,6 +26,7 @@ var seq_count = 0, tuple_count = 0;
 var loop_parent = []; //tracks top-most parent of if/while/for
 var tuple_kid_list = []; //list of K_ID for tuple TUPs
 var extended_expr = 0;
+var tuple_inside_func_decl = false; // helps to assign correct parent ID to TUP of a fcall/tuple inside a ::{}
 
 function mark_variable_read(mark_arr){
   //console.log(mark_arr);
@@ -203,7 +204,7 @@ function cfg_gen(data, obj_name = null) {
     }
     arr.push(++k_count);
     var ___parent = parent_arr[idx];
-    if(tuple_kid_list.length > 0) {
+    if(tuple_kid_list.length > 0 && !tuple_inside_func_decl) {
       ___parent = tuple_kid_list[tuple_kid_list.length - 1];
     }
     //arr.push(parent_arr[idx]);
@@ -432,21 +433,27 @@ function cfg_gen(data, obj_name = null) {
 
     if(i == "elements" && Array.isArray(data[i])){ //handles elements in a tuple
       //#arr.push("()");
-      for(var j = 0; j < data[i].length; j++){
-        if(typeof(data[i][j])=="object" && data[i][j] != null){
+      for(var j = 0; j < data[i].length; j++) {
+        if(typeof(data[i][j])=="object" && data[i][j] != null) {
           if(data[i][j]["type"] == "number" || data[i][j]["type"] == "identifier" || data[i][j]["type"] == "string") {
             //#arr.push(data[i][j]["value"]);
             obj = "tuple_element";
             cfg_gen(data[i][j], obj);
-          }else if(list.indexOf(data[i][j]["type"]) >= 0){
+          }else if(list.indexOf(data[i][j]["type"]) >= 0) {
             //#arr.push(convertToNumberingScheme(tmp_count));
             tmp_count = tmp_count + 1;
             tmp_count_track = 1;
             obj = "tuple_element";
+            var tmp_tuple_kid = null;
             if(data[i][j]["type"] == "tuple_list") {
               obj = "tuple_list";
+              cfg_gen(data[i][j], obj);
+            }else if(data[i][j]["type"] == "func_decl") {
+              //obj = "func_decl";
+              tuple_inside_func_decl = true;
+              cfg_gen(data[i][j], obj);
+              tuple_inside_func_decl = false;
             }
-            cfg_gen(data[i][j], obj);
           }else if(data[i][j]["type"] == "assignment_expression") {
             //arr.push(convertToNumberingScheme(tmp_count));
             tmp_count = tmp_count + 1;
@@ -466,10 +473,15 @@ function cfg_gen(data, obj_name = null) {
       }
       arr = null;
       tuple_kid_list.pop();
+    }else if(i == "elements" && data[i] == null) {
+      //handles fcall_explicit with no args -> foo()
+      arr = null;
+      tuple_kid_list.pop();
     }
 
     if(i == "scope_args"){
       arr.push("::{");
+      //console.log(arr);
       scope_pos_track = arr.length; //var helps to push fcall dest k_id before arg list
       if(data[i] != null){ //check if scope_args is not null
         if(Array.isArray(data[i]["scope_arg_list"])){
@@ -518,7 +530,12 @@ function cfg_gen(data, obj_name = null) {
         }
         child_arr[idx]++;
         arr.unshift(child_arr[idx]);
-        arr.unshift(parent_arr[idx]);
+        if(obj != "tuple_element") {
+          arr.unshift(parent_arr[idx]);
+        }else {
+          arr.unshift(tuple_kid_list[tuple_kid_list.length-1]);
+          obj = null;
+        }
         arr.unshift('K'+k_count); //push k_id to arr
         //#arr.splice(scope_pos_track+2,0,'K'+(k_count+2)); //push k_count of scope body in cfg
         k_count++;
@@ -1191,10 +1208,10 @@ function cfg_gen(data, obj_name = null) {
     arr.splice(6, 1);
   }
 
-  if(Array.isArray(arr) && (arr[4] == ".()" && arr[5].match(/___/))) {
+  if(Array.isArray(arr) && (arr[5] == ".()" && arr[6].match(/___/))) {
     //remove extra "tmp" variable in .() cfg within fcall/while blocks
     //FIXME: remove this if not needed
-    //arr.splice(5,1);
+    arr.splice(6,1);
   }
 
   /*if(arr[4] == "=" || arr[4] == ":=" || arr[4] == ".()" || arr[4] == "as"){
