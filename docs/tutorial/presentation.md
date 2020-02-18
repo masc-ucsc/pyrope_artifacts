@@ -15,9 +15,9 @@ background-position: bottom center
 background-repeat: no-repeat
 background-size: 30%
 
-.center[![Right-aligned image](https://masc.soe.ucsc.edu/logos/pyrope3_large.png)]
+.center[![Right-aligned image](https://masc.soe.ucsc.edu/logos/pyrope5.png)]
 
-.center[### Haven Skinner, Sheng Hong Wang, Akash Sridhar, Rafael Trapani Possignolo, Kenneth Mayer, Jose Renau]
+.center[### Sheng Hong Wang, Haven Skinner, Akash Sridhar, Rafael Trapani Possignolo, Kenneth Mayer, Jose Renau]
 .center[Computer Engineering]
 .center[University of California, Santa Cruz]
 
@@ -1408,6 +1408,54 @@ I((3, 2) ..sub1.. 1 == (2, 1))
 I((3, 2) ..sub1.. (2, 3) == (1, 0))
 ```
 ]
+
+
+---
+class: split-50
+# Input ($), Output (%), Register (#), Reference (@)
+
+.column[
+### Input/Outputs are tuples
+```coffeescript
+// code/ior.prp
+add = ::{
+  %total = 0   // % is the output tuple
+  for i in $ { // $ is the input tuple
+    %total = %total + i
+  }
+}
+
+f = add(a=1, b=2)
+I(f.total == f == 3)
+```
+]
+
+.column[
+### Registers and References
+```coffeescript
+// code/ior2.prp
+ncalls = ::{
+  #ncalled = #ncalled + 1
+  % = #ncalled;
+}
+
+a = ncalls
+I(a==1)
+b = ncalls
+I(b==2)
+c = @ncalls  // Reference to ncalls
+d = ncalls
+I(d==3)
+e = c
+I(e==4)
+f = ncalls
+I(f==5)
+g = c
+I(g==6)
+
+```
+]
+
 
 ---
 class: split-50
