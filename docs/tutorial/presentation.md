@@ -2083,8 +2083,9 @@ class: split-50
 ```coffeescript
 // code/mem2.prp
 // Enforce #rd and wr ports in SRAM
-#a as __bits:8 __size:1024 __rdports:1 __wrports:1
+#a as __bits:8 __size:1024
 #cycle as __bits:8
+CI(#a.__rdports==1 and #a.__wrports==1)
 
 #cycle += 13
 
@@ -2150,9 +2151,12 @@ class: split-50
 // code/mem5.prp
  __bits          Number of bits
  __posedge       Posedge or negedge (true)
- __last          Value end last cycle (flops/SRAMs)
+ __last          Value end last cycle (no fwd) (flops/SRAMs)
+ __fwd           Perform forwarding in cycle (true)
  __size          number of entries (SRAMs/tuple)
  __latch         Latch not flop based (false)
+ __rdports       Number of read ports
+ __wrports       Number of write ports
  __clk_pin       Wire signal to control clk pin
  __clk_rd_pin    Wire signal to read clk pin
  __clk_wr_pin    Wire signal to write clk pin
