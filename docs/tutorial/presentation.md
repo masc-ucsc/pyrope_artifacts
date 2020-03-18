@@ -17,7 +17,7 @@ background-size: 30%
 
 .center[![Right-aligned image](https://masc.soe.ucsc.edu/logos/pyrope5.png)]
 
-.center[### Sheng Hong Wang, Haven Skinner, Akash Sridhar, Rafael Trapani Possignolo, Kenneth Mayer, Jose Renau]
+.center[### Sheng-Hong Wang, Haven Skinner, Akash Sridhar, Rafael Trapani Possignolo, Kenneth Mayer, Jose Renau]
 .center[Computer Engineering]
 .center[University of California, Santa Cruz]
 
