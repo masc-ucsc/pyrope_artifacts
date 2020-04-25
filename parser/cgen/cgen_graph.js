@@ -295,10 +295,13 @@ function cfg_gen(data, obj_name = null) {
 
     if(obj == "tuple_element") {
       if(i == "type" && (data[i] == "number" || data[i] == "identifier" || data[i] == "string")) {
-        arr.pop(); //remove redundant "__tmp" variable in arr
+        if(typeof(arr[arr.length-1])=="string" && arr[arr.length-1].match(/___/)) {
+          arr.pop(); //remove redundant "__tmp" variable in arr
+        }
         arr.push("=");
         arr.push("null");
         arr.push(data["value"]);
+        //console.log(arr);
       }
     }
 
