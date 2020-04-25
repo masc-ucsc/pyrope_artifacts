@@ -1068,10 +1068,11 @@ function cfg_gen(data, obj_name = null) {
         if(data['type'] == "elif") { //handle scope of elif with complex conditional expression
           tmp_scope_count = tmp_scope_count + 1;
         }
-        if(obj_name == "condition") { //FIXME add for for and while also
+        if(obj_name == "condition" || i == "condition") { //FIXME add for for and while also
           extended_expr = 1;
         }
         cfg_gen(data[i], obj);
+        extended_expr = 0;
         if(data['type'] == "elif") { //handle scope of elif with complex conditional expression
           tmp_scope_count = tmp_scope_count - 1;
         }
@@ -1170,6 +1171,7 @@ function cfg_gen(data, obj_name = null) {
     }
   }
 
+
   //#child_arr[tmp_scope_count]++;
   if(Array.isArray(arr) && arr[0][0] != 'K'){
     k_count++;
@@ -1184,7 +1186,7 @@ function cfg_gen(data, obj_name = null) {
         arr.splice(1, 0, parent_arr[tmp_scope_count]);
       }else {
         arr.splice(1, 0, parent_tracker);
-        extended_expr = 0;
+        //extended_expr = 0;
       }
       arr.splice(2, 0, child_arr[tmp_scope_count]);
     }else {
