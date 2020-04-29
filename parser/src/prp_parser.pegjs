@@ -780,7 +780,7 @@ unary_expression
   / op:(NOT/TILDA) arg:factor {
     var t_op = "~"
     var op_type = "bitwise_not_op"
-    if(op == "!") {
+    if(op != "~") {
       t_op = "!"
       op_type = "not_op"
     }
@@ -1052,12 +1052,18 @@ identifier
   = !keyword bang:id_prefix? first:id_non_digit chars:id_char* postfix:id_postfix?
   {
     if(bang) {
-      //return bang+first+chars.join('')
-      return {
-        type:"identifier",
-        //prefix:bang,
-        value:bang+first+chars.join('')
+      var op_type = "bitwise_not_op"
+      if(bang != "~") {
+        op_type = "not_op"
       }
+      var val = {
+        type:op_type,
+        not_arg: {
+          type:"identifier",
+          value:first+chars.join('')
+        }
+      }
+      return val
     }
     if(postfix){
       var tmp = []

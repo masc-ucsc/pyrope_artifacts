@@ -364,8 +364,14 @@ function cfg_gen(data, obj_name = null) {
       arr.push("try");
     }
 
-    if(i == "compile_body") {
-      arr.push("#");
+    if(i == "not_arg") {
+      //console.log(data);
+      if(data["type"] == "bitwise_not_op") {
+        arr.push("~");
+      }else {
+        arr.push("!");
+      }
+      //console.log(arr);
     }
 
     if(i == "punch_inp" && data[i] != null){
@@ -625,41 +631,6 @@ function cfg_gen(data, obj_name = null) {
     }
 
 
-    if(i == "compile_body") {
-      k_count++;
-      k_next_count++;
-      var local_scope_count = -1;
-      var idx = scope_count - scope_out_count;
-      if(scope_count > scope_out_count) {
-        idx = scope_count;
-      }
-      child_arr[idx]++;
-      arr.unshift(child_arr[idx]);
-      arr.unshift(parent_arr[idx]);
-      arr.unshift('K'+k_count); //push k_id to arr
-      //#arr.push('K'+(k_count+1)); //push k_count of # body
-      k_count++;
-      k_next_count++;
-
-      scope_count++;
-      tmp_scope_count = scope_count;
-      local_scope_count = scope_count;
-
-      method_id_track = 1;
-      tmp_scope_count = local_scope_count; //seems useless - remove this line
-      if(local_scope_count < 0){ //scope count for entries otuside of a scope
-        tmp_scope_count = scope_count;
-      }
-      curr_scope = tmp_scope_count;
-      cfg_gen(data[i][0]);
-      scope_out_count++;
-      if(scope_count >= local_scope_count) {
-        tmp_scope_count = scope_count - scope_out_count;
-      }else {
-        tmp_scope_count = local_scope_count - 1;
-      }
-
-    }
 
     /*#
     if(arr[3] == "#") {
@@ -1020,9 +991,6 @@ function cfg_gen(data, obj_name = null) {
     if(i == "i_condition"){ //assertion statement I
       arr.push("I");
     }
-    if(i == "n_condition"){ //negation statement N
-      arr.push("N");
-    }
     if(i == "r_arg"){    //handles return statements
       arr.push("return");
       if(arr[arr.length-2] == convertToNumberingScheme(tmp_count-1)){
@@ -1077,23 +1045,17 @@ function cfg_gen(data, obj_name = null) {
           tmp_scope_count = tmp_scope_count - 1;
         }
       }else if(data[i]["type"] == "not_op"){
-        if(data[i]["not_arg"]["type"] == "number" || data[i]["not_arg"]["type"] == "identifier"){
-          arr.push('!'+data[i]["not_arg"]["value"]);
-        }else{
-          arr.push('!'+convertToNumberingScheme(tmp_count));
-          tmp_count = tmp_count + 1;
-          tmp_count_track = 1;
-          cfg_gen(data[i]["not_arg"], obj);
-        }
+        //arr.push('!'+convertToNumberingScheme(tmp_count));
+        arr.push(convertToNumberingScheme(tmp_count));
+        tmp_count = tmp_count + 1;
+        tmp_count_track = 1;
+        cfg_gen(data[i], obj);
       }else if(data[i]["type"] == "bitwise_not_op"){
-        if(data[i]["not_arg"]["type"] == "number" || data[i]["not_arg"]["type"] == "identifier"){
-          arr.push('~'+data[i]["not_arg"]["value"]);
-        }else{
-          arr.push('~'+convertToNumberingScheme(tmp_count));
-          tmp_count = tmp_count + 1;
-          tmp_count_track = 1;
-          cfg_gen(data[i]["not_arg"], obj);
-        }
+        //arr.push('~'+convertToNumberingScheme(tmp_count));
+        arr.push(convertToNumberingScheme(tmp_count));
+        tmp_count = tmp_count + 1;
+        tmp_count_track = 1;
+        cfg_gen(data[i], obj);
       }else if(data[i]["type"] == "number" || data[i]["type"] == "identifier"){
         arr.push(data[i]["value"]);
       }else if(operators.indexOf(data[i]["type"]) >= 0){

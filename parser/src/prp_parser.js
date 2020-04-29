@@ -655,7 +655,7 @@ function peg$parse(input, options) {
       peg$c67 = function(op, arg) {
           var t_op = "~"
           var op_type = "bitwise_not_op"
-          if(op == "!") {
+          if(op != "~") {
             t_op = "!"
             op_type = "not_op"
           }
@@ -858,12 +858,18 @@ function peg$parse(input, options) {
       peg$c112 = peg$literalExpectation("\"", false),
       peg$c113 = function(bang, first, chars, postfix) {
           if(bang) {
-            //return bang+first+chars.join('')
-            return {
-              type:"identifier",
-              //prefix:bang,
-              value:bang+first+chars.join('')
+            var op_type = "bitwise_not_op"
+            if(bang != "~") {
+              op_type = "not_op"
             }
+            var val = {
+              type:op_type,
+              not_arg: {
+                type:"identifier",
+                value:first+chars.join('')
+              }
+            }
+            return val
           }
           if(postfix){
             var tmp = []
