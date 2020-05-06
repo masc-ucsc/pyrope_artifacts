@@ -1113,7 +1113,8 @@ function cfg_gen(data, obj_name = null) {
         tmp_count_track = 1;
         cfg_gen(data[i], obj);
       }else if(data[i]["type"] == "func_decl"){
-        arr.push("\\"+convertToNumberingScheme(tmp_count));
+        //arr.push("\\"+convertToNumberingScheme(tmp_count));
+        arr.push("@"+convertToNumberingScheme(tmp_count));
         tmp_count = tmp_count + 1;
         tmp_count_track = 1;
         cfg_gen(data[i], obj);
