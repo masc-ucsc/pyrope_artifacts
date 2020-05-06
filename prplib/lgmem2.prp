@@ -1,0 +1,30 @@
+
+older_writes = ()
+
+mem.__fwd = false
+
+for a in $ {
+  if (a.cmd == READ) {
+     fwd_data = 0
+     fwd_found = false
+     for b in older_writes {
+        if (b.addr == a.addr) {
+           fwd_data = b.data
+           fwd_found = true
+        }
+     }
+     if (fwd_found) {
+        x.data = fwd_data
+        % ++= (x)
+     } else {
+        x.data = mem[addr].__last
+        % ++= (x)
+     }
+  } else {
+     older_writes ++= (x) 
+     mem[addr] = data
+  }
+}
+
+
+a.addr = ? 

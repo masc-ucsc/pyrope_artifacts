@@ -1,3 +1,9 @@
+# build
+```
+yarn install
+yarn build
+```
+
 
 # Setup
 
