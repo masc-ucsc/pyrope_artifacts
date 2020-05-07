@@ -1456,6 +1456,53 @@ I(g==6)
 ```
 ]
 
+---
+class: split-50
+# Constraining Outputs
+
+.column[
+### Unconstrained
+```coffeescript
+// code/out1.prp
+m1 = ::{
+  // Registers are outputs by default
+  %o1 = 1
+  #o2 = #o2 + 1
+}
+v1 = m1()
+I(v1.o1==1 and v1.o2==2)
+
+m2 = ::{
+  x = (o1=1,o2=3)
+  #o2 = #o2 + 1 // not an output
+  return x // force x as output
+}
+v2 = m2()
+I(v2.o1==1 and v2.o2==3)
+```
+]
+
+.column[
+### Constrained output
+```coffeescript
+// code/out2.prp
+m1 = :(%o1):{ // %o1 is single output
+  %o1 = 1
+  #o2 = #o2 + 1
+}
+v1 = m1()
+I(v1.o1==v1==1)
+
+m3 = :(%o1,%o3):{
+  x = (o1=1,o2=2)
+  return x    // compile error
+}
+
+m3 = :(%o1,%o3):{
+  %o2 = 3     // compile error
+}
+```
+]
 
 ---
 class: split-50
