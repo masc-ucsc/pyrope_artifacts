@@ -1200,8 +1200,9 @@ function cfg_gen(data, obj_name = null) {
     var aaa = arr[0].split('K');
     arr[0] = aaa[1];
 
+    //loop to generate RD ALWAYS and RD ON  for "and" and "or" with "$" inputs
     if(arr[5] == "or" || arr[5] == "and"){
-      mark_read.push(arr);
+      //mark_read.push(arr);
     }
 
     console.log(arr.join('\t'));
