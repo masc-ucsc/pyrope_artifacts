@@ -545,7 +545,7 @@ s1 import libs.adder.rca
 
 %sum.__stage = true
 %sum1.__stage as true
-%sum2 as __stage=true
+%sum2 as (__stage=true)
 
 sum1 = $a + $b
 sum2 = $c + $c
@@ -600,7 +600,7 @@ endmodule
 ### Pyrope
 ```coffeescript
 // code/vsverilog.prp file
-($a,$b) as __bits:3
+($a,$b) as (__bits=3)
 %c = $a + $b
 ```
 * No inputs/outputs
@@ -658,7 +658,7 @@ if $a? and $b? {
 test = ::{
   puts import io.puts
   gcd as vschisel
-  (a,b,z) as __bits:16
+  (a,b,z) as (__bits=16)
   z = gcd(a=a.__rnd,b=b.__rnd)
   waitfor z
   puts("gcd for {} and {} is {}", a, b, z)
@@ -766,7 +766,7 @@ if #counter {
 
 test = ::{
   puts import io.puts
-  b = vsmigen(maxperiod:300000)
+  b = vsmigen(maxperiod=300000)
   puts("led is {}",b.led)
   yield 300000
   puts("led is {}",b.led)
@@ -820,7 +820,7 @@ if #i == 0 { %result = #a }
 test = ::{
   seq = (0 1 1 2 3 5 8 13 21 34)
   for n in 0..9 {
-    n as __bits:6     // 6 bit fibonacci
+    n.__bits=6        // 6 bit fibonacci
     b = vspyrtl(n=n)
     waitfor b.result  // multiple clocks
     I(b.result == seq[n])
@@ -892,7 +892,7 @@ upCounter enable = s
 ### Pyrope
 ```coffeescript
 // code/vsclash.prp file
-#upCounter as __bits:8
+#upCounter.__bits as 8
 if $enable {
  #upCounter += 1
 }
@@ -942,18 +942,19 @@ collector out.resolved on "gen" {
 // code/vsliberty.prp file
 puts import io.puts
 gen  = ::{
-  #data = #data + 1
+  #data := #data + 1
 }
 sink = ::{
   if $data? {
-     puts(": {}",,,,$data)
+     puts(": {}",$data)
   }else{
      puts(": No data")
   }
 }
-s = sink __stage:true
-g = gen  __stage:true
-s.data = g.data
+s = @sink ++ (__stage=true, data.__bits=3)
+g = @gen ++ (__stage=true)
+// Filter only odd data values
+g |> ::{ if $.data[[0]] { return $ } } |> s
 ```
 * Clean syntax
 * No extra verbosity
@@ -1834,12 +1835,12 @@ I(n3.o4 == 4)
 // code/scope6.prp
 nested1_3b = ::{
   nested2 = ::{
-    #cycle as __bits:3
+    #cycle.__bits as 3
     #cycle += #incr
   }
 nested1_5b = ::{
   nested2 = ::{
-    #cycle as __bits:5
+    #cycle as (__bits=5)
     #cycle += #incr
   }
 }
@@ -2053,7 +2054,7 @@ class: split-50
 ### Sets
 ```coffeescript
 // code/sets1.prp
-s as __set:true
+s.__set=true
 s = (1, 2, 3, 3)
 I(s == (1,2,3))
 s ++= 4  // add to tuple
@@ -2076,12 +2077,12 @@ c = tup.Red              // OK
 b = 3                    // OK, allowed value
 a = 5                    // Compile error
 
+// enum is a strict in style allowed tuple
 tup2 as tup
-a.__enum as tup2
-a = tup2.Red             // OK
-a = tup.Red              // Compile error
-a = 3                    // Compile error
-
+d.__enum as tup2
+d = tup2.Red             // OK d[[]]==1
+d = tup.Red              // Compile error
+d = 1                    // Compile error
 ```
 ]
 
@@ -2094,9 +2095,9 @@ class: split-50
 ### Clear SRAMs
 ```coffeescript
 // code/mem1.prp
-#a as __bits:3 __size:1024 __rdports:1
-#b as #a __fwd:false  // without cycle fowarding
-#cycle as __bits:8
+#a as (__bits=3, __size=1024, __rdports=1)
+#b as #a ++ (__fwd=false)  // without fowarding
+#cycle.__bits as 8
 
 I(#a[0] == #cycle)
 
@@ -2130,8 +2131,8 @@ class: split-50
 ```coffeescript
 // code/mem2.prp
 // Enforce #rd and wr ports in SRAM
-#a as __bits:8 __size:1024
-#cycle as __bits:8
+#a as (__bits=8, __size=1024)
+#cycle as (__bits=8)
 CI(#a.__rdports==1 and #a.__wrports==1)
 
 #cycle += 13
@@ -2149,8 +2150,8 @@ CI(#a.__rdports==1 and #a.__wrports==1)
 ```coffeescript
 // code/mem3.prp
 // Enforce #rd and wr ports in SRAM
-#a as __bits:8 __size:1024 __wrports:1
-#cycle     as __bits:8
+#a as (__bits=8, __size=1024, __wrports=1)
+#cycle.__bits as 8
 
 #cycle += 13
 
@@ -2173,9 +2174,9 @@ class: split-50
 ```coffeescript
 // code/mem4.prp
 // Enforce #rd and wr ports in SRAM
-#a as __bits:8 __size:1024 __rdports:1 __wrports:1
-*#a as __posedge:false // posedge by default
-#cycle as __bits:8
+#a as (__bits=8, __size=1024, __rdports=1, __wrports=1)
+*#a.__posedge as false // posedge by default
+#cycle.__bits=8
 
 #cycle += 13
 
@@ -2197,8 +2198,8 @@ class: split-50
 ```coffeescript
 // code/mem5.prp
  __bits          Number of bits
- __posedge       Posedge or negedge (true)
- __last          Value end last cycle (no fwd) (flops/SRAMs)
+ __posedge       Posedge (true) or negedge
+ __last          Last cycle value, no fwd (registers)
  __fwd           Perform forwarding in cycle (true)
  __size          number of entries (SRAMs/tuple)
  __latch         Latch not flop based (false)
@@ -2212,8 +2213,6 @@ class: split-50
  __reset_cycles  Number of reset cycles required (1)
  __reset_async   Asynchronous reset (false)
  __set           Tuple behaves like a set (false)
- __range_begin   Force range beging value
- __range_end     Force range end value
 ```
 ]
 
@@ -2230,7 +2229,7 @@ class: split-50
  __rnd_bias      Controls random generation
  __stage         stage or comb submodule (false)
  __fluid         Outputs in module handled as fluid
- __comptime      Statement known at compile time
+ __comptime      Variable/function solved at compile time
  __const         Variables are constant at run time
  __debug         Debug statment, no side effects
  __do            Code block passes as argument
@@ -2272,6 +2271,7 @@ I((..3) == (-1..3))
 ```coffeescript
 // code/ranges2.prp
 seq = (1..9)
+
 start  = seq[0..2]
 middle = seq[3..-2] // seq[-2..3] same
 end    = seq[-2..]
@@ -2305,14 +2305,14 @@ I((1,2,4) ++ 3 == (1..4))
 // code/rndtest.prp
 puts import io.puts
 a = __rnd(1..3)          // rnd between 1 2 3
-b as __bits:12
-a = b.__rnd             // rnd from 0 to 4095
+b.__bits=12
+a = b.__rnd              // rnd from 0 to 4095
 b.__rnd_bias =   (1, 0)  // weight 1 for value 0
 b.__rnd_bias ++= (2, 3)  // weight 2 for value 3
 b.__rnd_bias ++= (2 ,4)  // weight 2 for value 4
 b.__rnd_bias ++= (5, 9)  // 0 10%, 3 20%, 4 20%, and 9 50% chance
 
-c as __bits:8
+c.__bits as 8
 c.__rnd_bias   = (1 ,0)     // weight 1 for value 0
 c.__rnd_bias ++= (2 ,255)   // weight 2 for value 255
 c.__rnd_bias ++= (7,1..254) // weigth 7 for the rest
@@ -2330,15 +2330,15 @@ $prp --run rndtest
 
 ```coffeescript
 // code/reset1.prp
-#a as __bits:3
+#a.__bits as 3
 #a.__reset = ::{ this = 13 }
 
-#b as __bits:3 __reset:false // disable reset
+#b as (__bits=3, __reset_pin=false) // disable reset
 
-#mem0 as __bits:4 __size:16
+#mem0 as (__bits=4, __size=16)
 #mem0.__reset = ::{ this = 3 }
 
-#mem1 as (__bits=4,__size=16, __reset_pin=0)
+#mem1 as (__bits=4,__size=16, __reset_pin=false)
 
 #mem2 as (__bits=2,__size=32)
 
@@ -2346,7 +2346,7 @@ $prp --run rndtest
 #mem2.__reset_cycles = #mem2.__size + 4
 #mem2.__reset = ::{
   // Called during reset or after clear (!!)
-  #_reset_pos as (__bits=log2(#this.__size),__reset=false)
+  #_reset_pos as (__bits=log2(#this.__size),__reset_pin=false)
   #this[#_reset_pos] = #_reset_pos
   #_reset_pos += 1
 }
@@ -2361,13 +2361,13 @@ $prp --run rndtest
 // code/clk1.prp
 
 #clk_flop = $inp
-// implicit #clk_flop as __clk_pin:$clk
-#clk2_flop as __clk_pin:$clk2
+// implicit #clk_flop as __clk_pin=$clk
+#clk2_flop as (__clk_pin=@$clk2)
 #clk2_flop = #clk_flop
 
 %out = #clk2_flop
-%out as __fluid:true
-%out as __clk_pin:$clk3  // 3rd clock for output
+%out as (__fluid=true)
+%out as (__clk_pin=@$clk3)  // 3rd clock for output
 ```
 
 ---
@@ -2376,11 +2376,11 @@ $prp --run rndtest
 ```coffeescript
 // code/constants.prp
 
-a = 3                     // implicit __bits:2 __sign:false
-a = 3u                    // explicit __sign:false, implicit __bits:2
-a = 3u4bits               // explicit __sign:false, __bits:4
+a = 3                     // implicit __bits=2 __sign=false
+a = 3u                    // explicit __sign=false, implicit __bits=2
+a = 3u4bits               // explicit __sign=false, __bits=4
 
-b = 0xFF_f__fs32bits      // explicit __bits:32 __sign:true
+b = 0xFF_f__fs32bits      // explicit __bits=32 __sign=true
 
 c = 0b_111_010_111u32bits
 c = 0b_111_010_111u2bits  // compile error
@@ -2398,16 +2398,16 @@ a = 3
 a.__comptime = true
 b = a  // b and a must be known at Compile time
 
-if a==3 {  // compile time if condition
-  I(true)   // runtime assertion
-  %d = $0+a // no constant
+if a==3 {       // compile time if condition
+  I(true)       // runtime assertion
+  %d = $0+a     // no constant
 }
 
-{.__comptime=true
-I(a == b)   // Compile time assertion
-}
-I(%d != a)  // runtime assertion
+CS as I
+CS.__comptime=true
+CI(a == b)      // compile time assertion
 
+I(%d != a)      // runtime assertion
 ```
 
 ---
@@ -2418,18 +2418,18 @@ class: split-50
 ### Explicit vs implicit
 ```coffeescript
 // code/precission1.prp
-a = 2       // implicit, __bits:2
-a = a - 1   // OK, implicit __bits:1
+a = 2       // implicit, __bits=2
+a = a - 1   // OK, implicit __bits=1
 
-b = 3u2bits // explicit, __bits:2
-b = b - 2   // OK, bits:2
+b = 3u2bits // explicit, __bits=2
+b = b - 2   // OK, bits=2
 b = b + 2   // compile error, __bits explicit 2
 I(b == 2)
 b := b + 2  // OK (drop bits)
 I(b == 0)   // 4u2bits -> 0b100[[0..1]] == 0
 
 // implicit unless all values explicit
-c = 3 - 1u1bits // implicit, __bits:2 __allowed:2u2bits
+c = 3 - 1u1bits // implicit, __bits=2 __allowed=2u2bits
 
 #d.__allowed as (0, 1, 7) // allowed values
 #d = 0      // OK
@@ -2630,13 +2630,13 @@ combinational = ::{
 
 one_stage_flop_out  = ::{ // The output is flopped
   % = ssum(a=sinc($a), b=sinc($b))
-  % as __stage=true
+  % as (__stage=true)
 }
 
 one_stage_comb_out = ::{  // Not flopped output
   a1 as @sinc
   a2 =  @ssum
-  a2 as __stage=true
+  a2 as (__stage=true)
   % = a2(a=a1($a), b=a1($b))
 }
 
@@ -2644,7 +2644,7 @@ two_stage_comb_out = ::{  // Not flopped output
   a1 = @sinc
   a1.__stage as true
   a2 = @ssum
-  a2 as __stage=true
+  a2 as (__stage=true)
   % = a2(a=a1($a), b=a1($b))
 }
 ```
@@ -2659,7 +2659,7 @@ combinational = ::{
   % = ssum(a=sinc($a), b=sinc($b))
 }
 incsum = combinational(a=$a,b=$b)
-incsum as __fluid:true    // instance is fluid
+incsum.__fluid as true    // instance is fluid
 
 one_stage_fluid  = ::{    // Same as incsum
   % = ssum(a=sinc($a), b=sinc($b))
@@ -2690,10 +2690,10 @@ sinc = ::{ % = $ + 1 }
 opt1_2stages = ::{
   s1_a = sinc($a)
   s1_b = sinc($b)
-  s1_a as __stage=true
-  s1_b as __stage=true
+  s1_a as (__stage=true)
+  s1_b as (__stage=true)
   % = sadd(a=s1_a, b=s1_b)
-  % as __stage=true
+  % as (__stage=true)
 }
 
 opt2_2stages = ::{
@@ -2701,7 +2701,7 @@ opt2_2stages = ::{
   s1_b = sinc($b)
   % = sadd(a=s1_a, b=s1_b)
 
-  (s1_a, s1_b, %) as __stage=true
+  (s1_a, s1_b, %) as (__stage=true)
 }
 ```
 ]
@@ -2714,7 +2714,7 @@ opt3_2stages = ::{
   s1.b = sinc($b)
   % = sadd(a=s1.a, b=s1.b)
 
-  (s1, %) as __stage=true
+  (s1, %) as (__stage=true)
 }
 
 opt4_2stages = ::{
@@ -2737,13 +2737,13 @@ a as c        // alias a as c, no real read for fluid
 e = c
 e.__const = true  // e is same as c, constant
 
-b = __bits:3  // explicit bits
-b = 3         // OK
-b = __bits:10 // OK to redefine
-b = 100       // OK
+b = (__bits=3)  // explicit bits
+b = 3           // OK
+b = (__bits=10) // OK to redefine
+b = 100         // OK
 
-d as __bits:3 // explicit bits
-d = __bits:4  // compile error, fixed with as
+d as (__bits=3) // explicit bits
+d =  (__bits=4) // compile error, fixed with as
 ```
 
 ---
@@ -2867,8 +2867,8 @@ class: split-50
 ### dealing with objects
 ```coffeescript
 // code/objects2a.prp
-obj1.foo as __bits:3
-obj2.bar as __bits:2
+obj1.foo as (__bits=3)
+obj2.bar as (__bits=2)
 I(!(obj1.__obj == obj2.__obj))
 
 obj1c = obj1
@@ -2933,7 +2933,7 @@ a = 0x73
 I(a == 0b111011)
 I(a == 0b?11?11)
 
-c as __bits:4
+c as (__bits=4)
 I(c.popcount <= 1) // Only 1 bit can be set
 
 unique if c == 0b???1 { // ? only in binaries
@@ -2957,7 +2957,6 @@ class: split-50
 ### Debug have no impact on non-debug
 ```coffeescript
 // code/debug1.prp
-{.__debug:1
 I as ::{
   puts import io.puts
   if (!$0) {
@@ -2968,14 +2967,12 @@ I as ::{
     }
   }
 }
-}
+CS as I
+CI.__comptime=true
 a = 3
-I(a == 3, "oops")  // runtime check
-{.__comptime as true
-I(a == 3)          // compile time check
+I(a == 3, "oops")   // runtime check
+CI(a == 3)          // compile time check
 
-cond = true
-}
 c = 3
 c.__comptime = true // c must be compile time
 a = b + 4+c - d
@@ -3008,13 +3005,13 @@ for a in tup {
 ### C-api must have known IO at compile time
 ```coffeescript
 // code/test_call1.prp
-myprint import myprint
-myprint("hello")
+mp import myprint
+mp("hello")
 read_val import json_read
 read_val.__comptime = true
 I(read_val("foo")==6)            // called at compile time
 for i in (1..read_val("file")) {
-  myprint(txt:"i:{}", i)         // called at simulation time
+  mp(txt:"i:{}", i)         // called at simulation time
 }
 // code/myprint.cpp
 #include "prp_cpp.hpp"
