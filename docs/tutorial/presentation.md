@@ -266,12 +266,12 @@ b as counter ++ (__stage as true) // pipeline type
 b.total as (__bits as 4)
 b.enable = 0
 I(b.total == 0)                // assertion
-yield                          // advance clock
+yield()                        // advance clock
 I(b.total == 0)
 b.enable = 1
 I(b.total == 0)
-yield                          // advance clock
-I(b.total == 1)
+yield(3)                       // advance 3 clock
+I(b.total == 3)
 ```
 ]
 
@@ -297,12 +297,12 @@ if $enable {
 b.total as (__bits as 4)
 b.enable = 0
 I(b.total == 0)                // assertion
-yield                          // advance clock
+yield()                        // advance clock
 I(b.total == 0)
 b.enable = 1
 *I(b.total == 1)
-yield                          // advance clock
-*I(b.total == 2)
+yield(3)                        // advance clock
+*I(b.total == 3)
 ```
 ]
 
@@ -374,7 +374,7 @@ mytest = ::{
   puts import io.puts
   puts("Hello World")
   I(1 == 0+1)
-  yield
+  yield()
   c = 1
   f.a = 2
   f.b = 3
@@ -554,9 +554,9 @@ sum2 = $c + $c
 test = ::{
   b as add4(a=1,b=2,c=3,d=4)
   I(b.sum1 == 10 and b.sum2 ==  0 and b.sum ==  0)
-  yield
+  yield()
   I(b.sum1 == 10 and b.sum2 == 10 and b.sum ==  0)
-  yield
+  yield()
   I(b.sum1 == 10 and b.sum2 == 10 and b.sum == 10)
 }
 ```
@@ -600,7 +600,7 @@ endmodule
 ### Pyrope
 ```coffeescript
 // code/vsverilog.prp file
-($a,$b) as (__bits=3)
+($a,$b) as (__bits=3, __bits=3)
 %c = $a + $b
 ```
 * No inputs/outputs
@@ -647,7 +647,7 @@ object Example {
 ### Pyrope
 ```coffeescript
 if $a? and $b? {
-  (#x #y) = ($a $b)
+  (#x,#y) = ($a,$b)
 }else{
   if   #x > #y { #x = #x - #y }
   else         { #y = #y - #x }
@@ -658,9 +658,9 @@ if $a? and $b? {
 test = ::{
   puts import io.puts
   gcd as vschisel
-  (a,b,z) as (__bits=16)
+  (a,b,z) as (__bits=16, __bits=16, __bits=16)
   z = gcd(a=a.__rnd,b=b.__rnd)
-  waitfor z
+  waitfor(@z)  // must be a reference @z
   puts("gcd for {} and {} is {}", a, b, z)
 }
 ```
@@ -768,7 +768,7 @@ test = ::{
   puts import io.puts
   b = vsmigen(maxperiod=300000)
   puts("led is {}",b.led)
-  yield 300000
+  yield(300000)
   puts("led is {}",b.led)
 }
 ```
@@ -822,7 +822,7 @@ test = ::{
   for n in 0..9 {
     n.__bits=6        // 6 bit fibonacci
     b = vspyrtl(n=n)
-    waitfor b.result  // multiple clocks
+    waitfor(@b.result)  // multiple clocks
     I(b.result == seq[n])
   }
 }
@@ -1513,6 +1513,8 @@ class: split-50
 * **Only** five levels of operator precedence (16 levels in c++)
 * Always left-to-right evaluation
 * Comparators can be chained (a==c<=d) same as (a==c and c<=d)
+* mult/div precedence is only against +,- operators
+* No precendence if left-right and right-left have same results
 
 .column[
 .small[
@@ -1533,18 +1535,19 @@ class: split-50
 I((true or !false) == (true or (!false)))
 I((3*5+5) == ((3*5) + 5))
 
-a = true or false==false
-b = true or (false==false)
-I(a == b)
+a = x1 or x2==x3  // same as b = x1 or (x2==x3)
+//b = 3 & 4 * 4   // compile error
+b = 3 + 3 - 5     // OK, same result right-left
+b = 3*4-4         // same as (3*4)-4
 
 c = (2) |> fcall(1)
 I(c == fcall(1,2))
 
-//bar = true or false and true // compile error
-//x = 3 ++ 4 -- 3              // compile error
+//bar = x or y and z   // compile error
+//x = 3 ++ 4 -- 3      // compile error
 
-c = a == 3 == b                // OK
-I(c == (a==3 and 3==b))
+c = a == 3 <= b == d   
+I(c == (a==3 and 3<=b and b == d))
 ```
 ]
 
@@ -1638,7 +1641,7 @@ class: split-50
 // code/codeblock.prp file
 puts import io.puts
 each as ::{
-  for a in $ { #(a) }
+  for a in $ { $.__do(a) }
 }
 
 each(1,2,3)     ::{ puts($) }
@@ -1647,7 +1650,7 @@ each(1,2,3)     ::{ puts($) }
 map as ::{
   t = ()
   for a in $ {
-    t ++= #(a)
+    t ++= $.__do(a)
   }
   return t
 }
@@ -1699,15 +1702,15 @@ class: split-50
 // code/codeblock2.prp file
 dec_large = ::{
   for a in $ {
-    if (#.0(a)) {     // #.0 == #[0]
-      % ++= #.bar(a)  // #.1 == #.bar
+    if ($.__do(a)) {     // $.__do block
+      % ++= $.__else(a)  // $.__else block
     }else{
       % ++= a
     }
   }
 }
 
-a = (1,2,3,10) |> dec_large ::{ $0 > 3 } bar { $0-1 }
+a = (1,2,3,10) |> dec_large ::{ $0 > 3 } else { $0-1 }
 I(a==(1,2,3,9))
 ```
 ]
@@ -1891,7 +1894,9 @@ I(a == 3 and b == 3)
 I(a == 3 and b == 4)
 (a,b) = (b,a)
 I(a == 4 and b == 3)
-// (a,b) = 3 // compile error
+c = (@a,@b)
+c = 5
+I(a==4==b and c==5)
 ```
 ]
 
@@ -2028,7 +2033,7 @@ I(e1==1 and e2==2)
 
 (f,g) = 3
 I(f==3 and g==3)
-(f,g) as field=1
+(f,g) as (field=1, field=1)
 I(f.field==1 and g.field=1)
 
 a = (b=1, c as 2)
@@ -2072,7 +2077,7 @@ I(s == (1,2,3,4,5))
 // Plain tuple with fixed (as) fields
 tup = (Red as 1,Blue as 2,Purple as 3)
 I(tup.Red == 1)
-(a,b,c) as __allowed=tup
+(@a,@b,@a) |> set_field("__allowed", tup)
 c = tup.Red              // OK
 b = 3                    // OK, allowed value
 a = 5                    // Compile error
@@ -2229,11 +2234,13 @@ class: split-50
  __rnd_bias      Controls random generation
  __stage         stage or comb submodule (false)
  __fluid         Outputs in module handled as fluid
- __comptime      Variable/function solved at compile time
+ __comptime      Fully solved at compile time
  __const         Variables are constant at run time
  __debug         Debug statment, no side effects
  __do            Code block passes as argument
  __else          Else code block
+ __read          Method called when variable read
+ __write         Method called when variable written
 ```
 ]
 ---
@@ -2495,8 +2502,8 @@ class: split-50
 // %o!! = true  // clear flop
 // %o!! = false // do not clear flop
 
-// yield        // stop and start from here cycle
-// waitfor      // blocking wait until input is ready
+// yield(...)   // stop and start from here cycle
+// waitfor(...) // blocking wait for args to be ready
 ```
 ]
 
@@ -2547,7 +2554,7 @@ puts import io.puts
 puts("prints every cycle")
 try {
   puts("odd cycles")
-  yield         // Yield applies to scope ::{}
+  yield()       // Yield applies to scope ::{}
   puts("even cycles")
 }
 puts("prints every cycle")
@@ -2559,7 +2566,7 @@ puts("prints every cycle")
 // code/fluid4.prp file
 everyother = ::{
   if #conta {
-    yield
+    yield()
   }
   #conta = ~#conta
   return 1
@@ -2630,13 +2637,13 @@ combinational = ::{
 
 one_stage_flop_out  = ::{ // The output is flopped
   % = ssum(a=sinc($a), b=sinc($b))
-  % as (__stage=true)
+  % |> set_field("__stage", true)
 }
 
 one_stage_comb_out = ::{  // Not flopped output
   a1 as @sinc
   a2 =  @ssum
-  a2 as (__stage=true)
+  a2.__stage=true
   % = a2(a=a1($a), b=a1($b))
 }
 
@@ -2693,7 +2700,7 @@ opt1_2stages = ::{
   s1_a as (__stage=true)
   s1_b as (__stage=true)
   % = sadd(a=s1_a, b=s1_b)
-  % as (__stage=true)
+  % |> set_field("__stage", true)
 }
 
 opt2_2stages = ::{
@@ -2701,7 +2708,8 @@ opt2_2stages = ::{
   s1_b = sinc($b)
   % = sadd(a=s1_a, b=s1_b)
 
-  (s1_a, s1_b, %) as (__stage=true)
+  x = (@s1_a, @s1_b) ++ %
+  x.__stage = true
 }
 ```
 ]
@@ -2714,14 +2722,14 @@ opt3_2stages = ::{
   s1.b = sinc($b)
   % = sadd(a=s1.a, b=s1.b)
 
-  (s1, %) as (__stage=true)
+  (s1 ++ %) |> set_field("__stage", true)
 }
 
 opt4_2stages = ::{
   s1 = (a=sinc($a), b=sinc($b))
   s1.__stage=true
   %  = sadd(s1)
-  %.__stage=true
+  this.__stage=true
 }
 ```
 ]
