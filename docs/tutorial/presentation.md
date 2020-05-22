@@ -1509,20 +1509,19 @@ class: split-50
 # Operator precedence
 
 * Unary operators (!,~,#,?,%...) bind stronger than binary operators (+,++,-,*...)
-* **Only** seven levels of operator precedence (16 levels in c++)
+* **Only** five levels of operator precedence (16 levels in c++)
 * Always left-to-right evaluation
+* Comparators can be chained (a==c<=d) same as (a==c and c<=d)
 
 .column[
 .small[
 | Priority | Category | Main operators in category |
 |:-----------:|:-----------:|-------------:|
 | 1          | Unary       | not ! ~ # ? % $ |
-| 2          | ranges      | ... |
-| 3          | Mult/Div    | *, /         |
-| 4          | bitwise ops | ^, & |     |
-| 5          | other bin | +, ++, --, <<, >>, >>>, <<< |
-| 6          | comparators |    <, <=, ==, !=, >=, > |
-| 7          | logical     | and, or    |
+| 2          | Mult/Div    | *, /         |
+| 3          | other bin   | ..,^, &, \|, -,+, ++, --, <<, >>, >>>, <<< |
+| 4          | comparators |    <, <=, ==, !=, >=, > |
+| 5          | logical     | and, or    |
 ]
 ]
 
