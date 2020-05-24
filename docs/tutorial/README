@@ -8,6 +8,10 @@ cp *png dist/
 
 # Export PDF Docker option
 
+ ./node_modules/decktape/decktape.js --chrome-arg=--no-sandbox --disable-web-security ./dist/presentation.html pyrope2.pdf
+
+# OLD EXPORT
+
 docker run -t -v `pwd`:/home/user/slides -v ~:/home/user astefanutti/decktape /home/user/projs/pyrope/docs/tutorial/dist/presentation.html slides.pdf
 docker cp `docker ps -lq`:slides/slides.pdf .
 

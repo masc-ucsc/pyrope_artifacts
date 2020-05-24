@@ -4,7 +4,8 @@
   "description": "Pyrope Tutorial Infrastructure",
   "license": "BSD-3-Clause",
   "dependencies": {
-    "backslide": "^2.3.0"
+    "backslide": "^2.3.0",
+    "decktape": "^3.0.0"
   },
   "scripts": {
     "build": "bs export"
