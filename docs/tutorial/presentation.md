@@ -364,7 +364,7 @@ $prp --run test1.mytest ./mysrc/test2.cpp
 ```coffeescript
 // code/test1.prp file
 mytest = ::{
-  puts import io.puts
+  puts = import("io.puts")
   puts("Hello World")
   I(1 == 0+1)
   yield()
@@ -372,7 +372,7 @@ mytest = ::{
   f.a = 2
   f.b = 3
 
-  m import methodx
+  m = import("methodx")
   a = m(c, f)
   I(a.res == 6)
   I(a.mor == 0b11)
@@ -402,7 +402,7 @@ for i in 0..a.__bits {             // iterate #bits
 %cout = carry
 
 test2 = ::{
-  puts import io.puts
+  puts = import("io.puts")
   c = rca(a=32, b=4, cin=0)
   puts("sum is {0:b} {0}",c.sum)   // puts has c++ fmt in prplib
 }
@@ -441,8 +441,8 @@ task: Quick Dive to Pyrope
 
 ```coffeescript
 // libs/adder/code/cla.prp file
-and_red import lib.and_reduction
-%sum = rca(a=$a b=$b cin=0).sum
+and_red = import("lib.and_reduction")
+%sum = rca(a=$a, b=$b, cin=0).sum
 
 g = $a & $b // Generate
 p = $a ^ $b // Propagate
@@ -509,13 +509,13 @@ task: Quick Dive to Pyrope
 
 ```coffeescript
 // code/ccounter.prp file
-..+.. import libs.adder.scla.cla  // Overload + operator
+..+.. = import("libs.adder.scla.cla")  // Overload + operator
 if $enable {
   #total := #total + 1
   I(3 ..+.. 4 == 7 == 3 + 4)      // + is an alias for ..+..
 }
 
-my_add import libs.adder.scal.cla
+my_add as import("libs.adder.scal.cla")
 ..+.. = :($a,$b) when $a.__bits>1 and $b.bits==1:{
  // Special code for special case
 }
@@ -533,8 +533,8 @@ task: Quick Dive to Pyrope
 
 ```coffeescript
 // code/add4.prp file
-..+.. import libs.adder.scla.cla
-s1 import libs.adder.rca
+..+.. = import("libs.adder.scla.cla")
+s1 = import("libs.adder.rca")
 
 %sum.__stage = true
 %sum1.__stage as true
@@ -649,7 +649,7 @@ if $a? and $b? {
 ```
 ```coffeescript
 test = ::{
-  puts import io.puts
+  puts = import("io.puts")
   gcd as vschisel
   (a,b,z) as (__bits=16, __bits=16, __bits=16)
   z = gcd(a=a.__rnd,b=b.__rnd)
@@ -668,7 +668,7 @@ class: split-40
 
 .column[
 ### BSV
-```coffeescript
+```verilog
 module mkTb (Empty);
   Reg#(int) cycle <- mkReg (0);
 
@@ -699,7 +699,7 @@ endmodule: mkTb
 ### Pyrope
 ```coffeescript
 // code/vsbsv.prp file
-#cycles = #cycles + 1
+#cycles := #cycles + 1
 x = 10
 a = x
 a = a * a
@@ -712,7 +712,7 @@ if cycle[[0..1]] == 3 { a = a + 3 }
 for k in 20..24 {
   a = a + k
 }
-puts import io.puts
+puts = import("io.puts")
 puts("{}: rule, a={}",cycle,a)
 ```
 * More compact syntax
@@ -758,7 +758,7 @@ if #counter {
 }
 
 test = ::{
-  puts import io.puts
+  puts as import("io.puts")
   b = vsmigen(maxperiod=300000)
   puts("led is {}",b.led)
   yield(300000)
@@ -811,7 +811,7 @@ if #i == 0 { %result = #a }
 ```
 ```coffeescript
 test = ::{
-  seq = (0 1 1 2 3 5 8 13 21 34)
+  seq = (0,1,1,2,3,5,8,13,21,34)
   for n in 0..9 {
     n.__bits=6        // 6 bit fibonacci
     b = vspyrtl(n=n)
@@ -933,7 +933,7 @@ collector out.resolved on "gen" {
 ### Pyrope
 ```coffeescript
 // code/vsliberty.prp file
-puts import io.puts
+puts = import("io.puts")
 gen  = ::{
   #data := #data + 1
 }
@@ -944,7 +944,8 @@ sink = ::{
      puts(": No data")
   }
 }
-s = @sink ++ (__stage=true, data.__bits=3)
+s = @sink ++ (__stage=true)
+s.data.__bits = 3
 g = @gen ++ (__stage=true)
 // Filter only odd data values
 g |> ::{ if $.data[[0]] { return $ } } |> s
@@ -989,7 +990,7 @@ a..field1 = 1
 ### Pyrope
 ```coffeescript
 // code/vsdart.prp file
-puts import io.puts
+puts = import("io.puts")
 person.fromJson = ::{
   puts("in Person")
 }
@@ -1168,7 +1169,7 @@ for(let pair of myMap) {
 ### Pyrope
 ```coffeescript
 // code/vsjs1.prp file
-puts import io.puts
+puts = import("io.puts")
 a = 0
 a.__read = ::{
   this += 1
@@ -1264,11 +1265,11 @@ y = pow(10, floor(log10(x)))
 .column[
 ### Pyrope
 ```coffeescript
-puts import io.puts
+puts as import("io.puts")
 square = :($x):{$ * $}
 eat    = :($x):{puts(square(x=$)) }
 
-for food in (1 2 3) {
+for food in (1,2,3) {
   if food !=2 { eat(x=food) }
 }
 
@@ -1276,9 +1277,9 @@ r=square(3 + square(4))// 361
 r=square(3) + square(4)// 25
 
 // Minimum number of parenthesis
-y = pow(10 floor(log10(x)))
+y = pow(10,floor(log10(x)))
 // Simpler syntax with pipes
-y = log2 x |> floor |> pow 10
+y = x |> log2 |> floor |> pow(10)
 ```
 * No iterators after statement
 * Different rules about arguments
@@ -1517,7 +1518,7 @@ class: split-50
 | 2          | Mult/Div    | *, /         |
 | 3          | other bin   | ..,^, &, -,+, ++, --, <<, >>, >>>, <<< |
 | 4          | comparators |    <, <=, ==, !=, >=, > |
-| 5          | logical     | and, or    |
+| 5          | logical     | and, or, then |
 ]
 ]
 
@@ -1601,7 +1602,7 @@ f = 1 ;+3                 // ugly but legal
 ```coffeescript
 // code/singleline.prp
 // ; is same as a newline
-puts import io.puts
+puts = import("io.puts")
 if true { x = 3 }
 if true {
 x = 3 }
@@ -1628,7 +1629,7 @@ class: split-50
 .column[
 ```coffeescript
 // code/codeblock.prp file
-puts import io.puts
+puts as import("io.puts")
 each as ::{
   for a in $ { $.__do(a) }
 }
@@ -1659,7 +1660,7 @@ I(s == (4,9,16))
 reduce = ::{
   if $.__size <= 1 { return $ }
 
-  redop = @#.0   // reference, not function call
+  redop = @$.__do   // reference, not function call
   tmp = $
 
   while true {
@@ -1779,7 +1780,7 @@ I(total == 1+2+3)
 I(i == 3) // compile error: i undefined
 
 #val = 3
-#val_link punch #scope2.val
+#val_link = punch("#scope2.val")
 I(#val_link.__obj == #val.__obj)
 I(#val_link == 3)
 #val = 1
@@ -1807,13 +1808,13 @@ n2 = ::{
 }
 n3 = ::{
   // Punch a wire through n2/n1 hierarchy
-  $p1 punch %n2.n1.o
+  $p1 = punch("%n2.n1.o")
   %o2 = $1 + 1
-  #p2 punch #n1.r
+  #p2 = punch("#n1.r")
   %o4 = #p2 + 1
 }
-$i1 punch %n2.n1.o
-$i2 punch %scope5.n2.n1.o
+$i1 = punch("%n2.n1.o")
+$i2 = punch("%scope5.n2.n1.o")
 I($i1.__obj == $i2.__obj)
 I(n3.o2 == 2)
 I(n3.o4 == 4)
@@ -1835,7 +1836,7 @@ nested1_5b = ::{
     #cycle += #incr
   }
 }
-#n2_links match #nested2
+#n2_links = punch("#nested2")
 for i in #n2_links {
   i.incr = i.__index + 1
 }
@@ -1896,30 +1897,27 @@ I(a==4==b and c==5)
 // directories are namespaces (dir1 in dir1/code/scope1.prp)
 // code*, src*, test*, _*, and *_ do not create namespace
 
-puts import io.puts  // puts only visible to this file
-export puts          // export puts to every file in directory/namespace
+puts as import("io.puts")   // puts only visible to this file
 scope1_m1 = ::{ 1 }
 scope1_m2 = ::{ 1 }
-
-export scope1_m1
 ```
 
 ```coffeescript
 // dir1/code/scope2.prp file
-puts import io.puts         // redundant (exported in scope1.prp)
+puts = import("io.puts")    // redundant (exported in scope1.prp)
 puts("{} == 1", scope1_m1)  // exported in scope1.prp
 ```
 
 ```coffeescript
 // dir2/code/scope1.prp file
-puts import io.puts
-export puts
+puts = import("io.puts")
 puts("{} == 1", scope1_m1)  // compile error: exported in dir1
 ```
 
 ```coffeescript
 // dir2/_hid/src3/code/dir73_/scope2.prp file
-sc1 import dir1.scope1_m1
+puts = import("io.puts")
+sc1 = import("dir1.scope1_m1")
 puts("{} == 1", sc1)        // calls scope1_m1
 ```
 
@@ -1928,7 +1926,7 @@ puts("{} == 1", sc1)        // calls scope1_m1
 
 ```coffeescript
 // code/fcalls.prp file
-puts import io.puts         // puts only visible to this file
+puts = import("io.puts")    // puts only visible to this file
 
 square = :($x):{$x * $}     // $ has a single element, so $x == $
 r=square(3, 4)              // compile error, square has 1 argument, 2 passed
@@ -1953,7 +1951,7 @@ puts(3,pass(4),5,,pas(3,4)) // OK, prints "3 7 5 9"
 ### https://en.wikipedia.org/wiki/Uniform_Function_Call_Syntax
 ```coffeescript
 // code/uniform.prp file
-puts import io.puts
+puts = import("io.puts")
 
 ms = ::{ return this * 1000 }
 us = ::{ return this * 1000_000 }
@@ -2019,7 +2017,7 @@ I(e1==1 and e2==2)
 (f,g) = 3
 I(f==3 and g==3)
 (f,g) as (field=1, field=1)
-I(f.field==1 and g.field=1)
+I(f.field==1 and g.field==1)
 
 a = (b=1, c as 2)
 a.b=3                // OK to change
@@ -2149,7 +2147,7 @@ CI(#a.__rdports==1 and #a.__wrports==1)
 #_cycle_p13 = #cycle + 13
 #_cycle_neg = ~(#cycle + 13)
 
-#a[#_cycle_p13] == #_cycle_m1
+#a[#_cycle_p13] = #_cycle_m1
 
 %out = #a[#_cycle_neg]
 ```
@@ -2185,8 +2183,7 @@ class: split-50
 
 .column[
 ### Flop/Latches/SRAM Specific
-```coffeescript
-// code/mem5.prp
+```
  __bits          Number of bits
  __posedge       Posedge (true) or negedge
  __last          Last cycle value, no fwd (registers)
@@ -2208,8 +2205,7 @@ class: split-50
 
 .column[
 ### Generic
-```coffeescript
-// code/generic.prp
+```
  __allowed       Allowed values in variable
  __enum          Tuple values become an enum
  __rnd           Generate an allowed random number
@@ -2280,7 +2276,7 @@ I(val[[0..2]] == 0b011)
 I(val[[2..0]] == 0b011) // no order
 I(val[[..-2]] == 0b00)
 I(val[[-2..]] == 0b00)  // no order
-I(val[[-1]]   == 0b1    // MSB)
+I(val[[-1]]   == 0b1)   // MSB
 
 I((1..3) * 2 == (2,4,6))
 I((1..3) + 2 == (3..5))
@@ -2295,7 +2291,7 @@ I((1,2,4) ++ 3 == (1..4))
 
 ```coffeescript
 // code/rndtest.prp
-puts import io.puts
+puts = import("io.puts")
 a = __rnd(1..3)          // rnd between 1 2 3
 b.__bits=12
 a = b.__rnd              // rnd from 0 to 4095
@@ -2535,7 +2531,7 @@ if a?.counter>0 {         // Option 3 (same)
 ```
 ```coffeescript
 // code/fluid3.prp file
-puts import io.puts
+puts = import("io.puts")
 puts("prints every cycle")
 try {
   puts("odd cycles")
@@ -2578,6 +2574,7 @@ class: split-50
 ```coffeescript
 // code/fluid5.prp file
 %o1 = $in1?.0       // pass input, no restart
+I(%o1? == $in1?)    // copy valid fron $in1
 
 %o2 = $in2?.field   // pass field, no restart
 
@@ -2599,10 +2596,6 @@ if $in1? {
 }else{
   val2 = 0
 }
-
-// Same as previous statements
-val1 = $in1 ?? $in2 ?? 0
-
 ```
 ]
 
@@ -2655,17 +2648,17 @@ incsum.__fluid as true    // instance is fluid
 
 one_stage_fluid  = ::{    // Same as incsum
   % = ssum(a=sinc($a), b=sinc($b))
-  % as __fluid=true
+  % as (__fluid=true)
 }
 
 mixed_weird_fluid = ::{
   %out1 = a2(a=a1($a), b=a1($b))
   %out2.__fluid=true
-  %out2 = a2(a=$a b=$b)
+  %out2 = a2(a=$a,b=$b)
 }
 
 allfluid = mixed_weird_fluid
-allfuild as __fluid=true  // both out1 and out2
+allfuild as (__fluid=true)
 ```
 ]
 
@@ -2832,8 +2825,8 @@ child = parent  // copy
 I(child.__obj == parent.__obj)
 child.dox = ::{
   _tmp = super($)
-  %o3 = punch #this.v2 // add new field in child
-  %o3 = 3              // set a value
+  %o3 = punch("#this.v2") // add new field in child
+  %o3 = 3                 // set a value
   return tmp + 7
 }
 I(child.__obj != parent.__obj)
@@ -2951,7 +2944,7 @@ class: split-50
 ```coffeescript
 // code/debug1.prp
 I as ::{
-  puts import io.puts
+  puts = import("io.puts")
   if (!$0) {
     if ($.__size==1) {
       puts("assertion failed\n");
@@ -2985,7 +2978,7 @@ if cond {
 }
 tup[b] = true
 for a in tup {
-  io import io
+  io = import("io")
   io.puts("index:{} value:{}\n",a.__index,a)
   I(tup[a.__index] == a)
 }
@@ -2998,14 +2991,16 @@ for a in tup {
 ### C-api must have known IO at compile time
 ```coffeescript
 // code/test_call1.prp
-mp import myprint
+mp = import_cpp("myprint")
 mp("hello")
-read_val import json_read
-read_val.__comptime = true
+read_val = import_cpp("json_read")
+I(read_val.__comptime == true)
 I(read_val("foo")==6)            // called at compile time
 for i in (1..read_val("file")) {
-  mp(txt:"i:{}", i)         // called at simulation time
+  mp(txt="i:{}", i)         // called at simulation time
 }
+```
+```c++
 // code/myprint.cpp
 #include "prp_cpp.hpp"
 void prp_json_read(const prp_tuple inp, prp_tuple &out) {
@@ -3027,10 +3022,11 @@ void prp_myprint(const prp_tuple inp, prp_tuple &out) {
 ### C-api structs converted to C++
 ```coffeescript
 // code/test_call2.prp
-my_c_code import my_c_code
+my_c_code = import_cpp("my_c_code")
 a = (b=1, c=true, d="hello")
 %foo = my_c_code(a)
-
+```
+```c++
 // code/test_call2.cpp
 #include "prp_cpp.hpp"
 void prp_my_c_code(const prp_tuple inp, prp_tuple &out) {
@@ -3062,8 +3058,8 @@ enumerate as ::{
   }
 }
 
-total1= zip([0..2],["a","b","c"])
-total2= ["a","b","c"] |> enumerate
+total1= zip((0..2),("a","b","c"))
+total2= ("a","b","c") |> enumerate
 I(total1==total2)
 
 tota1.each { puts("{} {}\n", $0, $1) }
