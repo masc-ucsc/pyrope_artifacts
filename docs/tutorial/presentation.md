@@ -23,7 +23,7 @@ background-size: 30%
 
 ---
 name: default
-background-image: url(https://masc.soe.ucsc.edu/logos/pyrope3.png)
+background-image: url(https://masc.soe.ucsc.edu/logos/pyrope5.png)
 background-position: bottom left
 background-repeat: no-repeat
 background-size: 10%
@@ -158,28 +158,21 @@ none
 
 # Pyrope, a modern HDL with a live flow
 
-* Verification
-
-   * Hot-Reload support, source maps, powerful assertions...
-
-* Steep learning curve, language artifacts
-
-   * Modern and concise programming language, avoiding hardware specific artifacts
-
-   * Static checks as long as they not produce false positives
-
-   * Synthesis and simulation must be equal and deterministic
-
 * Slow compilation and simulation
 
    * Live (under 30 secs) simulation, reload, and synthesis feedback goal
 
-* Verilog vs HDL (Most tools handle Verilog not X-HDL)
+* Verification
 
-  * Allows Pyrope 2 Verilog, edit Verilog, Verilog 2 Pyrope, edit Pyrope...
+   * Hot-Reload support, powerful assertions, source maps...
+   * Allows Pyrope 2 Verilog, edit Verilog, Verilog 2 Pyrope, edit Pyrope...
 
-  * Zero cost abstraction
+* Steep learning curve, language artifacts
 
+   * Modern and concise programming language, avoiding hardware specific artifacts
+   * Static checks as long as they not produce false positives
+   * Synthesis and simulation must be equal and deterministic
+   * Zero cost abstraction
 
 ---
 
@@ -215,7 +208,7 @@ none
 task: Quick Dive to Pyrope
 class: split-40r
 
-# A Counter with a pipeline stage
+# A counter with a pipeline stage
 
 .lcolumn[
 ### Pyrope
@@ -279,7 +272,7 @@ I(b.total == 3)
 task: Quick Dive to Pyrope
 class: split-40
 
-# A Counter ~~with a pipeline stage~~
+# A counter ~~with a pipeline stage~~
 
 .column[
 ### Pyrope
@@ -563,7 +556,7 @@ test = ::{
 
 ---
 class: center, middle
-background-image: url(https://masc.soe.ucsc.edu/logos/pyrope3_large.png)
+background-image: url(https://masc.soe.ucsc.edu/logos/pyrope5.png)
 background-position: bottom center
 background-repeat: no-repeat
 background-size: 20%
@@ -1293,7 +1286,7 @@ y = log2 x |> floor |> pow 10
 
 ---
 class: center, middle
-background-image: url(https://masc.soe.ucsc.edu/logos/pyrope3_large.png)
+background-image: url(https://masc.soe.ucsc.edu/logos/pyrope5.png)
 background-position: bottom center
 background-repeat: no-repeat
 background-size: 20%
