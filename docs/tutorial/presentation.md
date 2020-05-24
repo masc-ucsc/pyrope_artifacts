@@ -1222,7 +1222,7 @@ for i in 1..x.__length {
   sum = sum + abs(x(i))
 }
 
-x3=(1..3) ** 2  // compile error
+x3=(1..3) ** 2  // parse error
 I((2,4,6) == (1..3) * 2)
 A = (1,0,3)
 B = (2,3,7)
@@ -1342,14 +1342,14 @@ for a = 3 ; b in 0..3 {
   I(a==3+b)
   a = a + 1
 }
-I(a) // compile error: undefined
+I(a) // compile error: a undefined
 
 total = 0
 while a=3 ; b=0 ; total < a {
   a = a + 1
   total = total + 2
 }
-I(b==0) // compile error: undefined
+I(b==0) // compile error: b undefined
 ```
 ]
 
@@ -1489,11 +1489,11 @@ I(v1.o1==v1==1)
 
 m3 = :(%o1,%o3):{
   x = (o1=1,o2=2)
-  return x    // compile error
+  return x    // compile error: o2 not valid
 }
 
 m3 = :(%o1,%o3):{
-  %o2 = 3     // compile error
+  %o2 = 3     // compile error: %o2 not valid
 }
 ```
 ]
@@ -1529,15 +1529,15 @@ I((true or !false) == (true or (!false)))
 I((3*5+5) == ((3*5) + 5))
 
 a = x1 or x2==x3  // same as b = x1 or (x2==x3)
-//b = 3 & 4 * 4   // compile error
+b = 3 & 4 * 4     // parse error: precedence
 b = 3 + 3 - 5     // OK, same result right-left
 b = 3*4-4         // same as (3*4)-4
 
 c = (2) |> fcall(1)
 I(c == fcall(1,2))
 
-//bar = x or y and z   // compile error
-//x = 3 ++ 4 -- 3      // compile error
+bar = x or y and z   // parse error
+x = 3 ++ 4 -- 3      // parse error
 
 c = a == 3 <= b == d   
 I(c == (a==3 and 3<=b and b == d))
@@ -1556,8 +1556,8 @@ bar = x == 3
    or x == 3 and !(x!=3)
    or false
 
-//bar = false or
-//      true     // compile error, ops after newline
+bar = false or // parse error
+      true     // parse error, ops after newline
 
 I((true or false==false) == (true or (false==false)))
 
@@ -1578,20 +1578,20 @@ I(bar == 3 * (1+4) * (3-1))
 ### explicit ;
 ```coffeescript
 // code/precedence3.prp
-x = 3 ++ 4 -- 3     // compile error, precedence
+x = 3 ++ 4 -- 3     // parse error: precedence
 x = 3 ; ++ 4 -- 3   // OK, 3 ++ (4 -- 3)
 
 b = !a or d         // OK, ! higher precedence
 b = !a or c == d    // OK, == breaks expression
 I(b == !a or (c == d))
 
-bar = true or false and true // compile error
+bar = true or false and true // parse error
 bar = true ; or true and false ; or true
 I(bar == true or (true and false) or true)
 
 I((1,3) == (,,,1,,,3,,))
-f = 1 +;3                // Ugly illegal syntax
-f = 1 ;+3                // Ugly legal syntax
+f = 1 +;3                 // parse error
+f = 1 ;+3                 // ugly but legal
 ```
 ]
 
@@ -1605,24 +1605,20 @@ puts import io.puts
 if true { x = 3 }
 if true {
 x = 3 }
-if true                       // parse error: extra newline
+if true                   // parse error: extra newline
 { x = 3 }
 
-if true { a = 3 puts(a) }     // compile error:
-
-if true ::{ a = 3 ; puts(a)}
-
-if true :: {puts(false})      // parse error: no space :: {
+if true { a = 3 puts(a) } // parse error: missing newline
 
 c = 0
 d = 0
-if true ::{ c = 1 ; d = 2 }
-I(d == 0 and c == 0)          // :: is a new scope
-if true ::{ %c = 1 ; %d = 2 }
-I(d == 2 and c == 1)
+if true { c = 1 ; d = 2 }
+I(d == 1 and c == 2)
+if true { e = 1 }
+I(e == 1)                 // compile error: e undefined
 
 for a in (1..3) {puts(a)}
-I(a == 3)                     // compile error
+I(a == 3)                 // compile error: a undef
 ```
 
 ---
@@ -1648,10 +1644,9 @@ map as ::{
   return t
 }
 
-a = ::{ 2+1 }  // OK implicit return
+a = ::{ 2+1 }       // OK implicit return
 
-// parse error, only last can be implicit return
-//a = ::{ 1+1 ; 2+1 }
+a = ::{ 1+1 ; 2+1 } // parse error: 1+1
 
 s = (1,2,3) |> map ::{$+1} |> map ::{$*$}
 I(s == (4,9,16))
@@ -1750,7 +1745,7 @@ class: split-50
 a = 1
 b = ::{
   d = 3    // b local scope
-  %out = a // compile error, undefined a
+  %out = a // compile error: a undefined
 }
 x = b
 I(a == 1)
@@ -1759,7 +1754,7 @@ c = ::{
   d = 4
   %out = a
 }
-I(d==4)    // compile error, d not defined
+I(d==4)    // compile error: d undefined
 I(c.out == 2)
 ```
 ]
@@ -1775,13 +1770,13 @@ if a == 1 {
   b = 3
 }
 I(a == 2)
-I(b == 4) // compile error, undefined
+I(b == 4) // compile error: b undefined
 
 total = 0  // needed
 for i in (1..3) { total += i }
 
 I(total == 1+2+3)
-I(i == 3) // compile error, undefined
+I(i == 3) // compile error: i undefined
 
 #val = 3
 #val_link punch #scope2.val
@@ -1933,15 +1928,12 @@ puts("{} == 1", sc1)        // calls scope1_m1
 
 ```coffeescript
 // code/fcalls.prp file
-puts import io.puts  // puts only visible to this file
+puts import io.puts         // puts only visible to this file
 
 square = :($x):{$x * $}     // $ has a single element, so $x == $
-//r=square 3 + square 4     // parse error, complex argument
-//r=square(3 + square(4))   // parse error, space required for arguments
-//r=square (3 + square (4)) // parse error, missing explicit argument
-r=square(square, 4)         // compile error, square has 1 argument, 2 passed
-r=square (3 + (square(4)))  // compile error, two args, but first reqs argument
-r=square (3 + square(4))    // OK, 361 = (3+4^2)^2 ; ^ is exp, not power
+r=square(3, 4)              // compile error, square has 1 argument, 2 passed
+r=square (3 + (square(4)))  // OK, 361 = (3_4^2)^2 ; ^ is exp, not xor
+r=square (3 + square(4))    // OK, 361
 r=square(3 + square(4))     // OK, 361
 r=square(3) + square(4)     // OK, 25
 pass  = ::{
@@ -1949,10 +1941,10 @@ pass  = ::{
   if $.__size == 2 { return 9 }
   11
 }
-puts(3,square,4,5)          // OK, prints "3 4 5"
+puts(3,pass(),4,5)          // OK, prints "3 11 4 5"
 puts(3,square(4),5)         // OK, prints "3 16 5"
 puts(,,3,,,,pass,,,,5,,)    // OK, prints "3 11 5"
-puts(3,pass(4),5)           // OK, prints "3 7 5"
+puts(3,pass(4),5,,pas(3,4)) // OK, prints "3 7 5 9"
 ```
 
 ---
@@ -1998,12 +1990,12 @@ I(b.0 == 3 and b[1] == false)
 
 c1.b.__bits = 1
 c1.c.__bits = 3
-c as c1
 c as (c=0, b=1)            // final ordered named
+c as c1                    // fix bits
 I(c.c==0 and c.b==1)
 c = (true,2)
-c = (false,33) // compile error
-c.bar = 3      // compile error
+c = (false,33) // compile error: 33 > bits=3
+c.bar = 3      // compile error: bar undefined
 
 d as (a=3,5)   // final, ordered, unnamed
 I(d.a == 3 and d[1] == 5)
@@ -2022,7 +2014,7 @@ I(e.0 == 3 and e == 3)
 ```coffeescript
 (e1, e2) = (1, 2)
 I(e1==1 and e2==2)
-(e1, e2) = (3)        // Compile error
+(e1, e2) = (3)       // compile error: tuple sizes
 
 (f,g) = 3
 I(f==3 and g==3)
@@ -2030,17 +2022,17 @@ I(f==3 and g==3)
 I(f.field==1 and g.field=1)
 
 a = (b=1, c as 2)
-a.b=3                 // OK to change
-a.c=3                 // compile error
-a.d=3                 // OK, new field
+a.b=3                // OK to change
+a.c=3                // compile error: c was fixed
+a.d=3                // OK, new field
 
 a ++= (d=4)
 I(a.d==4 and a.b==1)
 
 d as (b=1, c=2)
 d.b = 10             // OK
-d.e = 1              // compile error
-d ++= (e=4)          // compile error
+d.e = 1              // compile error: e undefined
+d ++= (e=4)          // compile error: d was fixed
 ```
 ]
 
@@ -2073,14 +2065,14 @@ I(tup.Red == 1)
 (@a,@b,@a) |> set_field("__allowed", tup)
 c = tup.Red              // OK
 b = 3                    // OK, allowed value
-a = 5                    // Compile error
+a = 5                    // compile error
 
 // enum is a strict in style allowed tuple
 tup2 as tup
 d.__enum as tup2
 d = tup2.Red             // OK d[[]]==1
-d = tup.Red              // Compile error
-d = 1                    // Compile error
+d = tup.Red              // compile error
+d = 1                    // compile error
 ```
 ]
 
@@ -2245,7 +2237,7 @@ class: split-50
 ### Basic
 ```coffeescript
 // code/ranges1.prp
-// I((1,2,3) == 1..3) compile error
+I((1,2,3) == 1..3)
 I((1,2,3) == (1..3))
 
 I(((0..7) ..by.. 2) == (0, 2, 4, 6))
@@ -2254,15 +2246,15 @@ I((0..15) ..by.. (2, 3) == (0, 2, 5, 7, 10, 12, 15))
 I((1..2) ..union.. 3 == (1..3))
 I((1..10) ..intersect.. (2..20) == (2..10))
 
-// Ranges can be open
+// ranges can be open
 I((3..) ..intersect.. (1..5) == (3..5))
 I((..)  ..intersect.. (1..2) == (1..2))
 I((..4) ..union..     (2..3) == (..4))
 I((2..) == (2..-1))
 I((..3) == (-1..3))
 
-// Ranges can not be converted to values
-// I((1..3)[[]])  // compile error
+// closed ranges can be converted to values
+I((1..3)[[]] == (1,2,3)[[]])
 ```
 ]
 
@@ -2434,7 +2426,7 @@ c = 3 - 1u1bits // implicit, __bits=2 __allowed=2u2bits
 #d.__allowed as (0, 1, 7) // allowed values
 #d = 0      // OK
 #d += 1     // OK
-#d += 1     // error
+#d += 1     // runtime error: not allowed value
 
 I(0b11_1100 == (a, 0b1100)[[]]) // bit concatenation
 ```
@@ -2454,7 +2446,7 @@ if xx {
   a = a - 4  // OK
   c = c - 4
 }
-a = a + 1  // compile error, may be out range
+a = a + 1  // runtime error: out range
 I(c.__allowed == (1,6)) // all possible values
 c = c + 2
 I(c.__allowed == (3,8) and c.__bits == 4)
@@ -2487,8 +2479,8 @@ class: split-50
 // $i!! = false // do not clear flop
 
 // %o? = false  // do not generate output
-// %o! = true   // compile error
-// %o! = false  // compile error
+// %o! = true   // parse error
+// %o! = false  // parse error
 // %o?          // is valid set? (there was a write)
 // %o!          // is retry set?
 // %o!!         // is clear set?
@@ -2744,7 +2736,7 @@ b = (__bits=10) // OK to redefine
 b = 100         // OK
 
 d as (__bits=3) // explicit bits
-d =  (__bits=4) // compile error, fixed with as
+d =  (__bits=4) // compile error: fixed with as
 ```
 
 ---
@@ -2810,6 +2802,7 @@ obj2.oneortwo = ::{return 2}
 obj1.oneortwo2 = 1
 obj2.oneortwo2 = 2
 
+tmp = 0  // force defined variable
 if $input[[0..1]] == 0 {
   tmp = obj1
   I(tmp.oneortwo  == 1)
@@ -2820,7 +2813,6 @@ if $input[[0..1]] == 0 {
   I(tmp.oneortwo2 == 2)
 }else{
   // Calling undefined method is __init value
-  // NEVER runtime error
   I(tmp.oneortwo  == 0)
   I(tmp.oneortwo2 == 0)
 }
@@ -2846,7 +2838,7 @@ child.dox = ::{
 }
 I(child.__obj != parent.__obj)
 
-I(child.v1) // compile error, v1 undefined
+I(child.v1) // compile error: v1 undefined
 t = child.dox(4)
 I(t == (1+4+7))
 I(child.v1 == 3)

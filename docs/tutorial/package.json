@@ -5,6 +5,7 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "backslide": "^2.3.0",
+    "codedown": "^2.1.6",
     "decktape": "^3.0.0"
   },
   "scripts": {
