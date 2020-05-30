@@ -1327,30 +1327,80 @@ I(cond5 and cond6) // Unique implies full too
 ]
 
 .column[
-### iterators
+### while
 ```coffeescript
 // code/controlflow2.prp
-total = 0
-for a in 1..3 { total += a }
-I(total == (1+2+3))
-
-total = 0 // compact double nested loop
-for a in 1..3 ; b in (1, 2) { total += a }
-I(total == (1+2+3 + 1+2+3))
-
-// loop initialization assignments
-for a = 3 ; b in 0..3 {
-  I(a==3+b)
-  a = a + 1
-}
-I(a) // compile error: a undefined
-
 total = 0
 while a=3 ; b=0 ; total < a {
   a = a + 1
   total = total + 2
+  if total > 100 {
+    break
+  }
 }
 I(b==0) // compile error: b undefined
+```
+]
+
+---
+class: split-50
+# For Loops Control Flow
+
+.column[
+```coffeescript
+// code/controlflow3.prp
+total = 0
+for a in 1..3 { total += a }
+I(total == (1+2+3))
+
+total = 0
+for a in 1..100 {
+  if a[[0]] {
+    continue
+  }
+  total += a
+  if a > 10 {
+    break
+  }
+}
+I(total == (2+4+6+8+10))
+
+total = 0 // compact double nested loop
+for a in 1..3 ; b in (1, 2) { total += a }
+I(total == (1+2+3 + 1+2+3))
+```
+]
+
+.column[
+```coffeescript
+// code/controlflow4.prp
+// loop initialization assignments
+total = 0
+for a = 3 ; b in 0..3 ; c in (1,2) {
+  I(a==3+b)
+  a = a + 1
+  if a>6 {
+    break
+  }
+  total += a
+}
+I(a) // compile error: a undefined
+
+total2 = 0
+for a = 3 ; b in 0..3 {
+  for c in (1,2) {
+    I(a==3+b)
+    a = a + 1
+    if a>6 {
+      break
+    }
+    total2 += a
+  }
+  if a>6 {
+    break
+  }
+}
+I(total2 == total)
 ```
 ]
 
@@ -2095,15 +2145,15 @@ prev_val = #cycle
 #b[0] = #cycle
 
 I(#a[0] == #cycle)
-I(#a[0].__last == prev_val)
-I(#b[0] == #b[0].__last == prev_val)
+I(#a[0].__q == prev_val)
+I(#b[0] == #b[0].__q == prev_val)
 
 %out = #a[0] + #b.0
 ```
 ]
 
 .column[
-* Memory forward unless \__last used
+* Memory forward unless \__q used
 * Reset to zero by default
 * Enforces the rd/wr ports if indicated
 * Moves logic to get addresses at posedge
@@ -2186,7 +2236,7 @@ class: split-50
 ```
  __bits          Number of bits
  __posedge       Posedge (true) or negedge
- __last          Last cycle value, no fwd (registers)
+ __q             Last cycle value, no fwd (registers)
  __fwd           Perform forwarding in cycle (true)
  __size          number of entries (SRAMs/tuple)
  __latch         Latch not flop based (false)
