@@ -19,3 +19,5 @@ docker cp `docker ps -lq`:slides/slides.pdf .
 
 ./node_modules/decktape/decktape.js remark ./dist/presentation.html pp.pdf --no-sandbox
 
+cat presentation.md | node_modules/codedown/codedown.js coffeescript
+
