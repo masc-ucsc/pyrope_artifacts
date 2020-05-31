@@ -421,7 +421,7 @@ for i in (0..$a.__bits) {
 }
 
 test = ::{
-  for a in (1..100); b in (0..33); c in (0 1) {
+  for a in (1..100); b in (0..33); c in (0,1) {
     d = rca2(a=a, b=b, cin=c)
     I(d.sum == (a+b+c))
   }
@@ -606,10 +606,10 @@ endmodule
 ---
 class: split-40
 
-# vs Chisel
+# vs CHISEL
 
 .column[
-### Chisel
+### CHISEL
 ```scala
 import Chisel._
 class GCD extends Module {
@@ -660,6 +660,39 @@ test = ::{
 * Global type inference
 * No scala vs chisel syntax
 ]
+
+---
+class: split-40
+
+# vs CHISEL part 2
+
+.column[
+### CHISEL
+```scala
+// computes can overflow
+val mask = ((1<<offset)-1) // wrong when offset>64
+
+// Not possible to react to compiler info.
+// Diplomacy does with one way
+```
+]
+
+.column[
+### Pyrope
+```coffeescript
+mask = (1<<offset)-1  // unlimited precession
+
+uarts = punch("*.uart_set")
+offset = 0
+for i in uarts {
+  i.addr = 0x100 + offset
+  offset += 16
+}
+
+CI(uarts.__size >0) // compile time invariant
+```
+]
+
 
 ---
 class: split-40
@@ -1227,10 +1260,8 @@ x3=(1..3) ** 2  // parse error
 I((2,4,6) == (1..3) * 2)
 A = (1,0,3)
 B = (2,3,7)
-C = A ** B      // OK, matching sizes
-I(C == (2,0,21))
-D = A * B
-I(C == ((2,0,6),(3,0,9),(7,0,21)))
+D = A * B  // ok sizes match
+I(D == (2,0,21))
 ```
 * Share tuple vs element operators
 * Different applications/goals/...
@@ -1331,11 +1362,15 @@ I(cond5 and cond6) // Unique implies full too
 ```coffeescript
 // code/controlflow2.prp
 total = 0
-while a=3 ; b=0 ; total < a {
-  a = a + 1
-  total = total + 2
-  if total > 100 {
-    break
+{
+  a = 0
+  b = 0
+  while total < a {
+    a = a + 1
+    total = total + 2
+    if total > 100 {
+      break
+    }
   }
 }
 I(b==0) // compile error: b undefined
@@ -1376,18 +1411,22 @@ I(total == (1+2+3 + 1+2+3))
 // code/controlflow4.prp
 // loop initialization assignments
 total = 0
-for a = 3 ; b in 0..3 ; c in (1,2) {
-  I(a==3+b)
-  a = a + 1
-  if a>6 {
-    break
+{
+  a = 3;
+  for b in 0..3 ; c in (1,2) {
+    I(a==3+b)
+    a = a + 1
+    if a>6 {
+      break
+    }
+    total += a
   }
-  total += a
 }
 I(a) // compile error: a undefined
 
 total2 = 0
-for a = 3 ; b in 0..3 {
+a = 3
+for b in 0..3 {
   for c in (1,2) {
     I(a==3+b)
     a = a + 1
@@ -1766,7 +1805,7 @@ tree_reduce as ::{
   val = red_step($)    // Also pass code block
   I(val.__size<$.__size-1)
   while val.__size>1  {
-    val = red_step($width, val, @#)
+    val = red_step($width, val, __do=@$.__do)
   }
   return val
 }
@@ -1976,14 +2015,15 @@ puts("{} == 1", sc1)        // calls scope1_m1
 
 ```coffeescript
 // code/fcalls.prp file
-puts = import("io.puts")    // puts only visible to this file
+puts = import("io.puts")   // puts only visible to this file
 
-square = :($x):{$x * $}     // $ has a single element, so $x == $
-r=square(3, 4)              // compile error, square has 1 argument, 2 passed
-r=square (3 + (square(4)))  // OK, 361 = (3_4^2)^2 ; ^ is exp, not xor
-r=square (3 + square(4))    // OK, 361
-r=square(3 + square(4))     // OK, 361
-r=square(3) + square(4)     // OK, 25
+square = :($x):{$x * $}    // $ has a single element, so $x == $
+r=square(3, 4)             // compile error, square has 1 argument, 2 passed
+r=square (3)               // compile error, space after variable name
+r=square(3 + (square(4)))  // OK, 361 = (3_4^2)^2 ; ^ is exp, not xor
+r=square(3 + square(4))    // OK, 361
+r=square(3 + square(4))    // OK, 361
+r=square(3) + square(4)    // OK, 25
 pass  = ::{
   if $.__size == 1 { return 7 }
   if $.__size == 2 { return 9 }
@@ -2099,6 +2139,22 @@ s ++= 4  // add to tuple
 s = s ++ (1,4,5)
 I(s == (1,2,3,4,5))
 
+a = 1..3
+a.__set = true
+I(a == (1,2,3))
+I(a[[]] == 0b1110)
+
+I(c == (0..3))
+I(0b1010.__set == (1,3))
+
+a.__allowed as 0..127 // 128 bit vector set
+a.__set as true
+a[$i1] = true
+I(a[$i3]) // run-time check
+
+b = a[3]
+b.__comptime = true
+I(b) // b known at compile time
 ```
 ]
 
@@ -2111,16 +2167,16 @@ I(s == (1,2,3,4,5))
 tup = (Red as 1,Blue as 2,Purple as 3)
 I(tup.Red == 1)
 (@a,@b,@a) |> set_field("__allowed", tup)
-c = tup.Red              // OK
-b = 3                    // OK, allowed value
-a = 5                    // compile error
+c = tup.Red        // OK
+b = 3              // OK, allowed value
+a = 5              // compile error
 
 // enum is a strict in style allowed tuple
 tup2 as tup
-d.__enum as tup2
-d = tup2.Red             // OK d[[]]==1
-d = tup.Red              // compile error
-d = 1                    // compile error
+d.__enum as tup2   // sets __allowed too
+d = tup2.Red       // OK d[[]]==1
+d = tup.Red        // compile error, tup is not enum
+d = 1              // compile error
 ```
 ]
 
@@ -2260,7 +2316,8 @@ class: split-50
  __enum          Tuple values become an enum
  __rnd           Generate an allowed random number
  __obj           object id
- __index         Loop iteration position
+ __key           string key name for instrosprection
+ __index         tuple position (typically for loops)
  __io_pos        io possition for generated verilog
  __rnd_bias      Controls random generation
  __stage         stage or comb submodule (false)
@@ -2287,8 +2344,6 @@ I((1,2,3) == 1..3)
 I((1,2,3) == (1..3))
 
 I(((0..7) ..by.. 2) == (0, 2, 4, 6))
-I((0..15) ..by.. (2, 3) == (0, 2, 5, 7, 10, 12, 15))
-
 I((1..2) ..union.. 3 == (1..3))
 I((1..10) ..intersect.. (2..20) == (2..10))
 
@@ -2299,8 +2354,10 @@ I((..4) ..union..     (2..3) == (..4))
 I((2..) == (2..-1))
 I((..3) == (-1..3))
 
-// closed ranges can be converted to values
+// closed ranges are like sets
 I((1..3)[[]] == (1,2,3)[[]])
+I(0b0010101.__set == (0,2,4))
+I(0b0011110.__set == (1..4))
 ```
 ]
 
@@ -2320,16 +2377,18 @@ I(middle == (4,5,6,7))
 I(end    == (8,9))
 I(copy   == (1,2,3,4,5,6,7,8,9))
 
-val = 0b00_01_10_11
+val = 0b11_01_10_00
+I(0..2 == 2..0 == (2,1,0))  // ranges sort reverse
 
-I(val[[0..2]] == 0b011)
-I(val[[2..0]] == 0b011) // no order
-I(val[[..-2]] == 0b00)
-I(val[[-2..]] == 0b00)  // no order
-I(val[[-1]]   == 0b1)   // MSB
+I(val[[2..0]]   == val[[(2,1,0)]] == 0b000)
+I(val[[0..2]]   == val[[(2,1,0)]] == 0b000)
+I(val[[-1]]     == val[[-1]]      == 0b1)   // MSB
+I(val[[-1..-3]] == val[[(-1,-2,-3)]]== 0b110)
+I(val[[-1..1]]  == val[[(1,0,-1)]]== 0b001)
 
-I((1..3) * 2 == (2,4,6))
-I((1..3) + 2 == (3..5))
+I((1..3) * (2,2,2) == (2,4,6))
+I((1..3) + (2,2,2) == (3,4,5))
+I((1..3) + 2 == (3..5))  // compile error
 I((1,2,4) ++ 3 == (1..4))
 ```
 ]
@@ -3112,6 +3171,6 @@ total1= zip((0..2),("a","b","c"))
 total2= ("a","b","c") |> enumerate
 I(total1==total2)
 
-tota1.each { puts("{} {}\n", $0, $1) }
+tota1.each ::{ puts("{} {}\n", $0, $1) }
 
 ```
