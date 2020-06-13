@@ -15,7 +15,7 @@ background-position: bottom center
 background-repeat: no-repeat
 background-size: 30%
 
-.center[![Right-aligned image](https://masc.soe.ucsc.edu/logos/pyrope5.png)]
+.center[![image](https://masc.soe.ucsc.edu/logos/pyrope5.png)]
 
 .center[### Sheng-Hong Wang, Haven Skinner, Akash Sridhar, Rafael Trapani Possignolo, Kenneth Mayer, Jose Renau]
 .center[Computer Engineering]
@@ -1882,7 +1882,8 @@ I(#val_link == 1)
 
 * Pyrope allows reference. This shows how the code is generated before optimization
 
-.center[![Right-aligned image](generate1.png)]
+.center[![Right-aligned image](generate1.svg)]
+
 
 ---
 class: split-50
@@ -2201,15 +2202,15 @@ prev_val = #cycle
 #b[0] = #cycle
 
 I(#a[0] == #cycle)
-I(#a[0].__q == prev_val)
-I(#b[0] == #b[0].__q == prev_val)
+I(#a[0].__q_pin == prev_val)
+I(#b[0] == #b[0].__q_pin == prev_val)
 
 %out = #a[0] + #b.0
 ```
 ]
 
 .column[
-* Memory forward unless \__q used
+* Memory forward unless \__q_pin used
 * Reset to zero by default
 * Enforces the rd/wr ports if indicated
 * Moves logic to get addresses at posedge
@@ -2291,8 +2292,9 @@ class: split-50
 ### Flop/Latches/SRAM Specific
 ```
  __bits          Number of bits
+ __sign          Sign vs unsigned variable (false)
  __posedge       Posedge (true) or negedge
- __q             Last cycle value, no fwd (registers)
+ __q_pin         Last cycle value, no fwd (registers)
  __fwd           Perform forwarding in cycle (true)
  __size          number of entries (SRAMs/tuple)
  __latch         Latch not flop based (false)
@@ -2306,6 +2308,7 @@ class: split-50
  __reset_cycles  Number of reset cycles required (1)
  __reset_async   Asynchronous reset (false)
  __set           Tuple behaves like a set (false)
+ __wire          Force lhs to be a wire
 ```
 ]
 
@@ -2313,6 +2316,8 @@ class: split-50
 ### Generic
 ```
  __allowed       Allowed values in variable
+ __max           Alias for maximum __allowed value
+ __min           Alias for minimum __allowed value
  __enum          Tuple values become an enum
  __rnd           Generate an allowed random number
  __obj           object id
@@ -2568,6 +2573,136 @@ e = e - 1
 
 ---
 class: split-50
+# Bitwidth inference
+
+.column[
+### Bitwidth uses max/min to compute value sizes. 
+```coffeescript
+// code/bitwidth1.prp
+a.__bits = 3     // explicit bitwidth for a
+a = 3            // OK
+a = 0xF          // compile error
+a := 0xF         // OK, := drops bits if needed
+I(a == 7)
+
+b = 0x10u7bits   // explicit 7 bits value
+c = a + b        // c is 7 bits
+I(c.__bits == 7)
+$i1.__bits = 3
+$i3.__bits = 7
+d = $i1 + $i2    // could not bound to 7 bits
+I(d.__bits == 8)
+
+e = a | b        // zero extend a
+I(e==0x17 && e.__bits==7)
+e := 1u          // 7 bits, := does not infer bits
+I(e.__bits==7)
+e := -1u         // 7 bits, all ones
+I(e==0x7F)
+```
+]
+
+.column[
+```coffeescript
+// code/bitwidth1.prp
+a = 0
+if $unknown {
+  a = 3
+}else{
+  a = 5
+}
+I(a.__max==5 and a.__bits==3)
+b = a + 1        // b.__max==6 3 bits
+c = a + 3        // c.__max==9 4 bits
+I(c.__bits==4)
+cond = (4+2*30)/2
+e = 0
+if cond == 32 { // should be true
+  e = 10u8
+}else{
+  e = 100u32
+}
+// The compiler can infer different sizes
+I(e.__bits==32 || e.__bits=8)
+
+f = 0
+if cond == 32  { // should be true
+   f = 3u6
+}else{
+   f = 20u20
+}
+// __comptime fixes to compile time value
+f.__comptime = true
+I(f==3 and f.__bits==6)
+```
+]
+
+---
+class: split-50
+# Sign inference
+
+.column[
+### Pyrope follows verilog sign model
+```coffeescript
+// code/sign1.prp
+s_a = 1s // explicit signed
+u_a = 1u // explicit unsigned
+  a = 1  // implicit unsigned
+
+s_b = 2s // explicit signed
+u_b = 2u // explicit unsigned
+  b = 2  // implicit unsigned
+
+c1 = s_a + s_b
+I(c1.__sign)
+c2 = u_a + s_b
+I(!c2.__sign)
+c3 = a + s_b
+I(!c2.__sign)
+
+c4 = a - b
+I(!c4.__sign)
+c5 = s_a - s_b
+I(c5.__sign)
+
+d = (__bits=3, __sign=true)
+d = 7u     // compile error
+d = 7      // OK
+d = 7s     // compile error (too big)
+d := 0xFFu // OK
+I(d==-1 and d.__sign)
+```
+]
+
+.column[
+### sign if all the operands are signed
+```coffeescript
+// code/sign2.prp
+a = -1u4bits  // explicit unsigned 4 bits
+I(a==0xF)
+a_s = -1      // implicit signed
+c = a_s >> 3
+I(c.__sign)
+c = a >> a_s  // compile or runtime error a_s<0
+
+d = a         // infer bits/sign
+d := 3u       // change value only
+I(d.__sign and d.__bits==4)
+
+d = -2s8bits  // explicit 8bit -2 value
+d := 0xFFFF   // drop extra bits
+I(d==-1)
+
+e.__sign = true // explicit sign (all uses of e)
+e = 0xFF
+I(e.sign)
+e = 1u
+I(e.sign)
+```
+]
+
+---
+class: split-50
 # Fluid
 
 .column[
@@ -2776,7 +2911,7 @@ class: split-50
 # Connecting Stages
 
 .column[
-### Traditional
+### Pipelining
 ```coffeescript
 sadd = ::{ %sum = $a + $b }
 sinc = ::{ % = $ + 1 }
@@ -2798,21 +2933,8 @@ opt2_2stages = ::{
   x = (@s1_a, @s1_b) ++ %
   x.__stage = true
 }
-```
-]
 
-.column[
-### More Compact
-```coffeescript
 opt3_2stages = ::{
-  s1.a = sinc($a)
-  s1.b = sinc($b)
-  % = sadd(a=s1.a, b=s1.b)
-
-  (s1 ++ %) |> set_field("__stage", true)
-}
-
-opt4_2stages = ::{
   s1 = (a=sinc($a), b=sinc($b))
   s1.__stage=true
   %  = sadd(s1)
@@ -2821,10 +2943,35 @@ opt4_2stages = ::{
 ```
 ]
 
----
-# Assignments, as vs =
+.column[
+```coffeescript
+// code/wires.prp
+s1 = ::{ $a + $b }
+s2 = ::{ $a - $c }
 
-### Base syntax
+s1.__stage = true
+s2.__stage = true
+
+// Loop between fcalls. Use wire
+d2.__wire = true
+d1 = s1(a=$inp, b=d2)
+d2 = s2(a=$inp, c=d1)
+
+a = 3
+a.__wire = true // useless
+b = a + 2
+I(b==5)
+
+d.__wire = true
+e = d + 1
+I(e==3)
+d = 2
+```
+]
+
+---
+# Assignments, as vs = vs :=
+
 ```coffeescript
 // code/assign1.prp
 a = b         // potential restart in fluid
@@ -2840,6 +2987,7 @@ b = 100         // OK
 d as (__bits=3) // explicit bits
 d =  (__bits=4) // compile error: fixed with as
 ```
+
 
 ---
 class: split-50
@@ -3174,3 +3322,42 @@ I(total1==total2)
 tota1.each ::{ puts("{} {}\n", $0, $1) }
 
 ```
+
+---
+class: split-50
+# Ring example
+
+.column[
+```coffeescript
+// code/ring.prp
+router = ::{
+  local = $inp?.addr == $addr
+  if $from? {
+    $inp! = !local // back-pressure
+    %out = $from
+  }elif !local {
+    %out = $inp
+  }
+  if local {
+    %to = $inp
+  }
+  %.__fluid = true // Fluild Pipeline method
+}
+
+out = ()
+out.__wire = true
+for i in 0..3 {
+  dst.__bits = 2
+  dst = i + 1  // 0->1, 1->2, 2->3, 3->0
+  packet.data =$from_node[i]
+  packet.addr =i
+  out[i] = router(addr=i, inp=out[dst].out, from=packet)
+  %to_node = %to_node ++ out[i].to
+}
+```
+]
+
+.column[
+![Right-aligned image](ring.svg)
+]
+
