@@ -17,7 +17,7 @@ background-size: 30%
 
 .center[![image](https://masc.soe.ucsc.edu/logos/pyrope5.png)]
 
-.center[### Sheng-Hong Wang, Haven Skinner, Akash Sridhar, Rafael Trapani Possignolo, Kenneth Mayer, Jose Renau]
+.center[### Sheng-Hong Wang, Haven Skinner, Akash Sridhar, Sakshi Garg, Hunter Coffman, Kenneth Mayer, Rafael T. Possignolo, Jose Renau]
 .center[Computer Engineering]
 .center[University of California, Santa Cruz]
 
@@ -3330,29 +3330,29 @@ class: split-50
 .column[
 ```coffeescript
 // code/ring.prp
-router = ::{
-  local = $inp?.addr == $addr
-  if $from? {
-    $inp! = !local // back-pressure
-    %out = $from
-  }elif !local {
-    %out = $inp
+router = :($inp,$from,%to,%out):{
+  if $inp? {                // ? -> fluid pipeline
+    if $inp.addr == $addr {
+      %to    = $inp         // send to_node
+      %out   = $from        // new packet if present
+    }else{
+      %out   = $inp         // fwd packet
+      %from! = true         // back pressure from_node
+    }
+  }else{
+    %out  = $from           // new packet if present
   }
-  if local {
-    %to = $inp
-  }
-  %.__fluid = true // Fluild Pipeline method
 }
 
 out = ()
 out.__wire = true
+dst.__bits = 2
 for i in 0..3 {
-  dst.__bits = 2
-  dst = i + 1  // 0->1, 1->2, 2->3, 3->0
-  packet.data =$from_node[i]
-  packet.addr =i
-  out[i] = router(addr=i, inp=out[dst].out, from=packet)
-  %to_node = %to_node ++ out[i].to
+  dst        := i + 1  // 0->1, 1->2, 2->3, 3->0
+  packet.data = $from_node[i]
+  packet.addr = i
+  out[i]      = router(addr=i, inp=out[dst].out, from=packet)
+  %to_node    = %to_node ++ out[i].to.data
 }
 ```
 ]
