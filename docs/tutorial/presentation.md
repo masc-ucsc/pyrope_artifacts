@@ -2240,6 +2240,54 @@ d = 1              // compile error
 
 ---
 class: split-50
+# Tuples and Bitwidt at compile time
+
+### Once the hierarchy is known all the tuples and bitwidth should be known at compile time
+
+.column[
+### Tuples at compile time
+```coffeescript
+// code/tuples5.prp
+a = 3
+if true {
+  a = a ++ 4
+}else{
+  a = 5
+}
+I(a==(3,4)) // if decided at compile time
+
+b = 3
+if $runtime_val {
+  b = b ++ 4
+}
+I(b.0==3)
+// tuple size must be know at compile time
+I(b.1==4) // compile time error
+```
+]
+
+.column[
+### Bitwidth at compile time
+```coffeescript
+// code/bitwidth2.prp
+
+a = 1u2bits
+b = a + 1
+I(b.__bits == 2)
+
+c = 3u3bits
+if $runtime_val {
+  c = 8u4bits
+}else{
+  c = 6u6bits
+}
+I(c.__bits = 6)
+```
+]
+
+
+---
+class: split-50
 
 # Memories
 
