@@ -2127,6 +2127,63 @@ d ++= (e=4)          // compile error: d was fixed
 
 ---
 class: split-50
+
+# Tuples II
+
+.column[
+### Tuple operations
+```coffeescript
+// code/tuples3.prp
+
+a = (1,2)
+b = a ++ 3
+I(b==(1,2,3))
+
+c = a ++ b
+I(c == (1,2,1,2,3))
+I(c.0==1 and c.1==2 and c.3==1)
+I(c[0]==c.0 and c[1]==c.1)
+
+d.a=1
+d.b=2
+d.c=3
+
+e.f=4
+e.g=5
+
+g = d ++ e
+I(g.a==1 and g.f==4)
+I(g == (a=1,b=2,c=3,f=4,g=5))
+xx = g[0]     // compile error, unordered tuple
+I(g["a"]==g.a)
+
+h = (a=1,b=2)
+j = h ++ (c=3) // ordered named tuple
+I(j[0]==1==j.a and j[2]==j.c==3) 
+```
+]
+
+.column[
+### Tuple hierarchy
+```coffeescript
+// code/tuples4.prp
+
+t1.sub.a = 1
+t1.sub.b = 2
+t1.c =3
+
+t2 = (sub=(a=1,b=2),c=3)
+I(t1==t2)
+I(t2[0][0]==1 and t2[0][1]==2 and t2[1]==3)
+xx = t1[0][0] // compile error, unordered tuple
+
+t3 = t1.sub
+I(t3.a==1 and t3.b==2)
+```
+]
+
+---
+class: split-50
 # Sets and Enums
 
 .column[
