@@ -2399,7 +2399,7 @@ class: split-50
  __bits          Number of bits
  __sign          Sign vs unsigned variable (false)
  __posedge       Posedge (true) or negedge
- __q_pin         Last cycle value, no fwd (registers)
+ __q_pin         Previous cycle value, no fwd (registers)
  __fwd           Perform forwarding in cycle (true)
  __size          number of entries (SRAMs/tuple)
  __latch         Latch not flop based (false)
@@ -2413,7 +2413,7 @@ class: split-50
  __reset_cycles  Number of reset cycles required (1)
  __reset_async   Asynchronous reset (false)
  __set           Tuple behaves like a set (false)
- __wire          Force lhs to be a wire
+ __last_value    Read last write to the variable/tuple
 ```
 ]
 
@@ -3050,27 +3050,35 @@ opt3_2stages = ::{
 
 .column[
 ```coffeescript
-// code/wires.prp
+// code/last_value1.prp
 s1 = ::{ $a + $b }
 s2 = ::{ $a - $c }
 
-s1.__stage = true
+s1.__stage = true // withou is comb loop
 s2.__stage = true
 
-// Loop between fcalls. Use wire
-d2.__wire = true
-d1 = s1(a=$inp, b=d2)
+// Create loop with __last_value
+d1 = s1(a=$inp, b=d2.__last_value)
 d2 = s2(a=$inp, c=d1)
 
+// compile error: combinational loop
+xx = xx.__last_value + 1 
+```
+
+```coffeescript
+// code/last_value2.prp
 a = 3
-a.__wire = true // useless
-b = a + 2
+b = a.__last_value + 2
 I(b==5)
 
-d.__wire = true
-e = d + 1
+d = 100
+e = d.__last_value + 1
+d = 200
 I(e==3)
-d = 2
+if d==200 { // taken
+  d = 300
+  d = 2
+}
 ```
 ]
 
@@ -3450,14 +3458,13 @@ router = :($inp,$from,%to,%out):{
 }
 
 out = ()
-out.__wire = true
-dst.__bits = 2
-for i in 0..3 {
-  dst        := i + 1  // 0->1, 1->2, 2->3, 3->0
-  packet.data = $from_node[i]
-  packet.addr = i
-  out[i]      = router(addr=i, inp=out[dst].out, from=packet)
-  %to_node    = %to_node ++ out[i].to.data
+for src in 0..3 {
+  dst         = (src + 1) & 3 // 0->1, 1->2, 2->3, 3->0
+  dst_out     = out[dst].out.__last_value  // To break circular dep
+  packet.data = $from_node[src]
+  packet.addr = src
+  out[src]    = router(addr=src, inp=dst_dst, from=packet)
+  %to_node    = %to_node ++ out[src].to.data
 }
 ```
 ]
