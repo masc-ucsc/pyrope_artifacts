@@ -1,4 +1,17 @@
 
+
+
+-----
+x.foo =1
+if $cond {
+  x.bar =3
+}
+I(x.bar) // error or warning
+
+comp error: if we can prove that a read may generate rand sometimes
+warning : if we can not prove that a random may be read
+----
+
 Make I,N part of the syntax
 
 NEW:

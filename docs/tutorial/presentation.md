@@ -343,10 +343,10 @@ task: Quick Dive to Pyrope
 // mysrc/test2.cpp file
 #include "prp_cpp.hpp"
 
-void prp_methodx(const prt_tuple i ,prp_tuple &out) {
-  prp_struct f(i.get("f");
-  prp_number b(f.get("b"))
-  prp_number c(i.get(0));
+void prp_methodx(const prp_tuple &i ,prp_tuple &out) {
+  Lconst       c = i.get(0);  //1st call arg
+  prp_tuple    f = i.get(1);  //2nd call arg
+  Lconst       b = f.get("b")) 
   p.set("res", i.get(0) + f.get("a") + f.get("b");
   p.set("mor", i.get(0) | f.get("a") | f.get("b");
 }
@@ -474,22 +474,20 @@ task: Quick Dive to Pyrope
 
 ```coffeescript
 // libs/adder/code/scla.prp file
-cla = :($a,$b) when $a.__bits==8:{           // specialize when bits == 8
-  s1 = cla(a=$a[[0..3]],b=$b[[0..3]],cin=0)  // cla for 4 bits
-  t = generate($a[[0..3]],$b[[0..3]])        // generate carry method
-  s2 = cla(a=$a[[4..7]],b=$b[[4..7]],cin=t)  // CLA with fast cin
-  %sum = (s2.sum,s1.sum)[[]]                 // bit concatenation
-}
-
-cla = :($a,$b) when $a.__bits==12:{          // specialize when bits == 12
-  s1 = cla(a=$a[[0..7]],b=$b[[0..7]],cin=0)  // .. Ruby style ranges
-  t = generate($a[[0..6]],$b[[0..6]])        // generate carry method
-  s2 = cla(a=$a[[6..11]],b=$b[[6..11]],cin=t)
-  %sum = (s2.sum,s1.sum)[[]]
-}
-
-cla = :($a,$b):{                             // default CLA (not CLA, just RCA)
-  return rca(a=$a,b=$b,cin=0)
+cla = :($a,$b){
+  if $a.__bits==8 {
+    s1 = cla(a=$a[[0..3]],b=$b[[0..3]],cin=0)  // cla for 4 bits
+    t = generate($a[[0..3]],$b[[0..3]])        // generate carry method
+    s2 = cla(a=$a[[4..7]],b=$b[[4..7]],cin=t)  // CLA with fast cin
+    %sum = (s2.sum,s1.sum)[[]]                 // bit concatenation
+  }elif $a.__bits==12 {
+    s1 = cla(a=$a[[0..7]],b=$b[[0..7]],cin=0)  // .. Ruby style ranges
+    t = generate($a[[0..6]],$b[[0..6]])        // generate carry method
+    s2 = cla(a=$a[[6..11]],b=$b[[6..11]],cin=t)
+    %sum = (s2.sum,s1.sum)[[]]
+  }else{
+    return rca(a=$a,b=$b,cin=0)
+  }
 }
 
 test = ::{
@@ -516,10 +514,9 @@ if $enable {
 }
 
 my_add as import("libs.adder.scal.cla")
-..+.. = :($a,$b) when $a.__bits>1 and $b.bits==1:{
+..+.. = :($a,$b):{
  // Special code for special case
 }
-
 ```
 
 .footnote[
@@ -604,6 +601,46 @@ endmodule
 ]
 
 ---
+class: split-50
+
+# vs Verilog
+
+.column[
+### Verilog
+```verilog
+logic signed [3:0] a;
+logic signed [4:0] c1;
+logic signed [4:0] c2;
+logic signed [4:0] c3;
+logic        [1:0] u2bits;
+
+always_comb begin
+  a = -1;
+  // verilog extends to max in op (a,c1,constant)
+  // max bits is 5 (c has 5 bits)
+  // a has 4 bits, so it should be extended to 5
+
+  c1 = a + 1'b1;  // -16 (1 zero sign extend 15)
+  c2 = a + 1'sb1; // -2  (1 sign extended -1   )
+  c3 = a + 3'sb1; //  0  (0b001 sign extended 1)
+  
+end
+```
+]
+
+.column[
+### Pyrope
+```coffeescript
+// code/vsverilog2.prp file
+
+a = -1s4bits
+c1 = a + 1u    // 0 = -1 + 1
+c2 = a + 1s    // 0
+c3 = a + 1s3   /  0
+```
+]
+
+---
 class: split-40
 
 # vs CHISEL
@@ -651,9 +688,8 @@ if $a? and $b? {
 test = ::{
   puts = import("io.puts")
   gcd as vschisel
-  (a,b,z) as (__bits=16, __bits=16, __bits=16)
-  z = gcd(a=a.__rnd,b=b.__rnd)
-  waitfor(@z)  // must be a reference @z
+  z = gcd(a=(1<<16).__rnd,b=(1<<16).__rnd)
+  waitfor(z)
   puts("gcd for {} and {} is {}", a, b, z)
 }
 ```
@@ -848,7 +884,7 @@ test = ::{
   for n in 0..9 {
     n.__bits=6        // 6 bit fibonacci
     b = vspyrtl(n=n)
-    waitfor(@b.result)  // multiple clocks
+    waitfor(b.result)  // multiple clocks
     I(b.result == seq[n])
   }
 }
@@ -977,9 +1013,10 @@ sink = ::{
      puts(": No data")
   }
 }
-s = @sink ++ (__stage=true)
+// ::{sink} to not call method now/defer call
+s = ::{sink} ++ (__stage=true)
 s.data.__bits = 3
-g = @gen ++ (__stage=true)
+g = ::{gen} ++ (__stage=true)
 // Filter only odd data values
 g |> ::{ if $.data[[0]] { return $ } } |> s
 ```
@@ -1111,7 +1148,7 @@ double    = :($x):{$x + $x}
 eleven = 5 |> double |> increment
 
 add = :($x,$y):{$x + $y}
-addFive = @add  // add reference, no call
+addFive = ::{ add }  // reference, no call
 addFive = ::{ super(x=5,y=$y) }
 eleven  = ::{ super(y=6) }
 twelve  = ::{ super(y=7) }
@@ -1252,7 +1289,7 @@ y = (10..0) ..by.. 2 // (10 8 6 4 2 0)
 A = ((1,2),(3,4))
 
 sum = 0
-for i in 1..x.__length {
+for i in 1..x.__size {
   sum = sum + abs(x(i))
 }
 
@@ -1496,7 +1533,7 @@ I((3, 2) ..sub1.. (2, 3) == (1, 0))
 
 ---
 class: split-50
-# Input ($), Output (%), Register (#), Reference (@)
+# Input ($), Output (%), Register (#)
 
 .column[
 ### Input/Outputs are tuples
@@ -1526,16 +1563,21 @@ ncalls = ::{
 a = ncalls
 I(a==1)
 b = ncalls
-I(b==2)
-c = @ncalls  // Reference to ncalls
-d = ncalls
+I(b==2 && ncalls.ncalled == 2)
+c = ncalls  // no call to ncalls
+I(ncalls.ncalled==2)
+d = ncalls+0  // calls to ncalls
+I(ncalls.ncalled==3)
 I(d==3)
 e = c
-I(e==4)
+I(ncalls.ncalled==3)
+I(e==4==c)  // calls ncalls
+I(ncalls.ncalled==4)
 f = ncalls
 I(f==5)
 g = c
 I(g==6)
+I(ncalls.ncalled==6)
 
 ```
 ]
@@ -2034,6 +2076,42 @@ puts(3,pass(),4,5)          // OK, prints "3 11 4 5"
 puts(3,square(4),5)         // OK, prints "3 16 5"
 puts(,,3,,,,pass,,,,5,,)    // OK, prints "3 11 5"
 puts(3,pass(4),5,,pas(3,4)) // OK, prints "3 7 5 9"
+
+a = fcall1(a=(1,2),b=3,d=(a=1,b=3)) // a function call is a tuple
+```
+
+---
+# this vs super
+
+```coffeescript
+// code/thissuper.prp file
+
+o.x.data = 1
+o.x.data_plus_1 = ::{ 
+  // this accesses the parent tuple o.x
+  this.data+1 
+}
+o.x.cb_chain = ::{}
+
+x = o.x // copy object
+
+x.cb_chain // does nothing
+x.cb_chain = ::{ 
+  super($) // Calls cb_chain before this redefinition
+  this._my_data = this._my_data+1
+}
+x.cb_chain
+I(x._my_data==1)
+
+x.cb_chain = ::{ 
+  super($) // Calls cb_chain before this redefinition
+  this._foo = 2
+}
+I(x._my_data==2)
+I(x._doo==2)
+
+// o.x does not have _foo ()
+o.x.cb_chain // does nothing
 ```
 
 ---
@@ -2059,6 +2137,24 @@ hash = ::{
 
 I(3.hash(4) == hash(3,4) == (3,4).hash() == hash(3,4))
 
+```
+
+---
+# Everything is a tuple
+
+```coffeescript
+// code/alltuples.prp file
+
+a = 1
+b = (1)
+I(a.__size==b.__size==1)
+
+c = (1,2)
+d = a ++ b
+I(c.__size==d.__size==2)
+
+I(a.0==b[0]==c.0==d[0])
+I((((a[0])[0]).0)[0]==1)
 ```
 
 ---
@@ -2164,7 +2260,7 @@ I(j[0]==1==j.a and j[2]==j.c==3)
 ]
 
 .column[
-### Tuple hierarchy
+### Tuple hierarchy (big endian)
 ```coffeescript
 // code/tuples4.prp
 
@@ -2181,6 +2277,89 @@ t3 = t1.sub
 I(t3.a==1 and t3.b==2)
 ```
 ]
+---
+class: split-50
+
+# Tuples Endian
+
+### Pyrope follows the big endian convention from SystemVerilog
+
+.column[
+```coffeescript
+// code/tupleendian.prp
+
+s = (b1=0x12, h2=(b2=0x34,b3=0x56), b4=0x78)
+
+// big endian consistent with packed System Verilog
+tmp = s[[..]] // flatten pick bits (big endian)
+I(tmp == 0x12345678)
+I(s[[0..7]]==0x78)
+I(s[[8..16]]==0x56)
+
+/* SystemVerilog equivalent
+typedef struct packed {
+  logic [7:0] b2;
+  logic [7:0] b3;
+} hw_t;
+
+typedef struct packed {
+  logic [7:0] b1;
+  h2_type     h2;
+  logic [7:0] b4;
+} s_t;
+ */
+```
+]
+
+.column[
+### Tuple hierarchy (big endian)
+```coffeescript
+// code/tuplecpp.prp
+
+s = (a=0x12,b=(c=0x33,d=0u8bits))
+s.b.d = $inp
+
+call_cpp = import("my_fcall")
+
+out = call_cpp(s)
+I(out.total==(0x12+0x33+$inp))
+
+/* C++ sample interface (no struct generated)
+void my_fcall(const prp_tuple &inp, prp_out &out) {
+  auto a = inp.get("a");
+  auto b = inp.get("b");
+  auto c = b.get("c");
+  auto d = b.get("d");
+  auto total = a + c + d;
+  out.set("total", total);
+}
+ */
+```
+]
+
+---
+# Tuples vs Scalar
+
+### A scalar is a tuple of size 1
+
+```coffeescript
+// code/tuplescalar.prp file
+my_func::{
+  a = 3             // scalar
+  foo = a           // scalar, 3
+  a = a ++ 4        // tuple, (3,4)
+  b = a             // tuple, (3,4)
+  c = b.0           // scalar, 3
+  d = a[1]          // scalar, 4
+  %out = c + d      // scalar, 7
+  %out = %out ++ a  // tuple, (7, 3, 4)
+  %out2 = a ++ %out // tuple, (3, 4, 7, 3, 4)
+  %out3 = foo       // scalar, 3 
+}
+result = my_func()  // hier-tuple
+I(result == (out=(7, 3, 4), out2=(3, 4, 7, 3, 4), out3=3))
+%out = result.out.0 + result.out2.4 + result.out3 // 7 + 4 + 3 = 14
+```
 
 ---
 class: split-50
@@ -2224,7 +2403,7 @@ I(b) // b known at compile time
 // Plain tuple with fixed (as) fields
 tup = (Red as 1,Blue as 2,Purple as 3)
 I(tup.Red == 1)
-(@a,@b,@a) |> set_field("__allowed", tup)
+(a,b,c) = (a,b,c) |> set_field("__allowed", tup)
 c = tup.Red        // OK
 b = 3              // OK, allowed value
 a = 5              // compile error
@@ -2284,6 +2463,7 @@ if $runtime_val {
 I(c.__bits = 6)
 ```
 ]
+
 
 
 ---
@@ -2441,6 +2621,7 @@ class: split-50
  __write         Method called when variable written
 ```
 ]
+
 ---
 class: split-50
 
@@ -2454,15 +2635,19 @@ I((1,2,3) == 1..3)
 I((1,2,3) == (1..3))
 
 I(((0..7) ..by.. 2) == (0, 2, 4, 6))
-I((1..2) ..union.. 3 == (1..3))
-I((1..10) ..intersect.. (2..20) == (2..10))
+I((1..2) ..or.. 3 == (1..3))
+I((1..10) ..and.. (2..20) == (2..10))
 
 // ranges can be open
-I((3..) ..intersect.. (1..5) == (3..5))
-I((..)  ..intersect.. (1..2) == (1..2))
-I((..4) ..union..     (2..3) == (..4))
-I((2..) == (2..-1))
-I((..3) == (-1..3))
+I((3..) ..and.. (1..5) == (3..5))
+I((..)  ..and.. (1..2) == (1..2))
+I((..4) ..or..     (2..3) == (..4))
+
+I((..)   ..and.. (2..7) == (2..7))
+I((0..)  ..and.. (2..7) == (2..7))
+I((..-1) ..and.. (2..7) == (2..7))
+I((..-2) ..and.. (2..7) == (2..6))
+I((3..-2) ..and.. (2..7) == (3..6))
 
 // closed ranges are like sets
 I((1..3)[[]] == (1,2,3)[[]])
@@ -2478,7 +2663,7 @@ I(0b0011110.__set == (1..4))
 seq = (1..9)
 
 start  = seq[0..2]
-middle = seq[3..-2] // seq[-2..3] same
+middle = seq[3..-2]
 end    = seq[-2..]
 copy   = seq[..]
 
@@ -2488,7 +2673,7 @@ I(end    == (8,9))
 I(copy   == (1,2,3,4,5,6,7,8,9))
 
 val = 0b11_01_10_00
-I(0..2 == 2..0 == (2,1,0))  // ranges sort reverse
+I(0..2 == (0,1,2))
 
 I(val[[2..0]]   == val[[(2,1,0)]] == 0b000)
 I(val[[0..2]]   == val[[(2,1,0)]] == 0b000)
@@ -2569,12 +2754,12 @@ $prp --run rndtest
 
 #clk_flop = $inp
 // implicit #clk_flop as __clk_pin=$clk
-#clk2_flop as (__clk_pin=@$clk2)
+#clk2_flop as (__clk_pin=$clk2)
 #clk2_flop = #clk_flop
 
 %out = #clk2_flop
 %out as (__fluid=true)
-%out as (__clk_pin=@$clk3)  // 3rd clock for output
+%out as (__clk_pin=$clk3)  // 3rd clock for output
 ```
 
 ---
@@ -2964,20 +3149,20 @@ combinational = ::{
 
 one_stage_flop_out  = ::{ // The output is flopped
   % = ssum(a=sinc($a), b=sinc($b))
-  % |> set_field("__stage", true)
+  % = % |> set_field("__stage", true)
 }
 
 one_stage_comb_out = ::{  // Not flopped output
-  a1 as @sinc
-  a2 =  @ssum
+  a1 as sinc
+  a2 =  ssum
   a2.__stage=true
   % = a2(a=a1($a), b=a1($b))
 }
 
 two_stage_comb_out = ::{  // Not flopped output
-  a1 = @sinc
+  a1 = sinc
   a1.__stage as true
-  a2 = @ssum
+  a2 = ssum
   a2 as (__stage=true)
   % = a2(a=a1($a), b=a1($b))
 }
@@ -3027,7 +3212,7 @@ opt1_2stages = ::{
   s1_a as (__stage=true)
   s1_b as (__stage=true)
   % = sadd(a=s1_a, b=s1_b)
-  % |> set_field("__stage", true)
+  %.__stage = true
 }
 
 opt2_2stages = ::{
@@ -3035,7 +3220,7 @@ opt2_2stages = ::{
   s1_b = sinc($b)
   % = sadd(a=s1_a, b=s1_b)
 
-  x = (@s1_a, @s1_b) ++ %
+  x = (s1_a, s1_b) ++ %
   x.__stage = true
 }
 
@@ -3141,8 +3326,11 @@ try {
 ```
 ```coffeescript
 // code/assign5.prp
-_tmp1 as $a // alias, no restart trigger
-_tmp2 = @$b // pass reference, no restart
+_tmp1 as $a // no op, no restart
+_tmp2 =  $b // no op, no restart
+_tmp3 = $b+0 // read, can trigger restart
+_tmp4 = fcall($b) // restart if used inside fcall
+%out = $b   // If out restarts, $b restarts
 try {
   %out1 = _tmp1 + 1  // can trigger resart
 }
@@ -3207,7 +3395,12 @@ I(t == (1+4+7))
 I(child.v1 == 3)
 
 grandson = child
-grandson.dox = :when $0>20:{ super($); 100}
+grandson.dox = ::{ 
+  if $0>10 {
+    return 100
+  } 
+  return super($)
+}
 t = grandson.dox(4)
 I(t == (1+4+7))
 t = grandson.dox(30)
@@ -3358,12 +3551,12 @@ for a in tup {
 ---
 # Interface with C++ code
 
-### C-api must have known IO at compile time
+### C-api must tuples known at compile time
 ```coffeescript
 // code/test_call1.prp
-mp = import_cpp("myprint")
+mp = import("myprint")
 mp("hello")
-read_val = import_cpp("json_read")
+read_val = import("json_read")
 I(read_val.__comptime == true)
 I(read_val("foo")==6)            // called at compile time
 for i in (1..read_val("file")) {
@@ -3373,11 +3566,11 @@ for i in (1..read_val("file")) {
 ```c++
 // code/myprint.cpp
 #include "prp_cpp.hpp"
-void prp_json_read(const prp_tuple inp, prp_tuple &out) {
-  prp_string str = inp.get(0);
+void prp_json_read(const prp_tuple &inp, prp_tuple &out) {
+  Lconst str = inp.get(0);
   out.set(0,str.str().size()+3); // Fix value in output given set of inputs
 }
-void prp_myprint(const prp_tuple inp, prp_tuple &out) {
+void prp_myprint(const prp_tuple &inp, prp_tuple &out) {
   assert( inp.get(0).is_string()); assert(!inp.get(1).is_string());
   assert(!inp.get("txt").is_number()); assert( inp.get(1).is_number());
   assert(inp.get(0) == inp.get("txt"));
@@ -3392,19 +3585,18 @@ void prp_myprint(const prp_tuple inp, prp_tuple &out) {
 ### C-api structs converted to C++
 ```coffeescript
 // code/test_call2.prp
-my_c_code = import_cpp("my_c_code")
+my_c_code = import("my_c_code")
 a = (b=1, c=true, d="hello")
 %foo = my_c_code(a)
 ```
 ```c++
 // code/test_call2.cpp
 #include "prp_cpp.hpp"
-void prp_my_c_code(const prp_tuple inp, prp_tuple &out) {
-  assert(inp.is_tupple());
-  prp_number  b = inp.get("b");
-  prp_boolean c = inp.get("c");
-  prp_string  d = inp.get("d");
-  fmt::print("b:{} c:{} d:{}\n", b.get_uint64(), c.get_bool(), d.get_sview());
+void prp_my_c_code(const prp_tuple &inp, prp_tuple &out) {
+  auto  b = inp.get("b");
+  auto  c = inp.get("c");
+  auto  d = inp.get("d");
+  fmt::print("b:{} c:{} d:{}\n", b.to_i(), c.to_i(), d.to_s());
 }
 ```
 
