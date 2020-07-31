@@ -474,7 +474,7 @@ task: Quick Dive to Pyrope
 
 ```coffeescript
 // libs/adder/code/scla.prp file
-cla = :($a,$b){
+cla = :($a,$b):{
   if $a.__bits==8 {
     s1 = cla(a=$a[[0..3]],b=$b[[0..3]],cin=0)  // cla for 4 bits
     t = generate($a[[0..3]],$b[[0..3]])        // generate carry method
@@ -1088,44 +1088,6 @@ class: split-40
 .column[
 ### Reason
 ```dart
-type animal = Dog | Cat | Bird;
-let result = switch (isBig, animal) {
-| (true, Dog) => 1
-| (true, Cat) => 2
-| (true, Bird) => 3
-| (false, Dog | Cat) => 4
-| (false, Bird) => 5
-};
-```
-]
-
-.column[
-### Pyrope
-```coffeescript
-// code/vsreason1.prp file
-unique if isBig and animal.__obj == Dog {
-  result = 1
-}elif isBig and animal.__obj == Car {
-  result = 2
-}elif isBig and animal.__obj == Bird {
-  result = 3
-}elif !isBig and (animal.__obj == Bird
-                or animal.__obj == Cat) {
-  result = 4
-}elif !isBig and animal.__obj == Bird {
-  result = 5
-}
-```
-* Pyrope mimics SystemVerilog unique keyword, no case or switch
-]
----
-class: split-40
-
-# vs Reason
-
-.column[
-### Reason
-```dart
 let increment x => x + 1;
 let double    x => x + x;
 
@@ -1204,55 +1166,12 @@ I(a == b == 1)
 I(a.get_value() == b.get_value)
 I(a.get_value() == b.get_value())
 I(a.get_value   == b.get_value)
-I(a.__obj == b.__obj and a.__obj != 1.__obj)
 
 total = (0..10) |> filter ::{$ & 1} |> map ::{$*$}
 I(total == (1,9,25,49,81))
 ```
 ]
 
----
-class: split-40
-
-# vs Javascript
-
-.column[
-### Javascript Tricky
-```dart
-const a = {
-  num: 0,
-  valueOf: function() {
-    return this.num += 1
-  }
-};
-const equality = (a==1 && a==2 && a==3);
-console.log(equality); // true
-
-for(let pair of myMap) {
-  var [key, value] = pair;
-  console.log(key + " = " + value);
-}
-```
-]
-
-.column[
-### Pyrope
-```coffeescript
-// code/vsjs1.prp file
-puts = import("io.puts")
-a = 0
-a.__read = ::{
-  this += 1
-}
-eq = (a == 1) and (a == 2) and (a == 3)
-I(eq)
-
-for a in myMap {
-  puts("{} = {}",,,,a.__index,,,a,,,)
-}
-```
-* Some similarities in functionality
-]
 ---
 class: split-50
 
@@ -1448,18 +1367,15 @@ I(total == (1+2+3 + 1+2+3))
 // code/controlflow4.prp
 // loop initialization assignments
 total = 0
-{
-  a = 3;
-  for b in 0..3 ; c in (1,2) {
-    I(a==3+b)
+a = 3;
+for b in 0..3 ; c in (1,2) {
+  I(a==3+b)
     a = a + 1
     if a>6 {
       break
     }
-    total += a
-  }
+  total += a
 }
-I(a) // compile error: a undefined
 
 total2 = 0
 a = 3
@@ -1563,7 +1479,7 @@ ncalls = ::{
 a = ncalls
 I(a==1)
 b = ncalls
-I(b==2 && ncalls.ncalled == 2)
+I(b==2 and ncalls.ncalled == 2)
 c = ncalls  // no call to ncalls
 I(ncalls.ncalled==2)
 d = ncalls+0  // calls to ncalls
@@ -1912,7 +1828,6 @@ I(i == 3) // compile error: i undefined
 
 #val = 3
 #val_link = punch("#scope2.val")
-I(#val_link.__obj == #val.__obj)
 I(#val_link == 3)
 #val = 1
 I(#val_link == 1)
@@ -1947,7 +1862,6 @@ n3 = ::{
 }
 $i1 = punch("%n2.n1.o")
 $i2 = punch("%scope5.n2.n1.o")
-I($i1.__obj == $i2.__obj)
 I(n3.o2 == 2)
 I(n3.o4 == 4)
 ```
@@ -1962,6 +1876,7 @@ nested1_3b = ::{
     #cycle.__bits as 3
     #cycle += #incr
   }
+}
 nested1_5b = ::{
   nested2 = ::{
     #cycle as (__bits=5)
@@ -2015,9 +1930,6 @@ I(a == 3 and b == 3)
 I(a == 3 and b == 4)
 (a,b) = (b,a)
 I(a == 4 and b == 3)
-c = (@a,@b)
-c = 5
-I(a==4==b and c==5)
 ```
 ]
 
@@ -2088,15 +2000,18 @@ a = fcall1(a=(1,2),b=3,d=(a=1,b=3)) // a function call is a tuple
 
 o.x.data = 1
 o.x.data_plus_1 = ::{ 
+  I(this.__key == "x")
+  I(this.data.__key == "data")
   // this accesses the parent tuple o.x
   this.data+1 
 }
 o.x.cb_chain = ::{}
-
 x = o.x // copy object
 
 x.cb_chain // does nothing
 x.cb_chain = ::{ 
+  I(super.__key == "cb_chain")
+  I(this.__key == "x")
   super($) // Calls cb_chain before this redefinition
   this._my_data = this._my_data+1
 }
@@ -2107,8 +2022,7 @@ x.cb_chain = ::{
   super($) // Calls cb_chain before this redefinition
   this._foo = 2
 }
-I(x._my_data==2)
-I(x._doo==2)
+I(x._my_data==2 and x._doo==2)
 
 // o.x does not have _foo ()
 o.x.cb_chain // does nothing
@@ -2419,7 +2333,7 @@ d = 1              // compile error
 
 ---
 class: split-50
-# Tuples and Bitwidt at compile time
+# Tuples and Bitwidth at compile time
 
 ### Once the hierarchy is known all the tuples and bitwidth should be known at compile time
 
@@ -2464,107 +2378,378 @@ I(c.__bits = 6)
 ```
 ]
 
-
-
 ---
 class: split-50
 
-# Memories
+# Memories (Unconstrained)
 
 .column[
-### Clear SRAMs
 ```coffeescript
 // code/mem1.prp
-#a as (__bits=3, __size=1024, __rdports=1)
-#b as #a ++ (__fwd=false)  // without fowarding
-#cycle.__bits as 8
 
-I(#a[0] == #cycle)
+// Size inferred from $addr.__bits
+// Width inferred from $wdata.__bits
 
-prev_val = #cycle
-#cycle += 1
-#a[0] = #cycle
-#b[0] = #cycle
+if $we {
+  #mem[$addr] = $wdata
+  %out = $wdata
+}else{
+  %out = #mem[$addr]
+}
 
-I(#a[0] == #cycle)
-I(#a[0].__q_pin == prev_val)
-I(#b[0] == #b[0].__q_pin == prev_val)
-
-%out = #a[0] + #b.0
 ```
 ]
 
 .column[
-* Memory forward unless \__q_pin used
-* Reset to zero by default
-* Enforces the rd/wr ports if indicated
-* Moves logic to get addresses at posedge
-]
-
----
-class: split-50
-
-# Memories
-
-.column[
-### Enforce SRAM constraints
 ```coffeescript
 // code/mem2.prp
-// Enforce #rd and wr ports in SRAM
-#a as (__bits=8, __size=1024)
-#cycle as (__bits=8)
-CI(#a.__rdports==1 and #a.__wrports==1)
 
-#cycle += 13
+// SRAMs at posedge by default
+// $wdata+1 MUST be moved prev cycle
+new_data = $wdata + 1   
+#mem[$waddr] = new_data
 
+rd = #mem[$waddr]  // 1 cycle read delay, no fwd
+I(rd == #last_cycle_new_data)
 
-// ADDR must be stable at posedge. Push logic
-#a[#cycle] = #cycle-1
+#last_cycle_new_data = new_data
+```
+]
 
-%out = #a[~#cycle]
+---
+
+# Memories (Selecting ports with latency/fwd)
+
+```coffeescript
+// code/mem3.prp
+
+#mem.__size = 1024
+#mem.__port = (rd2n=(__latency=2,__fwd=false),
+               rd1n=(__latency=1,__fwd=false),
+               rd1f=(__latency=1,__fwd=true),
+               rd0n=(__latency=0,__fwd=false),
+               rd0f=(__latency=0,__fwd=true),
+               wr=(__latency=1))
+
+#cycle.__bits = 128 // Create long cycle
+#mem.wr[33] = #cycle & 0xFFF // infer __bits=12
+
+I(#mem.rd0f[33] == #cycle) // 0 clk and fwd
+I(#mem.rd1f[33] == #cycle) // 1 clk and fwd
+
+I(#mem.rd0n[33] == #last )           // 0 rd clk + 1 wr clk
+I(#mem.rd1n[33] == #last_last )      // 1 rd clk + 1 wr clk
+I(#mem.rd2n[33] == #last_last_last ) // 2 rd clk + 1 wr clk
+
+#last_last_last  = #last_last
+#last_last       = #last
+#last            = #cycle
+#cycle          := #cycle + 1
+```
+
+---
+class: split-50
+
+# Memories (Reset FSM and Forwarding)
+
+.column[
+```coffeescript
+// code/mem_nfwd.prp
+// No port constraints
+
+#a.__reset_cycles = 2000
+#a.__reset = ::{
+   #wr_addr.__bits = 8
+   this[wr_addr] = wr_addr
+   #wr_addr := #wr_addr + 1
+}
+
+I(#a[ 1] ==  1)
+I(#a[32] == 32)
+
+#cycle.__bits = 128
+
+#a[16] := #next
+if #cycle == 0 {
+  I(#a[16]==16)
+}else{
+  curr_data = #cycle & 0xFF // lower 8 bits
+  next_data = #next  & 0xFF // lower 8 bits
+  I(#a[16]==curr_data) // __fwd=false
+
+  I(#a[16].__q_pin == curr_data)
+}
+
+#cycle = #cycle + 1
+#next  = #cycle + 2
 ```
 ]
 
 .column[
-### Becomes
 ```coffeescript
-// code/mem3.prp
+// code/mem_fwd.prp
+*// Constraint all ports to do fwd
+*#a.__ports = (__fwd=true) //unlimited #ports
+#a.__reset_cycles = 2000
+#a.__reset = ::{
+   #wr_addr.__bits = 8
+   this[wr_addr] = wr_addr
+   #wr_addr := #wr_addr + 1
+}
+
+I(#a[ 1] ==  1)
+I(#a[32] == 32)
+
+#cycle.__bits = 128
+
+#a[16] := #next
+if #cycle == 0 {
+  I(#a[16]==16)
+}else{
+  curr_data = #cycle & 0xFF // lower 8 bits
+  next_data = #next  & 0xFF // lower 8 bits
+*  I(#a[16]==next_data) // __fwd=true
+
+  I(#a[16].__q_pin == curr_data)
+}
+
+#cycle = #cycle + 1
+#next  = #cycle + 2
+```
+]
+
+---
+class: split-50
+
+# Memories (Clock and edge select)
+
+.column[
+### No time for logic error
+```coffeescript
+// code/mem_edge1.prp
 // Enforce #rd and wr ports in SRAM
-#a as (__bits=8, __size=1024, __wrports=1)
-#cycle.__bits as 8
+#cycle as (__bits=8)
 
-#cycle += 13
+#cycle += 13  
+// +13 can not move to prev cycle. Comb loop
+// flop -> add 13 -> flop
+// flop -> add 13 -> SRAM (posedge)
+#a[#cycle] = 0x33 // error: oop! same cycle+13
 
-#_cycle_m1  = #cycle + 13 - 1
-#_cycle_p13 = #cycle + 13
-#_cycle_neg = ~(#cycle + 13)
+#b.__ports.__posedge=false
+#b[#cycle] = 0x33 // OK (half cycle for +13)
+```
+]
 
-#a[#_cycle_p13] = #_cycle_m1
+.column[
+### Posedge/Negedge
+```coffeescript
+// code/mem_edge2.prp
+#pos_cycle.__bits = 128
+#pos_cycle.__posedge = true
+#neg_cycle.__bits = 128
+#neg_cycle.__posedge = false
 
-%out = #a[#_cycle_neg]
+// clk  = 01010101010101010
+// pos  =  aabbccddeeffgghh
+// neg  = aabbccddeeffgghh
+// rd1p =      aabbccddeeffgghh    1 wr + 1 rd clk
+// rd2p =        aabbccddeeffgghh  1 wr + 2 rd clk
+// rd1n =       aabbccddeeffgghh   1 wr + 1 rd clk
+// rd2n =         aabbccddeeffgghh 1 wr + 2 rd clk
+
+#a.__bits = 8
+#a.__port = (rd1p=(__posedge=true)
+            ,rd1n=(__posedge=false)
+            ,rd2p=(__posedge=true,__latency=2)
+            ,rd2n=(__posedge=false,__latency=2)
+            ,wr =(__posedge=true))
+
+#a.wr[33u8] := #pos_cycle
+
+#pos_cycle := #pos_cycle + 1
+#neg_cycle := #neg_cycle + 1 // neg ahead of posedge
 ```
 ]
 ---
 class: split-50
 
-# Memories
+# Memories (Structural)
 
 .column[
-### Enforce SRAM constraints
 ```coffeescript
-// code/mem4.prp
-// Enforce #rd and wr ports in SRAM
-#a as (__bits=8, __size=1024, __rdports=1, __wrports=1)
-*#a.__posedge as false // posedge by default
-#cycle.__bits=8
+// code/mem_struct1.prp
+a = cell("memory")
 
-#cycle += 13
+a.__size = 32
+a.__bits = 64
+a.__port[0].__clk_pin = clock
+a.__port[0].__posedge = true
+a.__port[0].__latency = 1
+a.__port[0].__fwd     = true  // NOT default
+a.__port[0].__addr    = rd0_addr
+a.__port[0].__enable  = true
+rd0_data = a.__port[0].__data
 
+a.__port[1].__clk_pin = clock
+a.__port[1].__posedge = true
+a.__port[1].__latency = 1
+a.__port[1].__fwd     = true  // NOT default
+a.__port[1].__addr    = rd1_addr
+a.__port[1].__enable  = true
+rd1_data = a.__port[1].__data
 
-// SRAM can use pos/neg edge
-#a[#cycle] = #cycle-1
+a.__port[2].__clk_pin = clock
+a.__port[2].__posedge = true
+a.__port[2].__latency = 1
+a.__port[2].__fwd     = false
+a.__port[2].__addr    = wr_addr
+a.__port[2].__enable  = wr_enable
+a.__port[2].__data    = wr_data
+```
+]
 
-%out = #a[~#cycle]
+.column[
+### Automatic port select
+```coffeescript
+// code/mem_struct2.prp
+// Ports anonymous and identical can auto pick
+#mem.__port = (__fwd=true)
+
+rd0_data = #mem[r0_addr] // pick a port
+rd1_data = #mem[r1_addr] // pick a port
+
+if wr_enable {
+  #mem[wr_addr] = wr_data // Pick a port
+}
+```
+
+---
+class: split-50
+
+# Memories (write-mask)
+
+.column[
+```coffeescript
+// code/mem_wr.prp
+
+#mem.__size = 1024
+#mem.__bits = 14
+$a.__bits = 8
+$b.__bits = 4
+
+// default reset to zero all entries
+
+c = 3u2
+
+#mem[$addr].a = $a // 1 wr port (all same address)
+
+if $rand_input {
+  #mem[$addr].field2 = $b
+}else{
+  #mem[$addr].c = c
+}
+
+%out = $mem[$rd] // read a,b,c
+I(%out.c == 0 or %out.c==3u2)
+%out.xx = $mem[$rd2].c // read just c
+```
+]
+
+.column[
+### Structural generated
+```coffeescript
+// code/mem_wr2.prp
+
+#mem.__size = 1024
+#mem.__bits = 14
+
+c = 3u2
+
+___data.a = $a
+___wrmask = 0x0FF
+
+if $rand_input {
+  ___wrmask = __wrmask | 0xF00
+  ___data.field2 = $b
+}else{
+  ___wrmask = __wrmask | 0x3000
+  ___data.c = c
+}
+
+#mem.__port[0].__wrmask = ___wrmask
+#mem.__port[0].__addr   = $addr
+#mem.__port[0].__data   = ___data
+
+#mem.__port[1].__addr = $rd
+%out = #mem.__port[1].__data
+
+#mem.__port[2].__addr = $rd2
+%out.xx = #mem.__port[2].__data.c
+```
+]
+
+---
+class: split-50
+
+# Memories (Enable and port limits)
+
+.column[
+```coffeescript
+// code/mem_enable.prp
+
+// Low level structural memory
+a = cell("memory")
+
+a.__size = 1024
+a.__bits = 8
+a.__port[0].__addr    = rd0_addr
+a.__port[0].__enable  = rd0_enable
+rd0_data = a.__port[0].__data
+
+a.__port[1].__addr    = wr0_addr
+a.__port[1].__enable  = wr0_enable
+a.__port[1].__data    = wr0_data
+
+// Equivalent pyrope code
+
+I(rd0_addr.__bits==10) // 2**10 = 1024
+I(rd0_data.__bits==8)
+I(wr0_addr.__bits==10) // 2**10 = 1024
+I(wr0_data.__bits==8)
+
+if rd0_enable {
+  rd0_data = #mem.rd0[rd0_addr]
+}
+
+if wr0_enable {
+  #mem.wr0[rd0_addr] = wr0_data
+}
+```
+]
+
+.column[
+### Explicit ports used each read
+```coffeescript
+// code/mem_port.prp
+#mem.__port = (rd=(__fwd=true)
+              ,wr=()
+              ,dg=(__debug=true))
+
+rd0_data = #mem.rd[$rd_addr] // OK
+xxx      = #mem.rd[$rd_addr] // OK, same addr
+yyy      = #mem.rd[$rd_addr+1] // comp error
+
+if wr_enable {
+  #mem.wr[$wr_addr] = $wr_data   // dropped
+  #mem.wr[$wr_addr] = $wr_data+1 // ok
+  #mem.wr[$wr_addr+1] = $wr_data // comp error
+}
+
+a = #mem.dg[$rand] // dg as __debug not count as read
+b = #mem.dg[$rand] // dg as __debug not count as read
+c = #mem.dg[$rand] // dg as __debug not count as read
+%out = a + b + c
 ```
 ]
 
@@ -2574,51 +2759,62 @@ class: split-50
 # Compiler Parameters
 
 .column[
-### Flop/Latches/SRAM Specific
+### Flop/Latches Specific
 ```
- __bits          Number of bits
- __sign          Sign vs unsigned variable (false)
  __posedge       Posedge (true) or negedge
  __q_pin         Previous cycle value, no fwd (registers)
  __fwd           Perform forwarding in cycle (true)
- __size          number of entries (SRAMs/tuple)
  __latch         Latch not flop based (false)
- __rdports       Number of read ports
- __wrports       Number of write ports
  __clk_pin       Wire signal to control clk pin
- __clk_rd_pin    Wire signal to read clk pin
- __clk_wr_pin    Wire signal to write clk pin
  __reset         Code block to execute during reset
  __reset_pin     Wire signal to control reset pin
  __reset_cycles  Number of reset cycles required (1)
  __reset_async   Asynchronous reset (false)
- __set           Tuple behaves like a set (false)
  __last_value    Read last write to the variable/tuple
+ __stage         stage or comb submodule (false)
+ __fluid         Outputs in module handled as fluid
+```
+### SRAM Specific
+```
+ __size          number of entries SRAMs
+ __port          tuple with ports in SRAM
+    __debug      Port debug (false), no side-effects
+    __clk_pin    Port clock
+    __posedge    Port posedge (true) or negedge
+    __latency    Read or Write latency (1)
+    __fwd        Perform forwarding (false) in cycle
+    __addr       Address pin
+    __data       Data pin
+    __wrmask     Write mask pin
+    __enable     Enable pin
 ```
 ]
 
 .column[
-### Generic
+### Generic bitwidth
 ```
+ __sign          Sign vs unsigned variable (false)
  __allowed       Allowed values in variable
+ __bits          Number of bits
  __max           Alias for maximum __allowed value
  __min           Alias for minimum __allowed value
- __enum          Tuple values become an enum
+```
+### Generic
+```
+ __key           string key name for instrospection
  __rnd           Generate an allowed random number
- __obj           object id
- __key           string key name for instrosprection
- __index         tuple position (typically for loops)
- __io_pos        io possition for generated verilog
  __rnd_bias      Controls random generation
- __stage         stage or comb submodule (false)
- __fluid         Outputs in module handled as fluid
  __comptime      Fully solved at compile time
- __const         Variables are constant at run time
  __debug         Debug statment, no side effects
- __do            Code block passes as argument
- __else          Else code block
- __read          Method called when variable read
- __write         Method called when variable written
+```
+### Tuple
+```
+ __size          number of entries in tuple
+ __set           Tuple behaves like a set (false)
+ __enum          Tuple values become an enum
+ __index         tuple position (typically for loops)
+ __do            Code block passes ($.__do)
+ __else          Else code block ($.__else)
 ```
 ]
 
@@ -2884,7 +3080,7 @@ d = $i1 + $i2    // could not bound to 7 bits
 I(d.__bits == 8)
 
 e = a | b        // zero extend a
-I(e==0x17 && e.__bits==7)
+I(e==0x17 and e.__bits==7)
 e := 1u          // 7 bits, := does not infer bits
 I(e.__bits==7)
 e := -1u         // 7 bits, all ones
@@ -2906,14 +3102,13 @@ b = a + 1        // b.__max==6 3 bits
 c = a + 3        // c.__max==9 4 bits
 I(c.__bits==4)
 cond = (4+2*30)/2
-e = 0
-if cond == 32 { // should be true
-  e = 10u8
+if cond == 32 { // should be true (at compile)
+  a = 10u8
 }else{
-  e = 100u32
+  a = 100u32
 }
-// The compiler can infer different sizes
-I(e.__bits==32 || e.__bits=8)
+// The compiler should copy propagate
+I(a.__bits==8) // Maybe runtime check
 
 f = 0
 if cond == 32  { // should be true
@@ -3274,8 +3469,7 @@ if d==200 { // taken
 // code/assign1.prp
 a = b         // potential restart in fluid
 a as c        // alias a as c, no real read for fluid
-e = c
-e.__const = true  // e is same as c, constant
+e = c         // still not read until used for fluid
 
 b = (__bits=3)  // explicit bits
 b = 3           // OK
@@ -3380,14 +3574,12 @@ parent.dox = ::{return 1+$0}
 I(parent.dox(3) == 4)
 
 child = parent  // copy
-I(child.__obj == parent.__obj)
 child.dox = ::{
   _tmp = super($)
   %o3 = punch("#this.v2") // add new field in child
   %o3 = 3                 // set a value
   return tmp + 7
 }
-I(child.__obj != parent.__obj)
 
 I(child.v1) // compile error: v1 undefined
 t = child.dox(4)
@@ -3418,12 +3610,10 @@ class: split-50
 // code/objects2a.prp
 obj1.foo as (__bits=3)
 obj2.bar as (__bits=2)
-I(!(obj1.__obj == obj2.__obj))
 
 obj1c = obj1
 obj1.foo  = 1
 obj1c.foo = 3
-I(obj1.__obj == obj1c.__obj)
 
 obj3 as obj1 or obj2 // Union type
 if 3.__rnd == 2 {
@@ -3434,9 +3624,6 @@ if 3.__rnd == 2 {
   obj3.bar = 2
 }
 
-if obj3.__obj == obj1.__obj {
-  I(obj3.foo == 1)
-}
 ```
 ]
 
