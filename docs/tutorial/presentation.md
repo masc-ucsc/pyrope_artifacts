@@ -2029,31 +2029,6 @@ o.x.cb_chain // does nothing
 ```
 
 ---
-# Uniform call syntax
-
-### https://en.wikipedia.org/wiki/Uniform_Function_Call_Syntax
-```coffeescript
-// code/uniform.prp file
-puts = import("io.puts")
-
-ms = ::{ return this * 1000 }
-us = ::{ return this * 1000_000 }
-
-I(3.ms == 3000.us)
-
-hash = ::{
-  bad_hash = 0
-  for i in $ {
-    bad_hash ^= i
-  }
-  return bad_hash
-}
-
-I(3.hash(4) == hash(3,4) == (3,4).hash() == hash(3,4))
-
-```
-
----
 # Everything is a tuple
 
 ```coffeescript
@@ -2623,6 +2598,7 @@ if wr_enable {
   #mem[wr_addr] = wr_data // Pick a port
 }
 ```
+]
 
 ---
 class: split-50
