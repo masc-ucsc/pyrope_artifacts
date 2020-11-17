@@ -17,7 +17,7 @@ background-size: 30%
 
 .center[![image](https://masc.soe.ucsc.edu/logos/pyrope5.png)]
 
-.center[### Sheng-Hong Wang, Haven Skinner, Akash Sridhar, Sakshi Garg, Hunter Coffman, Kenneth Mayer, Rafael T. Possignolo, Jose Renau]
+.center[### Sheng-Hong Wang, Haven Skinner, Sakshi Garg, Hunter Coffman, Kenneth Mayer, Akash Sridhar, Rafael T. Possignolo, Jose Renau]
 .center[Computer Engineering]
 .center[University of California, Santa Cruz]
 
@@ -121,7 +121,7 @@ a = input.get_value
 none
 ---
 
-# Unable to Assimuilate Verilog
+# Unable to Assimilate Verilog
 
 * Verilog is the current standard
 * HDLs black-box Verilog modules
@@ -256,7 +256,7 @@ endmodule
 ```coffeescript
 // code/counter_test.prp file
 b as counter ++ (__stage as true) // pipeline type
-b.total as (__bits as 4)
+b.total as (__ubits as 4)
 b.enable = 0
 I(b.total == 0)                // assertion
 yield()                        // advance clock
@@ -287,7 +287,7 @@ if $enable {
 ```coffeescript
 // code/counter_test.prp file
 *b as counter // ++ (__stage as true) // combination type
-b.total as (__bits as 4)
+b.total as (__ubits as 4)
 b.enable = 0
 I(b.total == 0)                // assertion
 yield()                        // advance clock
@@ -387,14 +387,14 @@ task: Quick Dive to Pyrope
 
 ```coffeescript
 // libs/adder/code/rca.prp file
-fa = :($a,$b,$cin,%sum,%cout):{    // method with explicit arguments
+fa = ::{
   tmp   = $a  ^ $b
   %sum  = tmp ^ $cin
   %cout = (tmp & $cin) | ($a & $b)
 }
 
 carry = $cin                       // 0 if RCA without carry in
-for i in 0..a.__bits {             // iterate #bits
+for i in 0..a.__ubits {             // iterate #bits
   tmp = fa(a[[i]],b[[i]],carry)    // function call to fa
   %sum[[i]] = tmp.sum
   carry     = tmp.cout
@@ -415,7 +415,7 @@ task: Quick Dive to Pyrope
 ```coffeescript
 // libs/adder/code/rca2.prp file
 c = $cin
-for i in (0..$a.__bits) {
+for i in (0..$a.__ubits) {
   %sum[[i]] = $a[[i]] ^ $b[[i]] ^ c
   c =  ($a[[i]] & $b[[i]]) | ($a[[i]] & c) | ($b[[i]] & c)
 }
@@ -449,9 +449,9 @@ p = $a ^ $b // Propagate
 
 // 4 bit: c = g[[3]] | g[[2]] & p[[3]] | g[[1]] & p[[3]] & p[[2]] |...
 c = $cin & and_red(p)
-for i in 0..a.__bits {
+for i in 0..a.__ubits {
   _tmp = g[[i]]
-  for j in (i..(a.__bits-1)) {
+  for j in (i..(a.__ubits-1)) {
     _tmp = _tmp & p[[j]]
   }
   c = c | _tmp
@@ -474,13 +474,13 @@ task: Quick Dive to Pyrope
 
 ```coffeescript
 // libs/adder/code/scla.prp file
-cla = :($a,$b):{
-  if $a.__bits==8 {
+cla = ::{
+  if $a.__ubits==8 {
     s1 = cla(a=$a[[0..3]],b=$b[[0..3]],cin=0)  // cla for 4 bits
     t = generate($a[[0..3]],$b[[0..3]])        // generate carry method
     s2 = cla(a=$a[[4..7]],b=$b[[4..7]],cin=t)  // CLA with fast cin
     %sum = (s2.sum,s1.sum)[[]]                 // bit concatenation
-  }elif $a.__bits==12 {
+  }elif $a.__ubits==12 {
     s1 = cla(a=$a[[0..7]],b=$b[[0..7]],cin=0)  // .. Ruby style ranges
     t = generate($a[[0..6]],$b[[0..6]])        // generate carry method
     s2 = cla(a=$a[[6..11]],b=$b[[6..11]],cin=t)
@@ -514,7 +514,7 @@ if $enable {
 }
 
 my_add as import("libs.adder.scal.cla")
-..+.. = :($a,$b):{
+..+.. = ::{
  // Special code for special case
 }
 ```
@@ -590,7 +590,7 @@ endmodule
 ### Pyrope
 ```coffeescript
 // code/vsverilog.prp file
-($a,$b) as (__bits=3, __bits=3)
+($a,$b) as (__ubits=3, __ubits=3)
 %c = $a + $b
 ```
 * No inputs/outputs
@@ -882,7 +882,7 @@ if #i == 0 { %result = #a }
 test = ::{
   seq = (0,1,1,2,3,5,8,13,21,34)
   for n in 0..9 {
-    n.__bits=6        // 6 bit fibonacci
+    n.__ubits=6        // 6 bit fibonacci
     b = vspyrtl(n=n)
     waitfor(b.result)  // multiple clocks
     I(b.result == seq[n])
@@ -954,7 +954,7 @@ upCounter enable = s
 ### Pyrope
 ```coffeescript
 // code/vsclash.prp file
-#upCounter.__bits as 8
+#upCounter.__ubits as 8
 if $enable {
  #upCounter += 1
 }
@@ -1015,7 +1015,7 @@ sink = ::{
 }
 // ::{sink} to not call method now/defer call
 s = ::{sink} ++ (__stage=true)
-s.data.__bits = 3
+s.data.__ubits = 3
 g = ::{gen} ++ (__stage=true)
 // Filter only odd data values
 g |> ::{ if $.data[[0]] { return $ } } |> s
@@ -1104,18 +1104,19 @@ let twelve = addFive 7;
 ### Pyrope
 ```coffeescript
 // code/vsreason.prp file
-increment = :($x):{$x + 1 }
-double    = :($x):{$x + $x}
+increment = ::{$0 + 1 }
+double    = ::{$0 + $0}
 
 eleven = 5 |> double |> increment
 
-add = :($x,$y):{$x + $y}
-addFive = ::{ add }  // reference, no call
+add = ::{$x + $y}
+addFive = add   // ref no call
 addFive = ::{ super(x=5,y=$y) }
+eleven  = addFive
+twelve  = addFive
 eleven  = ::{ super(y=6) }
 twelve  = ::{ super(y=7) }
 ```
-* Pyrope has primitive currying
 ]
 
 ---
@@ -1154,7 +1155,7 @@ total = [x*x for x in range(10) if x % 2]
 objectTest.get_value = ::{
   return #this.myvalue
 }
-objectTest.set_value = :($a):{
+objectTest.set_value = ::{
   #this.myvalue = $a
   return this
 }
@@ -1253,8 +1254,8 @@ y = pow(10, floor(log10(x)))
 ### Pyrope
 ```coffeescript
 puts as import("io.puts")
-square = :($x):{$ * $}
-eat    = :($x):{puts(square(x=$)) }
+square = ::{$ * $}
+eat    = ::{puts(square(x=$)) }
 
 for food in (1,2,3) {
   if food !=2 { eat(x=food) }
@@ -1424,7 +1425,7 @@ I(a == (5, 6, 7))
 ### custom operators
 ```coffeescript
 // code/elementvstuple2.prp
-..dox.. = :($a,$b):{  // .. is optional
+..dox.. = ::{  // .. is optional
   t = ()
   for a in $0 ; b in $1 {
     t ++= a+b
@@ -1528,19 +1529,19 @@ I(v2.o1==1 and v2.o2==3)
 ### Constrained output
 ```coffeescript
 // code/out2.prp
-m1 = :(%o1):{ // %o1 is single output
+m1 = ::{ // %o1 is single output
   %o1 = 1
   #o2 = #o2 + 1
 }
 v1 = m1()
 I(v1.o1==v1==1)
 
-m3 = :(%o1,%o3):{
+m3 = ::{
   x = (o1=1,o2=2)
   return x    // compile error: o2 not valid
 }
 
-m3 = :(%o1,%o3):{
+m3 = ::{
   %o2 = 3     // compile error: %o2 not valid
 }
 ```
@@ -1707,7 +1708,7 @@ I(s == (4,9,16))
 reduce = ::{
   if $.__size <= 1 { return $ }
 
-  redop = @$.__do   // reference, not function call
+  redop = $.__do   // ref, not function call
   tmp = $
 
   while true {
@@ -1763,7 +1764,7 @@ tree_reduce as ::{
   val = red_step($)    // Also pass code block
   I(val.__size<$.__size-1)
   while val.__size>1  {
-    val = red_step($width, val, __do=@$.__do)
+    val = red_step($width, val, __do=$.__do)
   }
   return val
 }
@@ -1835,14 +1836,6 @@ I(#val_link == 1)
 ]
 
 ---
-# Dealing with references
-
-* Pyrope allows reference. This shows how the code is generated before optimization
-
-.center[![Right-aligned image](generate1.svg)]
-
-
----
 class: split-50
 # Scope outside code regions
 
@@ -1873,13 +1866,13 @@ I(n3.o4 == 4)
 // code/scope6.prp
 nested1_3b = ::{
   nested2 = ::{
-    #cycle.__bits as 3
+    #cycle.__ubits as 3
     #cycle += #incr
   }
 }
 nested1_5b = ::{
   nested2 = ::{
-    #cycle as (__bits=5)
+    #cycle as (__ubits=5)
     #cycle += #incr
   }
 }
@@ -1972,7 +1965,7 @@ puts("{} == 1", sc1)        // calls scope1_m1
 // code/fcalls.prp file
 puts = import("io.puts")   // puts only visible to this file
 
-square = :($x):{$x * $}    // $ has a single element, so $x == $
+square = ::{$x * $}    // $ has a single element, so $x == $
 r=square(3, 4)             // compile error, square has 1 argument, 2 passed
 r=square (3)               // compile error, space after variable name
 r=square(3 + (square(4)))  // OK, 361 = (3_4^2)^2 ; ^ is exp, not xor
@@ -2062,8 +2055,8 @@ I(a.0 == 1 and a.2 == 2)
 b =(3,false)               // ordered, unnamed
 I(b.0 == 3 and b[1] == false)
 
-c1.b.__bits = 1
-c1.c.__bits = 3
+c1.b.__ubits = 1
+c1.c.__ubits = 3
 c as (c=0, b=1)            // final ordered named
 c as c1                    // fix bits
 I(c.c==0 and c.b==1)
@@ -2079,7 +2072,7 @@ I((1,3) ..in.. g)
 g ++= (2,5)
 
 e.0 = 3        // unamed, ordered
-I(e.0 == 3 and e == 3)
+I(e.0 == 3 and e == 3) // 1 entry tuple or scalar
 ```
 ]
 
@@ -2164,6 +2157,18 @@ xx = t1[0][0] // compile error, unordered tuple
 
 t3 = t1.sub
 I(t3.a==1 and t3.b==2)
+
+x = (foo=3)
+if x { // compile error (named tuple)
+}
+if (foo=3) { // compile error (named tuple)
+}
+y = (1,2)
+if y { // compile error (not scalar)
+}
+y = (1)
+if y { // OK, single element unamed tuple
+}
 ```
 ]
 ---
@@ -2341,7 +2346,7 @@ I(b.1==4) // compile time error
 
 a = 1u2bits
 b = a + 1
-I(b.__bits == 2)
+I(b.__ubits == 2)
 
 c = 3u3bits
 if $runtime_val {
@@ -2349,7 +2354,7 @@ if $runtime_val {
 }else{
   c = 6u6bits
 }
-I(c.__bits = 6)
+I(c.__ubits = 6)
 ```
 ]
 
@@ -2362,8 +2367,8 @@ class: split-50
 ```coffeescript
 // code/mem1.prp
 
-// Size inferred from $addr.__bits
-// Width inferred from $wdata.__bits
+// Size inferred from $addr.__ubits
+// Width inferred from $wdata.__ubits
 
 if $we {
   #mem[$addr] = $wdata
@@ -2406,8 +2411,8 @@ I(rd == #last_cycle_new_data)
                rd0f=(__latency=0,__fwd=true),
                wr=(__latency=1))
 
-#cycle.__bits = 128 // Create long cycle
-#mem.wr[33] = #cycle & 0xFFF // infer __bits=12
+#cycle.__ubits = 128 // Create long cycle
+#mem.wr[33] = #cycle & 0xFFF // infer __ubits=12
 
 I(#mem.rd0f[33] == #cycle) // 0 clk and fwd
 I(#mem.rd1f[33] == #cycle) // 1 clk and fwd
@@ -2434,7 +2439,7 @@ class: split-50
 
 #a.__reset_cycles = 2000
 #a.__reset = ::{
-   #wr_addr.__bits = 8
+   #wr_addr.__ubits = 8
    this[wr_addr] = wr_addr
    #wr_addr := #wr_addr + 1
 }
@@ -2442,7 +2447,7 @@ class: split-50
 I(#a[ 1] ==  1)
 I(#a[32] == 32)
 
-#cycle.__bits = 128
+#cycle.__ubits = 128
 
 #a[16] := #next
 if #cycle == 0 {
@@ -2467,7 +2472,7 @@ if #cycle == 0 {
 *#a.__ports = (__fwd=true) //unlimited #ports
 #a.__reset_cycles = 2000
 #a.__reset = ::{
-   #wr_addr.__bits = 8
+   #wr_addr.__ubits = 8
    this[wr_addr] = wr_addr
    #wr_addr := #wr_addr + 1
 }
@@ -2475,7 +2480,7 @@ if #cycle == 0 {
 I(#a[ 1] ==  1)
 I(#a[32] == 32)
 
-#cycle.__bits = 128
+#cycle.__ubits = 128
 
 #a[16] := #next
 if #cycle == 0 {
@@ -2503,7 +2508,7 @@ class: split-50
 ```coffeescript
 // code/mem_edge1.prp
 // Enforce #rd and wr ports in SRAM
-#cycle as (__bits=8)
+#cycle as (__ubits=8,__async=false)
 
 #cycle += 13  
 // +13 can not move to prev cycle. Comb loop
@@ -2511,8 +2516,11 @@ class: split-50
 // flop -> add 13 -> SRAM (posedge)
 #a[#cycle] = 0x33 // error: oop! same cycle+13
 
-#b.__ports.__posedge=false
+#b.__ports.__posclk=false
 #b[#cycle] = 0x33 // OK (half cycle for +13)
+
+#c.__ports.__async=true
+#c[#cycle] = 0x33 // OK (just flops, async)
 ```
 ]
 
@@ -2520,10 +2528,10 @@ class: split-50
 ### Posedge/Negedge
 ```coffeescript
 // code/mem_edge2.prp
-#pos_cycle.__bits = 128
-#pos_cycle.__posedge = true
-#neg_cycle.__bits = 128
-#neg_cycle.__posedge = false
+#pos_cycle.__ubits = 128
+#pos_cycle.__posclk = true
+#neg_cycle.__ubits = 128
+#neg_cycle.__posclk = false
 
 // clk  = 01010101010101010
 // pos  =  aabbccddeeffgghh
@@ -2533,12 +2541,12 @@ class: split-50
 // rd1n =       aabbccddeeffgghh   1 wr + 1 rd clk
 // rd2n =         aabbccddeeffgghh 1 wr + 2 rd clk
 
-#a.__bits = 8
-#a.__port = (rd1p=(__posedge=true)
-            ,rd1n=(__posedge=false)
-            ,rd2p=(__posedge=true,__latency=2)
-            ,rd2n=(__posedge=false,__latency=2)
-            ,wr =(__posedge=true))
+#a.__ubits = 8
+#a.__port = (rd1p=(__posclk=true)
+            ,rd1n=(__posclk=false)
+            ,rd2p=(__posclk=true,__latency=2)
+            ,rd2n=(__posclk=false,__latency=2)
+            ,wr =(__posclk=true))
 
 #a.wr[33u8] := #pos_cycle
 
@@ -2557,9 +2565,9 @@ class: split-50
 a = cell("memory")
 
 a.__size = 32
-a.__bits = 64
+a.__ubits = 64
 a.__port[0].__clk_pin = clock
-a.__port[0].__posedge = true
+a.__port[0].__posclk  = true
 a.__port[0].__latency = 1
 a.__port[0].__fwd     = true  // NOT default
 a.__port[0].__addr    = rd0_addr
@@ -2567,7 +2575,7 @@ a.__port[0].__enable  = true
 rd0_data = a.__port[0].__data
 
 a.__port[1].__clk_pin = clock
-a.__port[1].__posedge = true
+a.__port[1].__posclk  = true
 a.__port[1].__latency = 1
 a.__port[1].__fwd     = true  // NOT default
 a.__port[1].__addr    = rd1_addr
@@ -2575,7 +2583,7 @@ a.__port[1].__enable  = true
 rd1_data = a.__port[1].__data
 
 a.__port[2].__clk_pin = clock
-a.__port[2].__posedge = true
+a.__port[2].__posclk = true
 a.__port[2].__latency = 1
 a.__port[2].__fwd     = false
 a.__port[2].__addr    = wr_addr
@@ -2610,9 +2618,9 @@ class: split-50
 // code/mem_wr.prp
 
 #mem.__size = 1024
-#mem.__bits = 14
-$a.__bits = 8
-$b.__bits = 4
+#mem.__ubits = 14
+$a.__ubits = 8
+$b.__ubits = 4
 
 // default reset to zero all entries
 
@@ -2638,7 +2646,7 @@ I(%out.c == 0 or %out.c==3u2)
 // code/mem_wr2.prp
 
 #mem.__size = 1024
-#mem.__bits = 14
+#mem.__ubits = 14
 
 c = 3u2
 
@@ -2678,7 +2686,7 @@ class: split-50
 a = cell("memory")
 
 a.__size = 1024
-a.__bits = 8
+a.__ubits = 8
 a.__port[0].__addr    = rd0_addr
 a.__port[0].__enable  = rd0_enable
 rd0_data = a.__port[0].__data
@@ -2689,10 +2697,10 @@ a.__port[1].__data    = wr0_data
 
 // Equivalent pyrope code
 
-I(rd0_addr.__bits==10) // 2**10 = 1024
-I(rd0_data.__bits==8)
-I(wr0_addr.__bits==10) // 2**10 = 1024
-I(wr0_data.__bits==8)
+I(rd0_addr.__ubits==10) // 2**10 = 1024
+I(rd0_data.__ubits==8)
+I(wr0_addr.__ubits==10) // 2**10 = 1024
+I(wr0_data.__ubits==8)
 
 if rd0_enable {
   rd0_data = #mem.rd0[rd0_addr]
@@ -2732,12 +2740,54 @@ c = #mem.dg[$rand] // dg as __debug not count as read
 ---
 class: split-50
 
+# Verification, and type checking
+
+.column[
+### Pyrope has prototype inheritance. No typical type check
+
+```
+a.foo = ::{ puts("foo") }
+a.bar = 3
+
+b = a
+
+b.foo = ::{ puts("not foo")
+
+x = b.foo() // prints not foo
+```
+]
+
+.column[
+### Pyrope has different constructs to enforce checks
+
+```
+I(a.xx>3)      // runtime invariant -> assert in verilog
+assert(a.xx>3) // same as I
+
+// CI are compile time assertion (verilog assume)
+// but only enforced at compile time
+CI(a.xx>3)     
+
+// assume similar to CI (assert) but only enforced if 
+// verification compiler enabled (slower) like in verilog
+assume(a.xx>3) 
+
+restrict(a.xx<5) // helps to for the assume verification
+
+// simulation/verification should cover all the values of xx
+cover(xx)  // values between max/min should be covered
+```
+]
+
+---
+class: split-50
+
 # Compiler Parameters
 
 .column[
 ### Flop/Latches Specific
 ```
- __posedge       Posedge (true) or negedge
+ __posclk        Posedge (true) or negedge
  __q_pin         Previous cycle value, no fwd (registers)
  __fwd           Perform forwarding in cycle (true)
  __latch         Latch not flop based (false)
@@ -2745,7 +2795,7 @@ class: split-50
  __reset         Code block to execute during reset
  __reset_pin     Wire signal to control reset pin
  __reset_cycles  Number of reset cycles required (1)
- __reset_async   Asynchronous reset (false)
+ __async         Asynchronous reset (false)
  __last_value    Read last write to the variable/tuple
  __stage         stage or comb submodule (false)
  __fluid         Outputs in module handled as fluid
@@ -2756,22 +2806,24 @@ class: split-50
  __port          tuple with ports in SRAM
     __debug      Port debug (false), no side-effects
     __clk_pin    Port clock
-    __posedge    Port posedge (true) or negedge
+    __posclk     clock posedge (true) or negedge
+    __negreset   reset posedge (true) or negedge
     __latency    Read or Write latency (1)
     __fwd        Perform forwarding (false) in cycle
     __addr       Address pin
     __data       Data pin
     __wrmask     Write mask pin
     __enable     Enable pin
+    __async      Asynchronous memory (allow combinational)
 ```
 ]
 
 .column[
 ### Generic bitwidth
 ```
- __sign          Sign vs unsigned variable (false)
  __allowed       Allowed values in variable
- __bits          Number of bits
+ __ubits         Number of bits and set as unsigned
+ __sbits         Number of bits and set as signed
  __max           Alias for maximum __allowed value
  __min           Alias for minimum __allowed value
 ```
@@ -2869,14 +2921,14 @@ I((1,2,4) ++ 3 == (1..4))
 // code/rndtest.prp
 puts = import("io.puts")
 a = __rnd(1..3)          // rnd between 1 2 3
-b.__bits=12
+b.__ubits=12
 a = b.__rnd              // rnd from 0 to 4095
 b.__rnd_bias =   (1, 0)  // weight 1 for value 0
 b.__rnd_bias ++= (2, 3)  // weight 2 for value 3
 b.__rnd_bias ++= (2 ,4)  // weight 2 for value 4
 b.__rnd_bias ++= (5, 9)  // 0 10%, 3 20%, 4 20%, and 9 50% chance
 
-c.__bits as 8
+c.__ubits as 8
 c.__rnd_bias   = (1 ,0)     // weight 1 for value 0
 c.__rnd_bias ++= (2 ,255)   // weight 2 for value 255
 c.__rnd_bias ++= (7,1..254) // weigth 7 for the rest
@@ -2894,23 +2946,23 @@ $prp --run rndtest
 
 ```coffeescript
 // code/reset1.prp
-#a.__bits as 3
+#a.__ubits as 3
 #a.__reset = ::{ this = 13 }
 
-#b as (__bits=3, __reset_pin=false) // disable reset
+#b as (__ubits=3, __reset_pin=false) // disable reset
 
-#mem0 as (__bits=4, __size=16)
+#mem0 as (__ubits=4, __size=16)
 #mem0.__reset = ::{ this = 3 }
 
-#mem1 as (__bits=4,__size=16, __reset_pin=false)
+#mem1 as (__ubits=4,__size=16, __reset_pin=false)
 
-#mem2 as (__bits=2,__size=32)
+#mem2 as (__ubits=2,__size=32)
 
 // complex custom reset
 #mem2.__reset_cycles = #mem2.__size + 4
 #mem2.__reset = ::{
   // Called during reset or after clear (!!)
-  #_reset_pos as (__bits=log2(#this.__size),__reset_pin=false)
+  #_reset_pos as (__ubits=log2(#this.__size),__reset_pin=false)
   #this[#_reset_pos] = #_reset_pos
   #_reset_pos += 1
 }
@@ -2940,11 +2992,11 @@ $prp --run rndtest
 ```coffeescript
 // code/constants.prp
 
-a = 3                     // implicit __bits=2 __sign=false
-a = 3u                    // explicit __sign=false, implicit __bits=2
-a = 3u4bits               // explicit __sign=false, __bits=4
+a = 3                     // implicit __sbits=3
+a = 3u                    // implicit __ubits=2
+a = 3u4bits               // explicit __ubits=4
 
-b = 0xFF_f__fs32bits      // explicit __bits=32 __sign=true
+b = 0xFF_f__fs32bits      // explicit __sbits=32
 
 c = 0b_111_010_111u32bits
 c = 0b_111_010_111u2bits  // compile error
@@ -2982,18 +3034,18 @@ class: split-50
 ### Explicit vs implicit
 ```coffeescript
 // code/precission1.prp
-a = 2       // implicit, __bits=2
-a = a - 1   // OK, implicit __bits=1
+a = 2       // implicit, __sbits=3
+a = a - 1   // OK, implicit __sbits=2
 
-b = 3u2bits // explicit, __bits=2
-b = b - 2   // OK, bits=2
-b = b + 2   // compile error, __bits explicit 2
+b = 3u2bits // explicit, __ubits=2
+b = b - 2   // OK, __ubits=2
+b = b + 2   // compile error, __ubits explicit 2
 I(b == 2)
 b := b + 2  // OK (drop bits)
 I(b == 0)   // 4u2bits -> 0b100[[0..1]] == 0
 
 // implicit unless all values explicit
-c = 3 - 1u1bits // implicit, __bits=2 __allowed=2u2bits
+c = 3 - 1u1bits // implicit, __sbits=3
 
 #d.__allowed as (0, 1, 7) // allowed values
 #d = 0      // OK
@@ -3021,9 +3073,9 @@ if xx {
 a = a + 1  // runtime error: out range
 I(c.__allowed == (1,6)) // all possible values
 c = c + 2
-I(c.__allowed == (3,8) and c.__bits == 4)
+I(c.__allowed == (3,8) and c.__sbits == 4)
 c = c ^ (c>>1)  // Not predictable
-I(c.__allowed == (0..15) and c.__bits == 4)
+I(c.__allowed == (0..15) and c.__sbits == 5)
 c = 300   // OK because c was explicit
 
 d = 50u2bits  // compile error
@@ -3041,7 +3093,7 @@ class: split-50
 ### Bitwidth uses max/min to compute value sizes. 
 ```coffeescript
 // code/bitwidth1.prp
-a.__bits = 3     // explicit bitwidth for a
+a.__ubits = 3    // explicit bitwidth for a
 a = 3            // OK
 a = 0xF          // compile error
 a := 0xF         // OK, := drops bits if needed
@@ -3049,16 +3101,16 @@ I(a == 7)
 
 b = 0x10u7bits   // explicit 7 bits value
 c = a + b        // c is 7 bits
-I(c.__bits == 7)
-$i1.__bits = 3
-$i3.__bits = 7
+I(c.__ubits == 7)
+$i1.__ubits = 3
+$i3.__ubits = 7
 d = $i1 + $i2    // could not bound to 7 bits
-I(d.__bits == 8)
+I(d.__ubits == 8)
 
 e = a | b        // zero extend a
-I(e==0x17 and e.__bits==7)
+I(e==0x17 and e.__ubits==7)
 e := 1u          // 7 bits, := does not infer bits
-I(e.__bits==7)
+I(e.__ubits==7)
 e := -1u         // 7 bits, all ones
 I(e==0x7F)
 ```
@@ -3073,10 +3125,10 @@ if $unknown {
 }else{
   a = 5
 }
-I(a.__max==5 and a.__bits==3)
-b = a + 1        // b.__max==6 3 bits
-c = a + 3        // c.__max==9 4 bits
-I(c.__bits==4)
+I(a.__max==5 and a.__sbits==4)
+b = a + 1        // b.__max==6 4 bits
+c = a + 3        // c.__max==9 5 bits
+I(c.__sbits==4)
 cond = (4+2*30)/2
 if cond == 32 { // should be true (at compile)
   a = 10u8
@@ -3084,7 +3136,7 @@ if cond == 32 { // should be true (at compile)
   a = 100u32
 }
 // The compiler should copy propagate
-I(a.__bits==8) // Maybe runtime check
+I(a.__ubits==8) // Maybe runtime check
 
 f = 0
 if cond == 32  { // should be true
@@ -3094,71 +3146,66 @@ if cond == 32  { // should be true
 }
 // __comptime fixes to compile time value
 f.__comptime = true
-I(f==3 and f.__bits==6)
+I(f==3 and f.__ubits==6)
 ```
 ]
 
 ---
 class: split-50
-# Sign inference
+# Pyrope is signed by default, but it has inference
 
 .column[
-### Pyrope follows verilog sign model
 ```coffeescript
 // code/sign1.prp
-s_a = 1s // explicit signed
-u_a = 1u // explicit unsigned
-  a = 1  // implicit unsigned
+$unk_s1.__sbits = 4
+$unk_s2.__sbits = 4
+$unk_u1.__ubits = 4
+$unk_u2.__ubits = 4
 
-s_b = 2s // explicit signed
-u_b = 2u // explicit unsigned
-  b = 2  // implicit unsigned
+c1 = unk_s1 + unk_s2
+I(c1.__min < 0)
+c2 = unk_u1 + unk_u2
+I(c2.__min >=0)
+c3 = unk_s1 + unk_u2
+I(!c2.__min <0)
 
-c1 = s_a + s_b
-I(c1.__sign)
-c2 = u_a + s_b
-I(!c2.__sign)
-c3 = a + s_b
-I(!c2.__sign)
+c4 = unk_u1 - unk_u2
+I(c4.__min < 0)
+c5 = unk_s1 - unk_s2
+I(c5 == 0 and c5.__max==0 and c5.__min==0)
 
-c4 = a - b
-I(!c4.__sign)
-c5 = s_a - s_b
-I(c5.__sign)
-
-d = (__bits=3, __sign=true)
+d.__sbits=3
 d = 7u     // compile error
 d = 7      // OK
 d = 7s     // compile error (too big)
 d := 0xFFu // OK
-I(d==-1 and d.__sign)
+I(d==-1)
 ```
 ]
 
 .column[
-### sign if all the operands are signed
 ```coffeescript
 // code/sign2.prp
 a = -1u4bits  // explicit unsigned 4 bits
 I(a==0xF)
 a_s = -1      // implicit signed
 c = a_s >> 3
-I(c.__sign)
 c = a >> a_s  // compile or runtime error a_s<0
 
-d = a         // infer bits/sign
-d := 3u       // change value only
-I(d.__sign and d.__bits==4)
+d.__sbits = 3 // range (-4..3)
+d := 0b111111 // drop bits, but everything 1
+I(d == -1)  
 
-d = -2s8bits  // explicit 8bit -2 value
-d := 0xFFFF   // drop extra bits
-I(d==-1)
+d.__ubits = 3 // range (0..7)
+d := -2       // drop extra bits
+I(d==0b110 or d == 6)
 
-e.__sign = true // explicit sign (all uses of e)
+e.__min = -3
 e = 0xFF
-I(e.sign)
-e = 1u
-I(e.sign)
+I(e.__min==256 and e.__max=256)
+e.__min = -3
+e.__max = 100
+e = 102       // compile error
 ```
 ]
 
@@ -3447,13 +3494,13 @@ a = b         // potential restart in fluid
 a as c        // alias a as c, no real read for fluid
 e = c         // still not read until used for fluid
 
-b = (__bits=3)  // explicit bits
+b = (__ubits=3)  // explicit bits
 b = 3           // OK
-b = (__bits=10) // OK to redefine
+b = (__ubits=10) // OK to redefine
 b = 100         // OK
 
-d as (__bits=3) // explicit bits
-d =  (__bits=4) // compile error: fixed with as
+d as (__ubits=3) // explicit bits
+d =  (__ubits=4) // compile error: fixed with as
 ```
 
 
@@ -3559,8 +3606,7 @@ child.dox = ::{
 
 I(child.v1) // compile error: v1 undefined
 t = child.dox(4)
-I(t == (1+4+7))
-I(child.v1 == 3)
+I(t == (1+4+7) and child.v1 == 3)
 
 grandson = child
 grandson.dox = ::{ 
@@ -3584,8 +3630,8 @@ class: split-50
 ### dealing with objects
 ```coffeescript
 // code/objects2a.prp
-obj1.foo as (__bits=3)
-obj2.bar as (__bits=2)
+obj1.foo as (__ubits=3)
+obj2.bar as (__ubits=2)
 
 obj1c = obj1
 obj1.foo  = 1
@@ -3645,7 +3691,7 @@ a = 0x73
 I(a == 0b111011)
 I(a == 0b?11?11)
 
-c as (__bits=4)
+c as (__ubits=4)
 I(c.popcount <= 1) // Only 1 bit can be set
 
 unique if c == 0b???1 { // ? only in binaries
@@ -3792,13 +3838,13 @@ tota1.each ::{ puts("{} {}\n", $0, $1) }
 ```
 
 ---
-class: split-50
+class: split-60
 # Ring example
 
 .column[
 ```coffeescript
 // code/ring.prp
-router = :($inp,$from,%to,%out):{
+router = ::{
   if $inp? {                // ? -> fluid pipeline
     if $inp.addr == $addr {
       %to    = $inp         // send to_node
@@ -3815,7 +3861,7 @@ router = :($inp,$from,%to,%out):{
 out = ()
 for src in 0..3 {
   dst         = (src + 1) & 3 // 0->1, 1->2, 2->3, 3->0
-  dst_out     = out[dst].out.__last_value  // To break circular dep
+  dst_out     = out[dst].out.__last_value  // break dst dep
   packet.data = $from_node[src]
   packet.addr = src
   out[src]    = router(addr=src, inp=dst_dst, from=packet)

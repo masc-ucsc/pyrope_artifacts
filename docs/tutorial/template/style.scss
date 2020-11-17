@@ -46,6 +46,9 @@
     .split-50 .column:first-of-type {width: 50%; padding-right:1.5em; }
     .split-50 .column:last-of-type  {width: 48% }
 
+    .split-60 .column:first-of-type {width: 58%; padding-right:1.5em; }
+    .split-60 .column:last-of-type  {width: 40% }
+
     .overlay { position:absolute; top:0%; left:0%; height:100%; width:100%; color: rgba(0,0,0,0.7); box-shadow: inset 0 0 0 9999px; }
     .boxit {
       font-family: 'Yanone Kaffeesatz', sans-serif;

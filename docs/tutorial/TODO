@@ -1,49 +1,46 @@
 
+Encapsulation vs modules
+
+ -Encapsulation is just for objects.
+
+ -We do modules like in Python. Starting with foo vs _foo the _foo is private,
+not enforced to be private if you want to access. Just do not do it.
+
+==========
+Jupiter notebook for LNAST? Pyrope?
 
 
 -----
-x.foo =1
-if $cond {
-  x.bar =3
-}
-I(x.bar) // error or warning
 
-comp error: if we can prove that a read may generate rand sometimes
-warning : if we can not prove that a random may be read
-----
+Async like with fluid?
 
-Make I,N part of the syntax
+ send = ::{
+    %out.__fluid = true
+    %out = $0 + 1
+ }
 
-NEW:
+ @local_cntr.__bits = 3
+ @local_cntr := @local_cntr + 1
 
-I cond "message"
+ z = xx.send(@local_cntr)
+ if z.out? { // if z? is the same
+  I(@local_cntr == 1 -> z.out==0)
+  I(@local_cntr == 2 -> z.out==1)
+ }
 
-OLD:
 
-I(cond,"message")
+ xx.send(@local_cntr) |> ::{
+   if $out? {
+      // $out? is the z.out, but @local_cntr is not visible
+   }
+ }
 
-I cond
-N cond
-PRE cond
-POST
-
-expects
-ensures
-asserts
-
-I  // Invariant or assert
-N  // never
-E  // ensures
-P  // pre-condition, expects
-T  // Temporal
-
-I cond "message"
-
-E cond
-P cond
-
-T #reg.__last[2]==0 and #ref.__last[1]==2 and #ref == 3
-
+ tmp = @local_cntr
+ tmp._cntr = @local_cntr
+ z = xx.send(tmp)
+ if z.out? {
+   I(@local_cntr == 1 -> z._cntr==0 and z.out==0)
+ }
 
 ----
 
@@ -151,8 +148,8 @@ CHISEL example library (PrefixSum) to do tree reduction
 
 prefix_reduction = ::{
   total = $0
-  for i:$[1..] {
-    total = $.__block total i
+  for i in $[1..] {
+    total = $.__do(total,i)
   }
 
   return total
