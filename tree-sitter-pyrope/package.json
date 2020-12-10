@@ -1,0 +1,33 @@
+{
+  "name": "tree-sitter-pyrope",
+  "version": "0.0.1",
+  "description": "Pyrope grammar for tree-sitter",
+  "license": "BSD-3",
+  "author": "Engin Tekin",
+  "main": "index.js",
+  "files": [
+    "grammar.js",
+    "binding.gyp",
+    "src/*",
+    "bin/*"
+  ],
+  "keywords": [
+    "parser",
+    "tree-sitter",
+    "pyrope"
+  ],
+  "directories": {
+    "example": "benchtest"
+  },
+  "scripts": {
+    "wasm": "tree-sitter generate --next-abi && tree-sitter build-wasm",
+    "generate": "tree-sitter generate",
+    "test": "tree-sitter test"
+  },
+  "dependencies": {
+    "nan": "^2.14.2"
+  },
+  "devDependencies": {
+    "tree-sitter-cli": "^0.17.1"
+  }
+}
