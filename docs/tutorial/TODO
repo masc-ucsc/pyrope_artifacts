@@ -7,6 +7,18 @@ Encapsulation vs modules
 not enforced to be private if you want to access. Just do not do it.
 
 ==========
+Expand the DP explanation to include this example (DP is syntax sugar in a way)
+
+// lhs := rhs
+if rhs.__max > lhs.__max {
+   lhs = lhs.max
+}elif rhs.__min < lhs.__min {
+   lhs = lhs.min
+}else{
+   lhs = rhs
+}
+
+==========
 Jupiter notebook for LNAST? Pyrope?
 
 

@@ -1,0 +1,88 @@
+{
+	"name": "pyrope-lsp",
+	"description": "A language server for pyrope",
+	"author": "Microsoft Corporation",
+	"license": "MIT",
+	"version": "1.0.0",
+	"publisher": "Yuyang Wu",
+	"categories": [],
+	"keywords": [
+		"multi-root ready"
+	],
+	"engines": {
+		"vscode": "^1.43.0"
+	},
+	"activationEvents": [
+		"onLanguage:pyrope"
+	],
+	"main": "./client/out/extension",
+	"contributes": {
+		"languages": [
+			{
+				"id": "pyrope",
+				"extensions": [
+					".prp"
+				],
+				"aliases": [
+					"Pyrope",
+					"pyrope"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "pyrope",
+				"scopeName": "source.prp",
+				"path": "./syntaxes/Pyrope.tmLanguage.json"
+			}
+		],
+		"snippets": [
+			{
+				"language": "pyrope",
+				"path": "./snippets/pyrope.json"
+			}
+		],
+		"configuration": {
+			"type": "object",
+			"title": "Pyrope_ls configuration",
+			"properties": {
+				"languageServerExample.maxNumberOfProblems": {
+					"scope": "resource",
+					"type": "number",
+					"default": 1000,
+					"description": "Controls the maximum number of problems produced by the server."
+				},
+				"languageServerExample.trace.server": {
+					"scope": "window",
+					"type": "string",
+					"enum": [
+						"off",
+						"messages",
+						"verbose"
+					],
+					"default": "off",
+					"description": "Traces the communication between VS Code and the language server."
+				}
+			}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -b",
+		"watch": "tsc -b -w",
+		"postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
+		"test": "sh ./scripts/e2e.sh"
+	},
+	"devDependencies": {
+		"@types/mocha": "^8.0.3",
+		"@types/node": "^12.12.0",
+		"@typescript-eslint/parser": "^2.3.0",
+		"eslint": "^6.4.0",
+		"mocha": "^8.1.1",
+		"ts-loader": "^8.0.11",
+		"typescript": "^4.0.2",
+		"webpack": "^5.9.0",
+		"webpack-cli": "^4.2.0"
+	}
+}

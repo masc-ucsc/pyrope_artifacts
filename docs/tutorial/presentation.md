@@ -1551,7 +1551,7 @@ m3 = ::{
 class: split-50
 # Operator precedence
 
-* Unary operators (!,~,#,?,%...) bind stronger than binary operators (+,++,-,*...)
+* Unary operators (not,!,~,?) bind stronger than binary operators (+,++,-,*...)
 * **Only** five levels of operator precedence (16 levels in c++)
 * Always left-to-right evaluation
 * Comparators can be chained (a==c<=d) same as (a==c and c<=d)
@@ -1562,7 +1562,7 @@ class: split-50
 .small[
 | Priority | Category | Main operators in category |
 |:-----------:|:-----------:|-------------:|
-| 1          | Unary       | not ! ~ # ? % $ |
+| 1          | Unary       | not ! ~ ? |
 | 2          | Mult/Div    | *, /         |
 | 3          | other bin   | ..,^, &, -,+, ++, --, <<, >>, >>>, <<< |
 | 4          | comparators |    <, <=, ==, !=, >=, > |
@@ -3206,6 +3206,66 @@ I(e.__min==256 and e.__max=256)
 e.__min = -3
 e.__max = 100
 e = 102       // compile error
+```
+]
+
+---
+class: split-50
+# Infering bits
+
+.column[
+```coffeescript
+// code/bitwidth3a.prp
+// OPT1: Drop bits before assignment with ANDs
+if $rand_input {
+   #reg = $a & 0xFF
+}else{
+   #reg = (#reg -1 ) & 0xFF
+}
+I(#reg.__ubits == 8)
+```
+```coffeescript
+// code/bitwidth3b.prp
+// OPT2: Set destination bits, and no inference
+#reg.__ubits = $a.__ubits // explicit bits
+if $rand_input {
+   #reg = $a 
+}else{
+   #reg := #reg -1  // needed to drop bits
+}
+```
+```coffeescript
+// code/bitwidth3c.prp
+// OPT3: Infer reg from $a assignment
+$a.__ubits = 8
+if foo {
+   #reg = $a
+}else{
+   #reg := #reg -1  // needed to drop bits
+}
+```
+]
+
+.column[
+```coffeescript
+// code/bitwidth4a.prp
+// BAD Code: no converge, dp helps
+#reg.__ubits = 8
+if foo {
+   #reg := $a
+}else{
+   #reg = #reg -1  // errro: not converge
+}
+```
+```coffeescript
+// code/bitwidth4b.prp
+// Bad Code: not setting reg size
+#a.__ubits = 8
+if foo {
+   #reg := $a
+}else{
+   #reg := #reg -1 
+}
 ```
 ]
 

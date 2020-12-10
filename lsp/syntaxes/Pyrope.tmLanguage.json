@@ -1,0 +1,204 @@
+{
+	"scopeName": "source.prp",
+	"name": "prp",
+	"fileTypes": [ "prp" ],
+	"foldingStartMarker": "(-{2})?\\(\\s*$",
+	"foldingStopMarker": "^\\s*(-{2})?\\s*\\)",
+	"patterns": [
+
+		{ "include": "#parens" },
+		{ "include": "#keywords" },
+		{ "include": "#strings" },
+		{ "include": "#numeric" },
+		{ "include": "#constant" },
+		{ "include": "#support" },
+		{ "include": "#entity" },
+		{ "include": "#storage" },
+		{ "include": "#variable"},
+		{ "include": "#comment" }
+	],
+	"repository": {
+		"parens": {
+			"patterns": [
+				{
+					"name": "punctuation.section.parens.begin.prp",
+					"match": "\\("
+				},
+				{
+					"name": "punctuation.section.parens.end.prp",
+					"match": "\\)"
+				}
+			]
+		},
+				
+		
+		"keywords": {
+			"patterns": [
+				{
+					"name":"keyword.operator.prp",
+					"match": "(?i)(?:(\\+=?|\\*=?|-=?|\\/=?|\\^|!?=|={1,2}|<=?|>=?))"
+				},
+				{
+					"name":"keyword.control.assign.prp",
+					"match": "(?<!:):(?=[^:]|:{2}[^:])"
+				},
+				{
+					"name":"keyword.operator.prp",
+					"match": "(?i)\\b(?>and|on|is|or|not)\\b"
+				},
+				{
+					"name": "keyword.control.conditional.prp",
+					"match": "(?i)\\b(?>if|else|elif|begin|end|for|in|while|break|continue|return|try|yield|always_comb|always)\\b"
+				},
+				{
+					"name": "keyword.control.conditional.prp",
+					"match": "\\b[I](?=())"
+				},
+				{
+					"name": "keyword.control.import.prp",
+					"match": "(?i)\\b(?>assign|fcall|module|punch|unique|endmodule|input|output|begin|end|import)\\b"
+				},
+				{
+					"name":"keyword.operator.byref.prp",
+					"match": "(&)(?=\\w)"
+				}
+			]
+		},
+		
+		"strings": {
+			"patterns": [
+				{
+					"name": "string.quoted.double.prp",
+					"begin": "\"",
+					"end": "\"",
+					"patterns": [
+						{
+							"name": "constant.character.escape.prp",
+							"match": "\\\\(\"|n|r|t|\\*|\\?|\\\\|%|x[A-Fa-f0-9]+)"
+						}
+					]
+				},
+				{
+					"name":  "string.quoted.double.verbatim.prp",
+					"begin": "(\")",
+					"end":   "\"",
+					"beginCaptures": {
+						"1": {"name": "string.verbatim.operator.prp" }
+					}
+				}
+			]
+		},
+		
+		"support":{
+			"patterns": [
+				{
+					"name": "support.type.primitive.prp",
+					"match": "\\b[$]\\b|[$](?:(?:[A-Za-z0-9_*?/\\\\]|[.]{3})*)"
+				},
+				{
+					"name": "support.type.primitive.prp",
+					"match": "\\b[%]\\b|[%](?:(?:[A-Za-z0-9_*?/\\\\]|[.]{3})*)"
+				},
+				{
+					"name": "support.type.primitive.prp",
+					"match": "\\b[#]\\b|[#](?:(?:[A-Za-z0-9_*?/\\\\]|[.]{3})*)"
+				},
+				{
+					"name":  "support.type.prp",
+					"match": "(?i)\\b(?>reg|super|posedge|this)\\b"
+				}
+			]
+		},
+		"entity": {
+			"patterns":[
+				{
+					"name":"entity.name.class.prp",
+					"match": "[A-Za-z0-9a]*(?=( = ::{))"
+				}
+			]
+		},
+		"numeric":{
+			"patterns": [
+				{
+					"name": "constant.numeric.prp",
+					"match": "(?<!\\.)\\b[+-]?\\d+[lLpP]?(?!\\.)\\b"
+				},
+				{
+					"name": "constant.numeric.prp",
+					"match": "\\b\\d+\\.\\d+([EeDd][+-]?\\d+)?"
+				},
+				{
+					"name": "constant.numeric.prp",
+					"match": "\\b(\\d+)(\\.)(?!\\w)"
+				},
+				{
+					"name": "constant.numeric.prp",
+					"match": "(?<!\\w)(\\.\\d+([EeDd][+-]?\\d+)?)"
+				},
+				{
+					"name": "constant.numeric.prp",
+					"match": "(?<!\\w|\\.)(?:\\d*\\.\\d+|\\d+\\.?\\d*)[msft](?:(?:\\d+|\\d*\\.\\d*)[msft])*"
+				},
+				{
+					"name": "constant.numeric.prp",
+					"match": "(?<!\\w)\\d+:\\d*\\.\\d*(?!\\w)"
+				},
+				{
+					"name": "constant.numeric.prp",
+					"match": "(?<!\\w|\\.)(?:\\d*\\.\\d+|\\d+\\.?\\d*)n(?!\\w)"
+				},
+				{
+					"name": "constant.numeric.prp",
+					"match": "\\b(0x\\w+)\\b"
+				},
+				{
+					"name":  "contant.numeric.bit-range.prp",
+					"match": "(?<!\\$)\\b(\\d+)(\\.{2})(\\d+)\\b"
+				}
+			]
+		},
+		"constant":{
+			"patterns": [
+				{
+					"name":  "constant.language.boolean.prp",
+					"match": "(?i)\\b(true|on|false|off|not)\\b"
+				},
+				{
+					"name":  "constant.language.math.prp",
+					"match": "(?i)\\b(pi)\\b"
+				},
+				{
+					"name":  "constant.language.colour.prp",
+					"match": "(?i)\\b(?>red|green|blue|white|black|orange|yellow|brown|gray)\\b"
+				},
+				{
+					"name":  "constant.language.null.prp",
+					"match": "(?i)\\b(?>undefined|unsupplied|silentvalue|ok)\\b"
+				}
+			]
+		},
+
+
+		"variable":{
+			"patterns": [
+				{
+					"name":"variable.language.prp",
+					"matprph": "(?<=\\.)([0-9]*[A-Za-z_]+\\w*)\\b"
+				},
+				{
+					"name":"variable.parameter.prp",
+					"match": "[A-Za-z0-9a]"
+				}
+			]
+		},
+		"comment": {
+			"patterns": [
+				{
+					"name": "comment.line.prp",
+					"match": "/\b\/\/[^\n]*/g"
+				}
+			]
+		}
+
+	}
+  }
