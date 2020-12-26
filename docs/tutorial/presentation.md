@@ -633,10 +633,10 @@ end
 ```coffeescript
 // code/vsverilog2.prp file
 
-a = -1s4bits
-c1 = a + 1u    // 0 = -1 + 1
-c2 = a + 1s    // 0
-c3 = a + 1s3   /  0
+a = -1
+c1 = a + 1     // 0 = -1 + 1
+c2 = a + 1     // 0
+c3 = a + 3     /  2
 ```
 ]
 
@@ -776,7 +776,7 @@ a = a - 5
 if cycle[[0]] == 0 { a = a + 1 }
 else               { a = a + 2 }
 
-if cycle[[0..1]] == 3 { a = a + 3 }
+if cycle[[0..1]] == -1 { a = a + 3 }
 
 for k in 20..24 {
   a = a + k
@@ -2176,7 +2176,7 @@ class: split-50
 
 # Tuples Endian
 
-### Pyrope follows the big endian convention from SystemVerilog
+### Pyrope follows the big endian convention from SystemVerilog (notice not same as C structs)
 
 .column[
 ```coffeescript
@@ -2185,7 +2185,7 @@ class: split-50
 s = (b1=0x12, h2=(b2=0x34,b3=0x56), b4=0x78)
 
 // big endian consistent with packed System Verilog
-tmp = s[[..]] // flatten pick bits (big endian)
+tmp = s[[..]] // flatten pick bits with sign (big endian)
 I(tmp == 0x12345678)
 I(s[[0..7]]==0x78)
 I(s[[8..16]]==0x56)
@@ -2210,7 +2210,7 @@ typedef struct packed {
 ```coffeescript
 // code/tuplecpp.prp
 
-s = (a=0x12,b=(c=0x33,d=0u8bits))
+s = (a=0x12,b=(c=0x33,d=0))
 s.b.d = $inp
 
 call_cpp = import("my_fcall")
@@ -2344,17 +2344,23 @@ I(b.1==4) // compile time error
 ```coffeescript
 // code/bitwidth2.prp
 
-a = 1u2bits
+a = 0
+I(a.__ubits==0 and a.__sbits==1)
+a = 1
+I(a.__ubits==1 and a.__sbits==2)
 b = a + 1
-I(b.__ubits == 2)
+I(b.__ubits==1 and b.__sbits==2)
 
-c = 3u3bits
+c = 0
+I(c.__sbits==1)
 if $runtime_val {
-  c = 8u4bits
+  c = 7
+  I(c.__sbits==4)
 }else{
-  c = 6u6bits
+  c = -32
+  I(c.__sbits==6)
 }
-I(c.__ubits = 6)
+I(c.__sbits==6) // max
 ```
 ]
 
@@ -2992,16 +2998,23 @@ $prp --run rndtest
 ```coffeescript
 // code/constants.prp
 
-a = 3                     // implicit __sbits=3
-a = 3u                    // implicit __ubits=2
-a = 3u4bits               // explicit __ubits=4
+a = 3                   // implicit __sbits=3
 
-b = 0xFF_f__fs32bits      // explicit __sbits=32
+b = 0xFF_f__f           // implicit __sbits=17
 
-c = 0b_111_010_111u32bits
-c = 0b_111_010_111u2bits  // compile error
+c = 255                 // implicit __sbits=9
+d = c[[0..2]]           // Pick bottom 3 bits (unsigned)
+I(d==-1)                // implicit __sbits=4
+d = c & 0x7             // implicit __sbits=4
+I(d==7 and d[[-1]]==0)  // [[-1]] == MSB == 0
 
-c = 0xFF[[0..2]]          // explicit drop bits
+d = (c & 7) | (((c>>3)&1)<<3)
+I(d==15 && d[[-1]]==0)  // MSB or sign still zero
+I(d.__sbits==5)
+
+d = c & 7               // implicit __sbits=4
+d[[3]]==1               // force 4 bit to 1
+I(d==-1)
 ```
 
 ---
@@ -3037,15 +3050,17 @@ class: split-50
 a = 2       // implicit, __sbits=3
 a = a - 1   // OK, implicit __sbits=2
 
-b = 3u2bits // explicit, __ubits=2
-b = b - 2   // OK, __ubits=2
-b = b + 2   // compile error, __ubits explicit 2
-I(b == 2)
+b = 3       // __ubits=2
+b = b - 2   // __ubits=1
+b = b + 2   // __ubits=3
+b = 2       // __sbits=3
 b := b + 2  // OK (drop bits)
-I(b == 0)   // 4u2bits -> 0b100[[0..1]] == 0
+I(b==-4)    // (2+2) -> 0b0100[[0..2]] == 0b100 or -4
 
-// implicit unless all values explicit
-c = 3 - 1u1bits // implicit, __sbits=3
+c.__sbits = 4
+c = 3       // OK
+c = 100     // compile error (not enough bits)
+c := 0xFFF  // OK 0b1111 -> c==-1
 
 #d.__allowed as (0, 1, 7) // allowed values
 #d = 0      // OK
@@ -3078,10 +3093,6 @@ c = c ^ (c>>1)  // Not predictable
 I(c.__allowed == (0..15) and c.__sbits == 5)
 c = 300   // OK because c was explicit
 
-d = 50u2bits  // compile error
-e = 3u2bits
-e := 50       // OK, drop upper bits
-e = e - 1
 ```
 ]
 
@@ -3093,26 +3104,26 @@ class: split-50
 ### Bitwidth uses max/min to compute value sizes. 
 ```coffeescript
 // code/bitwidth1.prp
-a.__ubits = 3    // explicit bitwidth for a
+a.__ubits = 3    // __sbits=4
 a = 3            // OK
 a = 0xF          // compile error
 a := 0xF         // OK, := drops bits if needed
 I(a == 7)
 
-b = 0x10u7bits   // explicit 7 bits value
-c = a + b        // c is 7 bits
-I(c.__ubits == 7)
-$i1.__ubits = 3
-$i3.__ubits = 7
-d = $i1 + $i2    // could not bound to 7 bits
-I(d.__ubits == 8)
+b = 10           // max/min=10 -> __sbits=5
+c = a + b        // max/min=13 -> __sbits=5
+I(c.__sbits == 5)
+$i1.__sbits = 3  // min/max is -4..3
+$i3.__ubits = 5  // min/max is 0..31
+d = $i1 + $i2    // min/max is -4..34
+I(d.__ubits == 7)
 
-e = a | b        // zero extend a
-I(e==0x17 and e.__ubits==7)
-e := 1u          // 7 bits, := does not infer bits
+e = a | b        // sign extend a (a>0 -> zero extend)
+I(e==10 and e.__ubits==7)
+e := 1           // 7 bits, := does not infer bits
 I(e.__ubits==7)
-e := -1u         // 7 bits, all ones
-I(e==0x7F)
+e := -1
+I((e & 0xFFF)==0xFFF) // & with sign extend
 ```
 ]
 
@@ -3131,22 +3142,22 @@ c = a + 3        // c.__max==9 5 bits
 I(c.__sbits==4)
 cond = (4+2*30)/2
 if cond == 32 { // should be true (at compile)
-  a = 10u8
+  a = 15        // __ubits=4
 }else{
-  a = 100u32
+  a = 255       // __sbits=9
 }
 // The compiler should copy propagate
-I(a.__ubits==8) // Maybe runtime check
+I(a.__ubits==4) // Maybe runtime check
 
 f = 0
 if cond == 32  { // should be true
-   f = 3u6
+   f = 3
 }else{
-   f = 20u20
+   f = 20
 }
 // __comptime fixes to compile time value
 f.__comptime = true
-I(f==3 and f.__ubits==6)
+I(f==3 and f.__ubits==2)
 ```
 ]
 
@@ -3175,10 +3186,9 @@ c5 = unk_s1 - unk_s2
 I(c5 == 0 and c5.__max==0 and c5.__min==0)
 
 d.__sbits=3
-d = 7u     // compile error
-d = 7      // OK
-d = 7s     // compile error (too big)
-d := 0xFFu // OK
+d = 3      // OK
+d = 7      // compile error
+d := 7     // OK
 I(d==-1)
 ```
 ]
@@ -3186,10 +3196,10 @@ I(d==-1)
 .column[
 ```coffeescript
 // code/sign2.prp
-a = -1u4bits  // explicit unsigned 4 bits
-I(a==0xF)
+a = -1        // implicit __sbits=1
+I(a)
 a_s = -1      // implicit signed
-c = a_s >> 3
+c = a_s >> 3  // c == -1
 c = a >> a_s  // compile or runtime error a_s<0
 
 d.__sbits = 3 // range (-4..3)
@@ -3201,11 +3211,11 @@ d := -2       // drop extra bits
 I(d==0b110 or d == 6)
 
 e.__min = -3
-e = 0xFF
-I(e.__min==256 and e.__max=256)
-e.__min = -3
-e.__max = 100
-e = 102       // compile error
+e = $rand_input & 0xFF
+I(e.__min==-3 and e.__max=255)
+f.__min = -3
+f.__max = 100
+f = 102       // compile error
 ```
 ]
 

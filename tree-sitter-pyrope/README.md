@@ -8,6 +8,17 @@ This repo is a tree-sitter Pyrope grammar.
 
 You will need to install tree-sitter-cli in order to use parser.
 
+Yarn usage:
+```
+yarnpkg install
+yarnpkg run generate
+```
+
+./node_modules/tree-sitter-cli/tree-sitter parse -q -t ./benchtest/large1.prp
+
+
+Or download/install manually from:
+
 https://github.com/tree-sitter/tree-sitter/tree/master/cli
 
 Once you install tree-sitter-cli then you can use

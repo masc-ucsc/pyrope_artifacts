@@ -6,7 +6,7 @@
   "dependencies": {
     "backslide": "^2.6.2",
     "codedown": "^2.1.6",
-    "decktape": "^3.0.0"
+    "decktape": "^3.1.0"
   },
   "scripts": {
     "build": "bs export"
