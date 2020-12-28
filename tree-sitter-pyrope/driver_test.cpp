@@ -13,7 +13,7 @@ int main() {
   ts_parser_set_language(parser, tree_sitter_pyrope());
 
   // Build a syntax tree based on source code stored in a string.
-  const char *source_code = "%out = foo(1,4)";
+  const char *source_code = "%out = foo(1,4)\n xx = 3";
   TSTree *tree = ts_parser_parse_string(
     parser,
     NULL,
@@ -43,7 +43,29 @@ int main() {
 
   // Print the syntax tree as an S-expression.
   char *string = ts_node_string(root_node);
-  printf("Syntax tree: %s\n", string);
+  printf("orig tree   : %s\n", string);
+
+#if 0
+  TSInputEdit edit;
+  edit.start_byte = 16; // Long_val(vStartByte);
+  edit.old_end_byte = 22; //Long_val(vOldEndByte);
+  edit.new_end_byte = 23; // Long_val(vNewEndByte);
+
+  edit.start_point.row = 1; // Long_val(vStartLine);
+  edit.start_point.column = 0;
+  edit.old_end_point.row = 2; // Long_val(vOldEndLine);
+  edit.old_end_point.column = 0;
+  edit.new_end_point.row = 2; // Long_val(vNewEndLine);
+  edit.new_end_point.column = 0;
+
+  TSTree *ret = ts_tree_copy(tree);
+
+  ts_tree_edit(ret, &edit);
+#endif
+
+  // Print the syntax tree as an S-expression.
+  char *string = ts_node_string(root_node);
+  printf("patched tree: %s\n", string);
 
   ts_tree_print_dot_graph(tree, stderr);
 
