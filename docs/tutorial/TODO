@@ -1,4 +1,26 @@
 
+----
+
+Anything all uppercase is an automatic constant inccurrent scope. No need to assign Id, created unique I'd by pyrope.
+
+a = 3
+If a == FOO // compile error, previous a was not auto const
+  x = BAR
+  If x == FOOOO // ok, but always false
+
+
+----
+
+foo.prp
+foo.vow
+
+ The vow file is a Pyrope pass that runs only when "vow" pass is enabled too. Runtime/compile time checks for the IOs/registers in prp
+
+ Vow file can read any state, but not update state in prp, just in vow file
+
+----
+
+
 Encapsulation vs modules
 
  -Encapsulation is just for objects.
