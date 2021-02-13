@@ -1,0 +1,18 @@
+
+val lower = (addra << 4.U) + 8.U
+val upper = ((addra + 1.U) << 4.U) - 1.U
+val mask = (1.U << (upper - lower)) - 1.U
+post_addra := (h_rdata >> lower) & mask
+
+
+//----
+
+lower = (addra << 4) + 8
+upper = ((addra + 1) << 4) - 1
+post_addra = h_rdata@(lower:upper)
+
+
+// No .U all over
+// No different = and := assign
+// bit selection operator with range
+
