@@ -1,0 +1,138 @@
+
+These are some potential ideas for Pyrope v3 based on RUST/V ideas
+
+
+1.Immutability by default
+
+ a = 3 // immutable by default
+ mut b = 3 // mutable
+
+ c.__bits = 3
+ c = 3 // OK, fits
+ c.__bits = 5 // comp error, immutable
+
+ mut c
+ c.__bits = 3
+
+ Remove the "as" keyword
+
+ #reg are mutable by definition
+
+2.Ranges
+
+ 1..3 is a bit confusing. Is it 1,2,3 or 1,2?
+
+ 1:2 is more verilog/python friendly and easier to understand
+
+ 1:10:2 -> (1,3,5,7,9)
+
+3.Bit selection
+
+ Reserve msb/lsb keywords that can be used in ranges/bit selection
+
+ foo@3            // pick bit 3 from foo
+
+ foo@(1,3)        // pick bits 1 and 3
+ foo@(lsb:msb)    // pick all bits
+ foo@(:)          // pick all bits
+ foo@(1:msb)      //pick all bits but LSB
+ foo@((lsb+3):(msb-2))
+
+ foo@ == foo@(:)  // typecast, get all bits
+
+4.A bit cleaner assert/assume/ensure
+
+ assert foo == 3  // compile or runtime check
+ ensure foo == 3  // compile time check
+ assume foo < 3   // enforced in verif mode
+ restrict foo < 4 // constrain to help in verif mode
+
+5.Easier function type check
+
+ :{ code } vs ::{ code }
+
+ fun = :{
+   ensure $ is type(foo,bar)
+   ensure %.__size == 1
+   ensure % is type(sum)
+
+   %sum = $foo + $bar
+ }
+
+6.Explicit import keyword
+
+ Cleaner than current lgcpp current call
+
+ import foo.potato (bar, mod3)
+ import another.thing as tot
+
+ bar(3,4)
+ 11 |> mod3
+ tot(3)
+
+7.If allowed to have a return
+
+ s = if cond & 1 { (odd=1, 33) } else { (odd=0, bar+3) }
+
+8.Tuple/Type check
+
+ is, type keyword
+
+ a = 3
+ assert a is 1030
+
+ b = (c=3,d=4)
+ assert b is (c=0,d=0)   // value does not matter
+ assert b !is (d=0,c=0)  // ordered tuple
+ assert b is type(c,d)   // syntax sugar for (c=0,d=0)
+
+ import foo.bar
+ assert bar is type(:{}) // it is a module/fcall
+
+ process_tree = :{
+   assert $ is type(left,right,value) or type(value)
+ }
+
+9.Init for modules/directories
+
+__reset = :{
+}
+
+10.Allow read-only definition time scope variables capture
+
+a = 3
+foo = 10
+
+do_xx = :{ return foo+$0 }
+
+res1 = do_xx(2)
+assert res1 == 12
+
+foo = 3
+
+res2 = do_xx(2)
+assert res1 == 12
+
+11.Enums
+
+ Current:
+
+ color.__enum = ('red', 'green', 'blue')
+ assert color is (red=0, green=1, blue=2)
+
+ Syntax sugar:
+ color = enum(red,green=1,blue)  // expr must be compile time
+ assert color is (red=0, green=1, blue=2)
+
+12.Autodoc
+
+ Use the vow AND prp to generate doc. Use comments like v/go/doxygen and parse
+the assertions/assume
+
+============================================
+
+Why not generics?
+
+ -In Pyrope, every method is a generic. The assert/assume/restrict constrain the generic
+
+

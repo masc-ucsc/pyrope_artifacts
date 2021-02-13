@@ -1,7 +1,7 @@
 
 ----
 
-Anything all uppercase is an automatic constant inccurrent scope. No need to assign Id, created unique I'd by pyrope.
+Anything all uppercase is an automatic constant in current scope. No need to assign Id, created unique I'd by pyrope.
 
 a = 3
 If a == FOO // compile error, previous a was not auto const

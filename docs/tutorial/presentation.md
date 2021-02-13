@@ -1877,8 +1877,8 @@ nested1_5b = ::{
   }
 }
 #n2_links = punch("#nested2")
-for i in #n2_links {
-  i.incr = i.__index + 1
+for index, v in #n2_links {
+  v.incr = index + 1
 }
 I(#n2_links[0].id == 1)
 I(#n2_links[1].id == 2)
@@ -2303,9 +2303,9 @@ b = 3              // OK, allowed value
 a = 5              // compile error
 
 // enum is a strict in style allowed tuple
-tup2 as tup
-d.__enum as tup2   // sets __allowed too
-d = tup2.Red       // OK d[[]]==1
+tup2.__enum as ('Red', 'Green')
+d as tup2
+d = tup2.Red       // OK d[[]]==0
 d = tup.Red        // compile error, tup is not enum
 d = 1              // compile error
 ```
@@ -2846,7 +2846,6 @@ class: split-50
  __size          number of entries in tuple
  __set           Tuple behaves like a set (false)
  __enum          Tuple values become an enum
- __index         tuple position (typically for loops)
  __do            Code block passes ($.__do)
  __else          Else code block ($.__else)
 ```
@@ -3873,10 +3872,10 @@ if cond {
   b = "carrot"
 }
 tup[b] = true
-for a in tup {
+for i, a in tup {
   io = import("io")
-  io.puts("index:{} value:{}\n",a.__index,a)
-  I(tup[a.__index] == a)
+  io.puts("index:{} value:{}\n",i,a)
+  I(tup[i] == a)
 }
 ```
 ]
@@ -3947,9 +3946,9 @@ zip as ::{
   }
 }
 enumerate as ::{
-  for a in $ {
-    %res[a.__index].0 = a.__index
-    %res[a.__index].1 = a
+  for index, a in $ {
+    %res[index].0 = index
+    %res[index].1 = a
   }
 }
 
