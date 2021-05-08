@@ -1,22 +1,51 @@
 
+new reserved keywords in pyrope for potential future updates:
+
+ msb,lsb
+ var,let,mut,set
+ comptime
+
+ guard,assert,ensure,assume,restrict,when
+
+ import, export, punch
+
+ is, isnot, subset, superset
+
+ int, string, bool, mem
+
+--------------------------
+
 These are some potential ideas for Pyrope v3 based on RUST/V ideas
 
+ var xx =  // xx should not exist, xx is mutable
+ let xx =  // xx should not exist, xx is immutable
 
-1.Immutability by default
+ var foo.bar.xx  = // foo.bar should exist , xx should not exist. xx is mutable
+ let foo.bar.xx  = // foo.bar should exist , xx should not exist. xx is immutable
 
- a = 3 // immutable by default
- mut b = 3 // mutable
+ // add var foo.bar.xx  = // foo.bar may exist , xx should not exist. xx is mutable
+ // add let foo.bar.xx  = // foo.bar may exist , xx should not exist. xx is immutable
 
- c.__bits = 3
- c = 3 // OK, fits
- c.__bits = 5 // comp error, immutable
+ mut foo.bar.xx  = // foo.bar.xx should exist as mutable
+ set foo.bar.xx  = // (only check that foo.bar.xx is not immutable) foo.bar.xx may be mutable or not exist
 
- mut c
- c.__bits = 3
+ comptime mut foo.bar.xx = // comptime -> the rhs/value/tuple to assign must be known at compile time
+ comptime raw foo.bar.xx = // ....
 
- Remove the "as" keyword
+ comptime var xx =  // the assignment is comptime, future updates may not be
 
- #reg are mutable by definition
+ // Tuple syntax
+ foo = (comptime bar = (var xx = 3, let yy = 4), zz = 5)
+
+ var lhs = rhs // lhs should not exist, lhs is mutable
+ let lhs = rhs // lhs should not exist, lhs is immutable
+
+ add XXX lhs1.lhs2 = rhs // lhs1 may not exist, but lhs2 should not exist
+
+ mut lhs = rhs // lhs should exist as mutable
+ comptime XXX lhs = rhs // rhs must be known at compile time
+
+ raw lhs = rhs // no checks besides lhs is not already declared as immutable (mutable or may not exist)
 
 2.Ranges
 
@@ -40,8 +69,19 @@ These are some potential ideas for Pyrope v3 based on RUST/V ideas
 
  foo@ == foo@(:)  // typecast, get all bits
 
+ tmp = foo@(1..3)  // tmp.min>=0
+ tmp = foo@        // tposs
+ tmp = foo.sext(2) // sign extend from bit 2
+ tmp = foo@sext(2) // sign extend from bit 2
+ tmp = foo@zext(2) // == foo@(2)
+
+ tmp = foo@|()     // or reduction
+ tmp = foo@&()     // and reduction
+ tmp = foo@^()     // xor reduction
+
 4.A bit cleaner assert/assume/ensure
 
+ guard  foo < 3   // Method called only if foo < 3
  assert foo == 3  // compile or runtime check
  ensure foo == 3  // compile time check
  assume foo < 3   // enforced in verif mode
@@ -49,9 +89,7 @@ These are some potential ideas for Pyrope v3 based on RUST/V ideas
 
 5.Easier function type check
 
- :{ code } vs ::{ code }
-
- fun = :{
+ fun = ||{
    ensure $ is type(foo,bar)
    ensure %.__size == 1
    ensure % is type(sum)
@@ -63,12 +101,20 @@ These are some potential ideas for Pyrope v3 based on RUST/V ideas
 
  Cleaner than current lgcpp current call
 
- import foo.potato (bar, mod3)
- import another.thing as tot
+ x   = import foo.potato (bar, mod3)
+ tot = import another.thing
 
- bar(3,4)
- 11 |> mod3
+ x.bar(3,4)
+ 11 |> x.mod3
  tot(3)
+
+-Maybe make punch/import consistent. The diff is that import gets only methods and compile error if multiple match
+
+ x = import([top], "foo.potato.(bar|mod3)") // match with regex like punch
+ y = punch("any_wire_named_foo")
+ for i in y {
+   puts("wire:{} has value:{}\n", i.__key, i);
+ }
 
 7.If allowed to have a return
 
@@ -83,13 +129,10 @@ These are some potential ideas for Pyrope v3 based on RUST/V ideas
 
  b = (c=3,d=4)
  assert b is (c=0,d=0)   // value does not matter
- assert b !is (d=0,c=0)  // ordered tuple
+ assert b isnot (d=0,c=0)  // ordered tuple
  assert b is type(c,d)   // syntax sugar for (c=0,d=0)
 
- import foo.bar
- assert bar is type(:{}) // it is a module/fcall
-
- process_tree = :{
+ process_tree = |{
    assert $ is type(left,right,value) or type(value)
  }
 
@@ -98,10 +141,11 @@ These are some potential ideas for Pyrope v3 based on RUST/V ideas
 __reset = :{
 }
 
-10.Allow read-only definition time scope variables capture
+10.Allow read-only definition time scope variables capture (ONLY if the
+definition variable is immutable )
 
 a = 3
-foo = 10
+let foo = 10
 
 do_xx = :{ return foo+$0 }
 
@@ -117,17 +161,24 @@ assert res1 == 12
 
  Current:
 
- color.__enum = ('red', 'green', 'blue')
+ color.__allow = ('red', 'green', 'blue')
  assert color is (red=0, green=1, blue=2)
 
- Syntax sugar:
- color = enum(red,green=1,blue)  // expr must be compile time
- assert color is (red=0, green=1, blue=2)
+ Some syntax sugar a bit Elixir style?
+ Allow :foo the same as 'foo'
 
 12.Autodoc
 
  Use the vow AND prp to generate doc. Use comments like v/go/doxygen and parse
 the assertions/assume
+
+13.All variables have initial value but "undefined" is valid assign
+ (this was already in Pyrope 2, but not well documented)
+
+ mut foo = undefined
+ assert foo>3 // fails
+ foo = 4
+
 
 ============================================
 
@@ -135,4 +186,164 @@ Why not generics?
 
  -In Pyrope, every method is a generic. The assert/assume/restrict constrain the generic
 
+
+14.Future types
+
+ let type_xxx :int(0:)
+ let type_xx  :int(-10:50)
+
+ var x:type_xxx
+ let x:type_xx = 33
+ mut x = 3 // preserve type
+
+ x = (a:typexx=3,b:foo=5)
+
+ I(x is (a:typexx,b:foo))
+ I(x is (a:_,b:foo))
+ I(x isnot (a:foo))
+
+ int(0:22) // min:0 max:22
+ int(:22)  // min:-inf, max:22
+ int(3:)   // min:3 max:inf
+ string
+ bool
+
+ xx = |(a:int(0:44)|{
+ }
+
+ xx(a=3) // OK
+ xx(a=50) // compile error
+
+ var x:int(0:30)=0
+ I(x isnot int(0:50))
+ I(!(x is  int(0:5)))      // FALSE: subset
+ I(!(x subset int(0:5)))   // FALSE: superset
+ I( (x superset int(0:5))) // TRUE:  superset
+ I( (int(0:5) subset x))   // TRUE:  subset
+
+15.Memory API
+
+
+ //----------------------
+ // RAW direct flop and memory
+
+
+ ff = __flop(clock=$clk, din=xx)
+ // ff is the flop_q pin
+
+ // 1 rd and 1 wr port
+ mm = __mem(entries=1K, bits=30, mode=(0,1) addr=(rd_addr, wr_addr), enable=(rd_enable, wr_enable), data_in=(0,wr_data))
+ mm = __mem(entries=1K, bits=30, mode.0=0, mode.1=1, addr.0=rd_addr, addr.1=wr_addr, enable.0=rd_enable, enable.1=wr_enable, data_in.1=wr_data)
+
+ xx = mm.Q  // result from addr.1
+ //----------------------
+
+ a = mem(entries=4K, rd_ports=3, wr_ports=4, entry_bits=32, posedge=false)
+
+ a.write(addr=20,data=30) // generic multiport API
+ x = a.read(33)
+
+ a.wr[0].write(addr=20,data=30)
+ a.rd[1].read(addr=20)
+ a.wr[1].write(wmask=0xF0, addr=500, data=11)
+
+ mem = ||{
+   n_ports = $rd_ports + $wr_ports
+
+   addr_list = () // First writes, then reads
+   mode_list = ()
+   data_in_list ()
+   for i in 0:(wr_ports-1) {
+     data_in_list ++= xx.wr[i].data_in.__last_value
+     addr_list    ++= xx.wr[i].addr.__last_value
+     mode_list    ++= (1)
+   }
+   for i in 0:(rd_ports-1) {
+     data_in_list ++= (0)
+     addr_list    ++= xx.rd[i].addr.__last_value
+     mode_list    ++= (0)
+   }
+
+   let my_clock = this.clock
+
+   xx = __mem(clock=my_clock, entries=$entries, bits=$entry_bits, addr=addr_list, enable=enable_list, clock=clock_list, data_in=data_inst_list, mode=mode_list)
+   for pid in 0:(wr_ports-1) {
+     xx.wr[pid].write = ||{
+       this.data_in = $data
+       this.addr    = $addr
+     }
+   }
+   for pid in 0:(rd_ports-1) {
+     xx.rd[pid].read = ||{
+       this.addr = $addr
+       return this[".."][".."].q[pid] // xx.q[pid] // foo.bar.jojo[".."] == for.bar
+     }
+   }
+
+   for pid in 0:(rd_ports-1) {
+     xx.rd[pid].read_pipe = ||{
+       yy = ()
+       for i in $ {
+         yy[i.__key] = __flop(clock=my_clock, din=i)
+       }
+       this.addr = $addr
+       yy.addr   = __flop(clock=my_clock,$addr);
+       yy.q = this[".."][".."].q[pid]
+       $.__do(yy)
+     }
+   }
+
+   return xx
+ }
+
+ mem.rd[0].read_pipe(addr=10,meta_1=(x=1,b=4)) ||{
+   // Method called a cycle later (when read is done)
+   puts("read to addr:{} has data:{} with meta.x={}\n",$.addr, $data, $meta.x);
+ }
+
+ //----------------------
+
+ my_custom_flop = ||{
+
+   let ff.q   = __flop(din=ff.din.__last_value, enable=ff.enable.__last_value, initial=$initial)
+
+   ff.din     = 0 // clear din every clock cycle
+   ff.enable  = false
+
+   ff.write = ||{
+     this.enable = true
+     this.din = $
+   }
+
+   ff.read = ||{
+     return this.q
+   }
+
+   ff.read_pipe = ||{
+     xx = ()
+     for i in $ {
+       xx[i.__key] = __flop(din=i)
+     }
+     xx.din = this.q
+     $.__do(xx)
+   }
+
+   return ff
+ }
+
+ ff = my_custom_flop(initial=0)
+
+ val_q = ff.read()
+ ff.write(33)
+
+ ff.read_pipe(vv=$runtime) ||{
+   val = $din // must be 33 next cycle
+   // $vv == last cycle $runtime
+ }
+
+ ff.read_pipe(foo=3) ||{
+   val = $din // must be 33 next cycle
+   // $foo== 3
+   // $vv == last cycle $runtime
+ }
 

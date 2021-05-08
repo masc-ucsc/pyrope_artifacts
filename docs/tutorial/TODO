@@ -1,4 +1,114 @@
 
+--------------
+ADD THIS CONCAT EXAMPLE TO TUTORIAL:
+
+a = "hello"
+
+if true {
+ a = a ++ ".banana"
+}
+
+b = ("hello", ".banana")
+
+val = 0
+if b[0] == a[0] and a[1] == b[1] and a==b { // TRUE
+  val = 0x23
+}
+
+if "hello.banana" == a or b == "hello.banana" { // FALSE
+  val = 0xdead
+}
+
+if a@() == "hello.banana" and b@() == "hello.banana" { // TRUE
+  val = val + 0x10
+}
+
+tmp = 3 ++ 5           // (3,5)
+x = tmp[0] + tmp[1]    // 3+5
+x2 = tmp@()            // 0b011 ++ 0b0101 == 0b011_0101 == 0x35
+%total = x + x2        // 8+0x35 = 0x3d
+
+foo[a@()] = 3
+%out = foo.hello.banana + val // 3 + 0x33 == 0x36
+
+
+//-----------------------------
+
+a = 3     // immutable
+
+b = (1,3) // immutable
+
+mut c.b = 3 // mutable
+
+c.c = 3 // compile error
+set c.b = 1 // set value, no mutate object
+set c.d = 1 // compile error: d field does not exit
+mut c.d = 1 // OK
+
+mut d.foo.__bits = 3
+set d.foo := 1   // change val, drop bits if needed
+set d.bar := 1   // compile error: bar field does not exit
+
+e := 3       // compile error: e does not exist
+
+
+//------ What about?
+
+val (optional/required) for immutable variables.
+
+val a = 3
+
+--------------------------
+
+We are building a programming language for hardware, and we are thinking
+about adding keywords for mutable/immutable/add_field assignments.
+
+The language uses a "prototypal-like" inheritance. Something like this is possible.
+
+a.foo = 3  // no previous 'a' declaration
+fcall(a)   // same as fcall(foo=3)
+
+a.bar = 4
+fcall(a)   // same as fcall(foo=3,bar=4)
+
+The proposed mutable/immutable keywords:
+
+var foo.xx = ... // first instance of foo.xx and it is mutable
+let foo.xx = ... // first instance of foo.xx and it is immutable
+
+set foo.xx = ... // modifies foo.xx (xx must exist)
+mut foo.yy = ... // modifies foo.yy (yy may not exist)
+
+The language/compiler can handle without the var/set/set/mut keywords, but they
+can be useful to catch errors like unintended setting a non-existing field.
+
+Any suggestion?
+
+------------------------------------
+
+-Compile time directives:
+
+guard cond  : prevents the method being called unless guards are true. Must be evaluated at compile time
+expect cond : compile time checks (unlike guard there is no code side effects)
+infer cond  : allow to simplify code based on the condition, checks at run-time for it
+
+guard foo is static // know at compile time
+guard foo is const  // can not change at runtime
+
+expect foo is const // compile time check
+
+infer foo == xxx    // check runtime/compile and simplify code
+
+-Runtime directives:
+
+assert foo is const // same as expect, but method could be called and checked at runtime
+cover  foo          // coverage point
+
+-Format verification checks
+
+assume foo == 3 // eq: to verilog assume
+restrict foo == 3 // runtime/synthesis assumptions (checked during simulation)
+
 ----
 
 Anything all uppercase is an automatic constant in current scope. No need to assign Id, created unique I'd by pyrope.

@@ -255,8 +255,8 @@ endmodule
 ### Pyrope unit test
 ```coffeescript
 // code/counter_testa.prp
-b as counter ++ (__stage as true) // pipeline type
-b.total as (__ubits as 4)
+b = counter ++ (__stage as true) // pipeline type
+b.total.__ubits = 4
 b.enable = 0
 I(b.total == 0)                // assertion
 yield()                        // advance clock
@@ -286,8 +286,8 @@ if $enable {
 ### Pyrope unit test
 ```coffeescript
 // code/counter_testb.prp
-*b as counter // ++ (__stage as true) // combination type
-b.total as (__ubits as 4)
+*b = counter // ++ (__stage as true) // combination type
+b.total.__ubits = 4
 b.enable = 0
 I(b.total == 0)                // assertion
 yield()                        // advance clock
@@ -513,7 +513,7 @@ if $enable {
   I(3 ..+.. 4 == 7 == 3 + 4)      // + is an alias for ..+..
 }
 
-my_add as import("libs.adder.scal.cla")
+my_add = import("libs.adder.scal.cla")
 ..+.. = ::{
  // Special code for special case
 }
@@ -534,15 +534,15 @@ task: Quick Dive to Pyrope
 s1 = import("libs.adder.rca")
 
 %sum.__stage = true
-%sum1.__stage as true
-%sum2 as (__stage=true)
+%sum1.__stage = true
+%sum2 = (__stage=true)
 
 sum1 = $a + $b
 sum2 = $c + $c
 %sum = s1(a=sum1.sum,b=sum2.sum,cin=0)
 
 test = ::{
-  b as add4(a=1,b=2,c=3,d=4)
+  b = add4(a=1,b=2,c=3,d=4)
   I(b.sum1 == 10 and b.sum2 ==  0 and b.sum ==  0)
   yield()
   I(b.sum1 == 10 and b.sum2 == 10 and b.sum ==  0)
@@ -590,7 +590,7 @@ endmodule
 ### Pyrope
 ```coffeescript
 // code/vsverilog1.prp
-($a,$b) as (__ubits=3, __ubits=3)
+($a,$b) = (__ubits=3, __ubits=3)
 %c = $a + $b
 ```
 * No inputs/outputs
@@ -687,7 +687,7 @@ if $a? and $b? {
 ```coffeescript
 test = ::{
   puts = import("io.puts")
-  gcd as vschisel
+  gcd = vschisel
   z = gcd(a=(1<<16).__rnd,b=(1<<16).__rnd)
   waitfor(z)
   puts("gcd for {} and {} is {}", a, b, z)
@@ -827,7 +827,7 @@ if #counter {
 }
 
 test = ::{
-  puts as import("io.puts")
+  puts = import("io.puts")
   b = vsmigen(maxperiod=300000)
   puts("led is {}",b.led)
   yield(300000)
@@ -954,7 +954,7 @@ upCounter enable = s
 ### Pyrope
 ```coffeescript
 // code/vsclash.prp
-#upCounter.__ubits as 8
+#upCounter.__ubits = 8
 if $enable {
  #upCounter += 1
 }
@@ -1253,7 +1253,7 @@ y = pow(10, floor(log10(x)))
 .column[
 ### Pyrope
 ```coffeescript
-puts as import("io.puts")
+puts = import("io.puts")
 square = ::{$ * $}
 eat    = ::{puts(square(x=$)) }
 
@@ -1677,15 +1677,15 @@ class: split-50
 .column[
 ```coffeescript
 // code/codeblock.prp
-puts as import("io.puts")
-each as ::{
+puts = import("io.puts")
+each = ::{
   for a in $ { $.__do(a) }
 }
 
 each(1,2,3)     ::{ puts($) }
 (1,2,3) |> each ::{ puts($) }
 
-map as ::{
+map = ::{
   t = ()
   for a in $ {
     t ++= $.__do(a)
@@ -1755,8 +1755,8 @@ I(a==(1,2,3,9))
 .column[
 ```coffeescript
 // code/codeblock3.prp
-tree_reduce as ::{
-  red_step as ::{
+tree_reduce = ::{
+  red_step = ::{
     for i in 1..$.__size by $width {
       % ++= $.__do($[i..(i+$width)])
     }
@@ -1866,13 +1866,13 @@ I(n3.o4 == 4)
 // code/scope6.prp
 nested1_3b = ::{
   nested2 = ::{
-    #cycle.__ubits as 3
+    #cycle.__ubits = 3
     #cycle += #incr
   }
 }
 nested1_5b = ::{
   nested2 = ::{
-    #cycle as (__ubits=5)
+    #cycle = (__ubits=5)
     #cycle += #incr
   }
 }
@@ -1934,7 +1934,7 @@ I(a == 4 and b == 3)
 // directories are namespaces (dir1 in dir1/code/scope1.prp)
 // keywords code, src, test?, _*, and *_ do not create namespace
 
-puts as import("io.puts")   // puts only visible to this file
+puts = import("io.puts")   // puts only visible to this file
 scope1_m1 = ::{ 1 }
 scope1_m2 = ::{ 1 }
 ```
@@ -2057,14 +2057,14 @@ I(b.0 == 3 and b[1] == false)
 
 c1.b.__ubits = 1
 c1.c.__ubits = 3
-c as (c=0, b=1)            // final ordered named
-c as c1                    // fix bits
+c = (c=0, b=1)            // final ordered named
+c = c1                    // fix bits
 I(c.c==0 and c.b==1)
 c = (true,2)
 c = (false,33) // compile error: 33 > bits=3
 c.bar = 3      // compile error: bar undefined
 
-d as (a=3,5)   // final, ordered, unnamed
+d = (a=3,5)   // final, ordered, unnamed
 I(d.a == 3 and d[1] == 5)
 
 g = (1,2,3)
@@ -2085,10 +2085,10 @@ I(e1==1 and e2==2)
 
 (f,g) = 3
 I(f==3 and g==3)
-(f,g) as (field=1, field=1)
+(f,g) = (field=1, field=1)
 I(f.field==1 and g.field==1)
 
-a = (b=1, c as 2)
+a = (b=1, c = 2)
 a.b=3                // OK to change
 a.c=3                // compile error: c was fixed
 a.d=3                // OK, new field
@@ -2096,7 +2096,7 @@ a.d=3                // OK, new field
 a ++= (d=4)
 I(a.d==4 and a.b==1)
 
-d as (b=1, c=2)
+d = (b=1, c=2)
 d.b = 10             // OK
 d.e = 1              // compile error: e undefined
 d ++= (e=4)          // compile error: d was fixed
@@ -2263,23 +2263,17 @@ class: split-50
 ### Sets
 ```coffeescript
 // code/sets1.prp
-s.__set=true
-s = (1, 2, 3, 3)
-I(s == (1,2,3))
-s ++= 4  // add to tuple
-s = s ++ (1,4,5)
-I(s == (1,2,3,4,5))
+s = @[1, 2, 3, 3]
+I(s == @[1,2,3])
+s ++= @[4]  // add to tuple
+s = s ++ @[1,4,5]
+I(s == @[1,2,3,4,5])
 
-a = 1..3
-a.__set = true
-I(a == (1,2,3))
-I(a[[]] == 0b1110)
+a = @[1:3]
+I(a == @[1,2,3])
+I(a@[] == 0b01110)
 
-I(c == (0..3))
-I(0b1010.__set == (1,3))
-
-a.__allowed as 0..127 // 128 bit vector set
-a.__set as true
+a.__allowed = 0..127 // 128 bit vector set
 a[$i1] = true
 I(a[$i3]) // run-time check
 
@@ -2295,7 +2289,7 @@ I(b) // b known at compile time
 // code/enums1.prp
 
 // Plain tuple with fixed (as) fields
-tup = (Red as 1,Blue as 2,Purple as 3)
+tup = (Red = 1,Blue = 2,Purple = 3)
 I(tup.Red == 1)
 (a,b,c) = (a,b,c) |> set_field("__allowed", tup)
 c = tup.Red        // OK
@@ -2303,8 +2297,8 @@ b = 3              // OK, allowed value
 a = 5              // compile error
 
 // enum is a strict in style allowed tuple
-tup2.__enum as ('Red', 'Green')
-d as tup2
+tup2.__enum = ('Red', 'Green')
+d = tup2
 d = tup2.Red       // OK d[[]]==0
 d = tup.Red        // compile error, tup is not enum
 d = 1              // compile error
@@ -2514,7 +2508,7 @@ class: split-50
 ```coffeescript
 // code/mem_edge1.prp
 // Enforce #rd and wr ports in SRAM
-#cycle as (__ubits=8,__async=false)
+#cycle = (__ubits=8,__async=false)
 
 #cycle += 13
 // +13 can not move to prev cycle. Comb loop
@@ -2844,7 +2838,6 @@ class: split-50
 ### Tuple
 ```
  __size          number of entries in tuple
- __set           Tuple behaves like a set (false)
  __enum          Tuple values become an enum
  __do            Code block passes ($.__do)
  __else          Else code block ($.__else)
@@ -2860,7 +2853,6 @@ class: split-50
 ### Basic
 ```coffeescript
 // code/ranges1.prp
-I((1,2,3) == 1..3)
 I((1,2,3) == (1..3))
 
 I(((0..7) ..by.. 2) == (0, 2, 4, 6))
@@ -2880,8 +2872,9 @@ I((3..-2) ..and.. (2..7) == (3..6))
 
 // closed ranges are like sets
 I((1..3)[[]] == (1,2,3)[[]])
-I(0b0010101.__set == (0,2,4))
-I(0b0011110.__set == (1..4))
+I(0b0010101 == @[0,2,4])
+I(0b0011110 == @[1:4])
+I(-2 == @[1:])
 ```
 ]
 
@@ -2933,7 +2926,7 @@ b.__rnd_bias ++= (2, 3)  // weight 2 for value 3
 b.__rnd_bias ++= (2 ,4)  // weight 2 for value 4
 b.__rnd_bias ++= (5, 9)  // 0 10%, 3 20%, 4 20%, and 9 50% chance
 
-c.__ubits as 8
+c.__ubits = 8
 c.__rnd_bias   = (1 ,0)     // weight 1 for value 0
 c.__rnd_bias ++= (2 ,255)   // weight 2 for value 255
 c.__rnd_bias ++= (7,1..254) // weigth 7 for the rest
@@ -2951,23 +2944,23 @@ $prp --run rndtest
 
 ```coffeescript
 // code/reset1.prp
-#a.__ubits as 3
+#a.__ubits = 3
 #a.__reset = ::{ this = 13 }
 
-#b as (__ubits=3, __reset_pin=false) // disable reset
+#b = (__ubits=3, __reset_pin=false) // disable reset
 
-#mem0 as (__ubits=4, __size=16)
+#mem0 = (__ubits=4, __size=16)
 #mem0.__reset = ::{ this = 3 }
 
-#mem1 as (__ubits=4,__size=16, __reset_pin=false)
+#mem1 = (__ubits=4,__size=16, __reset_pin=false)
 
-#mem2 as (__ubits=2,__size=32)
+#mem2 = (__ubits=2,__size=32)
 
 // complex custom reset
 #mem2.__reset_cycles = #mem2.__size + 4
 #mem2.__reset = ::{
   // Called during reset or after clear (!!)
-  #_reset_pos as (__ubits=log2(#this.__size),__reset_pin=false)
+  #_reset_pos = (__ubits=log2(#this.__size),__reset_pin=false)
   #this[#_reset_pos] = #_reset_pos
   #_reset_pos += 1
 }
@@ -2983,12 +2976,12 @@ $prp --run rndtest
 
 #clk_flop = $inp
 // implicit #clk_flop as __clk_pin=$clk
-#clk2_flop as (__clk_pin=$clk2)
+#clk2_flop = (__clk_pin=$clk2)
 #clk2_flop = #clk_flop
 
 %out = #clk2_flop
-%out as (__fluid=true)
-%out as (__clk_pin=$clk3)  // 3rd clock for output
+%out = (__fluid=true)
+%out = (__clk_pin=$clk3)  // 3rd clock for output
 ```
 
 ---
@@ -3031,7 +3024,7 @@ if a==3 {       // compile time if condition
   %d = $0+a     // no constant
 }
 
-CS as I
+CS = :{ I($) }
 CS.__comptime=true
 CI(a == b)      // compile time assertion
 
@@ -3061,7 +3054,7 @@ c = 3       // OK
 c = 100     // compile error (not enough bits)
 c := 0xFFF  // OK 0b1111 -> c==-1
 
-#d.__allowed as (0, 1, 7) // allowed values
+#d.__allowed = (0, 1, 7) // allowed values
 #d = 0      // OK
 #d += 1     // OK
 #d += 1     // runtime error: not allowed value
@@ -3074,7 +3067,7 @@ I(0b11_1100 == (a, 0b1100)[[]]) // bit concatenation
 ### Conditions
 ```coffeescript
 // code/precission2.prp
-a.__allowed as 1..6
+a.__allowed = 1..6
 a = 5
 c = 5
 if xx {
@@ -3313,7 +3306,7 @@ class: split-50
 ### Dealing with valids
 ```coffeescript
 // code/fluid1.prp
-a as $c         // alias, no restart
+a = $c         // alias, no restart
 try {
   if %sum2! {
     %sum3 = $a  // sum2 busy, try sum3
@@ -3495,7 +3488,7 @@ one_stage_flop_out  = ::{ // The output is flopped
 }
 
 one_stage_comb_out = ::{  // Not flopped output
-  a1 as sinc
+  a1 = sinc
   a2 =  ssum
   a2.__stage=true
   % = a2(a=a1($a), b=a1($b))
@@ -3503,9 +3496,9 @@ one_stage_comb_out = ::{  // Not flopped output
 
 two_stage_comb_out = ::{  // Not flopped output
   a1 = sinc
-  a1.__stage as true
+  a1.__stage = true
   a2 = ssum
-  a2 as (__stage=true)
+  a2 = (__stage=true)
   % = a2(a=a1($a), b=a1($b))
 }
 ```
@@ -3519,11 +3512,11 @@ combinational = ::{
   % = ssum(a=sinc($a), b=sinc($b))
 }
 incsum = combinational(a=$a,b=$b)
-incsum.__fluid as true    // instance is fluid
+incsum.__fluid = true    // instance is fluid
 
 one_stage_fluid  = ::{    // Same as incsum
   % = ssum(a=sinc($a), b=sinc($b))
-  % as (__fluid=true)
+  % = (__fluid=true)
 }
 
 mixed_weird_fluid = ::{
@@ -3533,7 +3526,7 @@ mixed_weird_fluid = ::{
 }
 
 allfluid = mixed_weird_fluid
-allfuild as (__fluid=true)
+allfuild = (__fluid=true)
 ```
 ]
 
@@ -3550,8 +3543,8 @@ sinc = ::{ % = $ + 1 }
 opt1_2stages = ::{
   s1_a = sinc($a)
   s1_b = sinc($b)
-  s1_a as (__stage=true)
-  s1_b as (__stage=true)
+  s1_a = (__stage=true)
+  s1_b = (__stage=true)
   % = sadd(a=s1_a, b=s1_b)
   %.__stage = true
 }
@@ -3609,12 +3602,11 @@ if d==200 { // taken
 ]
 
 ---
-# Assignments, as vs = vs :=
+# Assignments, = vs :=
 
 ```coffeescript
 // code/assign1.prp
 a = b         // potential restart in fluid
-a as c        // alias a as c, no real read for fluid
 e = c         // still not read until used for fluid
 
 b = (__ubits=3)  // explicit bits
@@ -3622,14 +3614,12 @@ b = 3           // OK
 b = (__ubits=10) // OK to redefine
 b = 100         // OK
 
-d as (__ubits=3) // explicit bits
-d =  (__ubits=4) // compile error: fixed with as
 ```
 
 
 ---
 class: split-50
-# Fluid and assignments, as vs =
+# Fluid and assignments
 
 .column[
 ### both out1 and out2 happens or nothing happens
@@ -3666,7 +3656,7 @@ try {
 ```
 ```coffeescript
 // code/assign5.prp
-_tmp1 as $a // no op, no restart
+_tmp1 = $a // no op, no restart
 _tmp2 =  $b // no op, no restart
 _tmp3 = $b+0 // read, can trigger restart
 _tmp4 = fcall($b) // restart if used inside fcall
@@ -3753,14 +3743,14 @@ class: split-50
 ### dealing with objects
 ```coffeescript
 // code/objects2a.prp
-obj1.foo as (__ubits=3)
-obj2.bar as (__ubits=2)
+obj1.foo = (__ubits=3)
+obj2.bar = (__ubits=2)
 
 obj1c = obj1
 obj1.foo  = 1
 obj1c.foo = 3
 
-obj3 as obj1 or obj2 // Union type
+obj3 = obj1 or obj2 // Union type
 if 3.__rnd == 2 {
   obj3 = obj1
   obj3.foo = 1
