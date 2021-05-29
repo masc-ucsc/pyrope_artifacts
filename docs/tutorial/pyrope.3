@@ -17,6 +17,8 @@ new reserved keywords in pyrope for potential future updates:
 
 These are some potential ideas for Pyrope v3 based on RUST/V ideas
 
+ //NOTE: default value must be given to xx "var xx" not OK
+
  var xx =  // xx should not exist, xx is mutable
  let xx =  // xx should not exist, xx is immutable
 
@@ -29,10 +31,22 @@ These are some potential ideas for Pyrope v3 based on RUST/V ideas
  mut foo.bar.xx  = // foo.bar.xx should exist as mutable
  set foo.bar.xx  = // (only check that foo.bar.xx is not immutable) foo.bar.xx may be mutable or not exist
 
- comptime mut foo.bar.xx = // comptime -> the rhs/value/tuple to assign must be known at compile time
- comptime raw foo.bar.xx = // ....
+ mut comptime foo.bar.xx = // comptime -> the rhs/value/tuple to assign must be known at compile time
+ raw comptime foo.bar.xx = // ....
 
- comptime var xx =  // the assignment is comptime, future updates may not be
+ var comptime xx =  // the assignment is comptime, future updates may not be
+
+ // Type style (same object but the object can not affect results, just a variable type
+
+ // Default value must be given to the type "var type xt" not OK
+
+ var type xt =  // xt is type and mutable
+ let type xt =  // xt is type and immutable, type implies comptime (types must be compile time)
+
+ var xx:xt       // xx is type xt
+ var xx:xt = ... // xx is type xt with contructor values of ...
+
+ let xx:xt = ... // immutable version
 
  // Tuple syntax
  foo = (comptime bar = (var xx = 3, let yy = 4), zz = 5)
@@ -43,7 +57,7 @@ These are some potential ideas for Pyrope v3 based on RUST/V ideas
  add XXX lhs1.lhs2 = rhs // lhs1 may not exist, but lhs2 should not exist
 
  mut lhs = rhs // lhs should exist as mutable
- comptime XXX lhs = rhs // rhs must be known at compile time
+ XXX comptime lhs = rhs // rhs must be known at compile time
 
  raw lhs = rhs // no checks besides lhs is not already declared as immutable (mutable or may not exist)
 
@@ -96,6 +110,34 @@ These are some potential ideas for Pyrope v3 based on RUST/V ideas
 
    %sum = $foo + $bar
  }
+
+----
+BRAIN DUMP:
+
+iris2 f* use some
+
+var m:my_mem(size=1K, initial="foo.json", xxxx=3);
+
+m.read(port=0,300) ||{
+  puts "One cycle later, the read is {}", $
+}
+
+m.write(port=2,addr=301+x, data=33+a)
+
+let counter:signed constrain { ||{ ret $ is int and $.__bits<4 and $.__min>2 } }
+
+let xxx_type:signed constrain { ||{ ret $ between 7:23 } }
+
+a:unsigned(0:3) = b:signed(10:20) - c:xxx_type;
+
+
+Bar : (a,b) constrain { ||{ ret $a.__sbits>6 and $b is Foo } }
+
+Base types: int, string
+
+Bool : int constrain { ||{ $ is int and $.__sbits==1} }
+
+---
 
 6.Explicit import keyword
 
@@ -189,16 +231,16 @@ Why not generics?
 
 14.Future types
 
- let type_xxx :int(0:)
- let type_xx  :int(-10:50)
+ let type txxx :int(0:)
+ let type txx  :int(-10:50)
 
- var x:type_xxx
- let x:type_xx = 33
+ var x:txxx
+ let x:txx = 33
  mut x = 3 // preserve type
 
- x = (a:typexx=3,b:foo=5)
+ x = (a:txx=3,b:foo=5)
 
- I(x is (a:typexx,b:foo))
+ I(x is (a:txx,b:foo))
  I(x is (a:_,b:foo))
  I(x isnot (a:foo))
 
@@ -216,10 +258,9 @@ Why not generics?
 
  var x:int(0:30)=0
  I(x isnot int(0:50))
- I(!(x is  int(0:5)))      // FALSE: subset
- I(!(x subset int(0:5)))   // FALSE: superset
- I( (x superset int(0:5))) // TRUE:  superset
- I( (int(0:5) subset x))   // TRUE:  subset
+ I(!(x is  int(0:5))) // FALSE: subset
+ I(!(x subset 0:5))   // FALSE: superset
+ I( (x superset 0:5)) // TRUE:  superset
 
 15.Memory API
 
@@ -346,4 +387,190 @@ Why not generics?
    // $foo== 3
    // $vv == last cycle $runtime
  }
+
+--------------
+
+
+Allow at pyrope (not lnast) more intuitive ops. Like
+
+If a in x {
+If a not in x {
+
+If a between 2: {
+It a between 3:8 {
+
+A = x if condition
+A = (3 if cond else 5)
+
+a = 3 if foo else 5
+
+mut a = 3 if boo else 5 if cond // WEIRD!
+
+mut a = match foo {true=>3,false=>5} if cond
+
+mut a = match foo {true=>3} else 5 if 
+
+
+match tup_expr {
+  1,3,4 ||{ puts("1..4, not 2 it was:{}", $) }
+  55 { puts("55") },
+  else { puts("Something else") }
+}
+
+a = match cond { true {123} false {33} }
+a = match cond { true->123, false->33 }
+
+a = (a?3:4)
+a = (if a {3} else {4}) when cond3
+
+
+if cond {
+  puts "hello here"
+}elif cond2 {
+  //
+}else{
+  puts("xxx")
+} when disable_condition
+
+One line:
+  let a = 3 unless enable_stuff
+Expands to:
+  tmp = undefined
+  if enable_stuff {
+    tmp = 3
+  }
+  let a = tmp
+
+
+Python style comprehension (no nested no walrus)
+A = (1<<i for I in 1:10)
+
+PYTHON:
+>>> sentence = 'the rocket came back from mars'
+>>> vowels = [i for i in sentence if i in 'aeiou']
+>>> vowels
+
+OPT 1:
+sentence = 'the rocket came back from mars'
+vowels = ()
+for i in sentence {
+  if i in ('a','e','i','o','u') {
+    vowels = vowels ++ i
+  }
+}
+  
+OPT 2:
+filter = ||{
+  res = ()
+  for i in $ {
+    if $.__do(i) {
+      res = res ++ i
+    }
+  }
+  return res
+}
+let vowels = sentence |> filter ||{ $ in 'aeiou') }
+
+OPT 3: (NOT IMPLEMENTED. Same as OPT 2, and less syntax to support)
+let vowels = (i for i in sentence if i in 'aeiou')
+
+_------
+1..3 == 1:2
+
+
+----------------------------------
+
+add = (||{true}, ||{$0+$1})
+add ++= (||{$0.bits==1}, ||{ my_fast_plus_1_add($0,$1) })
+
+
+xxx = (1,2) |> pick(add)
+
+A.foo  = ||{}
+a.foo ++= |(a,b)|{...
+A.foo ++= |((a,b) when a<b|{...
+
+When a matching method is found, that method is called.
+
+Diff is that the overload tracking is a variable/ordered tuple. It goes one entry at a time to decide the call.
+
+To allow multiple case at compile time.
+
+A.foo.__runtime_select = false
+In pyrope
+x = runtime A.foo(a,b) // mux of fcalls allowed
+x = comptime a.foo(a,b) // default 
+Runtime x = ... // Default
+Comprime x = ... // Result x know at compile time can be mut or let or var...
+
+
+let comptime xx = fun(args)
+
+
+y = add(x,1)
+// Is y combinational or flopped??
+// assert y == (x+1)
+// assert y == (past(x)+1)
+
+add = ||{ $0+$1 }
+padd = ||{
+  %    = @res
+  @res = $0+$1
+}
+
+let comb y = add(x,1) // checks that add is pure comb
+assert y == x+1
+
+let pipe y = padd(x,1) // checks that outputs are not pure comb
+assert y == past(x)+1 // x is from past
+
+assert #y1 == past(x)+1
+let pipe  y2 = add(x,1)
+assert #y1 == y2
+let comb #y1 = add(x,1)
+maybe #y1 != y2
+
+--------------
+
+// coverage guided assertions (lgcpp)
+
+cover var  // any possible value of var should be tested
+cover var, reset=true // include reset in coverage
+cover var, range=(1..3) // cover from just 1..3
+cover(var, range=(1,30,2)) // cover var just 1,2, and 30 values
+
+--------------
+
+
+for i in 1,3,4 {
+}
+
+a = 1..33 step 4
+a = 1:33 step 4
+
+
+---------------------
+
+any = ||{
+  for i in $ {
+    if $.__do(i) {
+      return true
+    }
+  }
+  return false
+}
+
+all = ||{
+  for i in $ {
+     $.__do(i)
+    return false unless res
+  }
+  return true
+}
+
+if comptime any(2,7,3) ||{$ < 3} {
+}
+
+if (1,2,3) |> all ||{$ <= 3} {
+}
 
