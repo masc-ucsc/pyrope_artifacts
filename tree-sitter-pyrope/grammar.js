@@ -118,7 +118,7 @@ module.exports = grammar({
     ),
 
     bool_expr_cont: $ => seq(
-      choice('or', 'and', 'implies', 'is', 'isnot', '<', '<=', '==', '!=', '>=', '>'),
+      choice('or', 'has', 'and', 'implies', 'is', 'isnot', '<', '<=', '==', '!=', '>=', '>'),
       $.factor
     ),
 
@@ -260,14 +260,6 @@ module.exports = grammar({
 
     _newline: $ => repeat1(choice(/;/,/\n/,/\\\r?\n/)),
 
-    // http://stackoverflow.com/questions/13014947/regex-to-match-a-c-style-multiline-comment/36328890#36328890
-    comment: $ => token(choice(
-      seq('//', /(\\(.|\r?\n)|[^\\\n])*/),
-      seq(
-        '/*',
-        /[^*]*\*+([^/*][^*]*\*+)*/,
-        '/'
-      )
-    )),
+    comment: (_) => token(seq("//", /.*/)),
   }
 });

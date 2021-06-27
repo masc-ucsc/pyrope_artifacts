@@ -1,155 +1,385 @@
 
 (* Pyrope grammar with preparse to remove comments and create tokens *)
-(* New lines and ';' are line separator. In lexer, "((\n|\r|;)+[space])+ -> newline *)
-(* Commas are list separators. In lexer ",[space|newline]," -> ","  *)
-(* Some tokens change when at the beginning of new line. In lexer (newline|';'), [,+*/|&^ and or] -> n_comma n_+ n_* n_or n_and ... *)
+(* New lines and ';' are line separator. In lexer, "((\n|\r|;)+[space])+ -> newline_ *)
+(* Commas are list separators. In lexer ",[space|newline_]," -> ","  *)
+(* Some tokens change when at the beginning of new line. In lexer (newline_|';'), [,+*/|&^ and or] -> n_comma n_+ n_* n_or n_and ... *)
 (* To distinguish between 1+1 * 3 and 1 + 1*3, The +/* tokens also have s_+ (spaced +) or t_+ (tight +) *)
 (* In the grammar: '+' means s_+ | t_+ | n_+ *)
-(* Newlines that have no meaning are eliminated. E.g: (newline|';'), [,:=] -> [,:=] *)
+(* newline_s that have no meaning are eliminated. E.g: (newline_|';'), [,:=] -> [,:=] *)
 (* In lexer, token 'not' 'in' becomes 'notin' *)
 (* In lexer, token 'is' 'not'  becomes 'isnot' *)
 (* In lexer, Token '|>' becomes "pipe" *)
 (* Spaces are Token separators. As usual, no token for spaces *)
-(* constant and string are the same? *)
 
-start
+(*
+
+ Grammar rules are simple to help tree creation: After removing the "tokens",
+ each rule has a fixed number of sub-rules.  If the rule has a repeat or skip,
+ there is nothing but the repeat/skip after removing the tokens. The reason is
+ that this allows to have tree nodes of fixed size (easier to convert to ASTs)
+ or a simple repetition pattern
+
+*)
+
+stmt_seq
   = {stmt}
   ;
 
 stmt
-  = stmt_itself, [gate_stmt], newline
+  = (if_stmt
+    | match_stmt
+    | while_stmt
+    | for_stmt
+    | ass_fcall_stmt
+    | ctrl_stmt
+    | scope_stmt_seq
+    | try_stmt
+    | debug_comptime_stmt
+    | yield_stmt
+    | fail_stmt
+    | test_stmt)
+  , gate_stmt_opt, newline_
   ;
 
-gate_stmt
-  = ('when' | 'unless'), bool_expr
-  ;
-
-stmt_itself
-  = if_stmt
-  | while_stmt
-  | for_stmt
-  | ass_fcall_stmt
-  | ctrl_stmt
+gate_stmt_opt
+  = [('when' | 'unless'), expr_entry]
   ;
 
 if_stmt
-  = ['unique'], 'if', ['comptime'], bool_expr, new_scope, {'elif', ['comptime'], bool_expr, new_scope}, ['else', new_scope]
+  = ['unique'], 'if', expr_entry, scope_stmt_seq, if_elif_seq, else_line_opt
+  ;
+
+else_line_opt
+  = ['else', scope_stmt_seq]
+  ;
+
+if_elif_seq
+  = {if_elif_line}
+  ;
+
+if_elif_line
+  = 'elif', expr_entry, scope_stmt_seq
+  ;
+
+(* after '}' there must be a newline_ or a when or an unless, but already in
+   other rules.  If possible to "peek" it could be checked *)
+scope_stmt_seq
+  = '{', newline_, stmt_seq, '}'
+  ;
+
+scope_stmt_opt
+  = [scope_stmt_seq]
+  ;
+
+debug_comptime_stmt
+  = stmt_attr, scope_stmt_seq
+  ;
+
+stmt_attr
+  = (('comptime', ['debug']) | 'debug')
+  ;
+
+stmt_attr_opt
+  = [stmt_attr]
+  ;
+
+test_stmt
+  = 'test', LITERAL_STRING, scope_stmt_seq
+  ;
+
+fail_stmt
+  = 'fail', LITERAL_STRING, scope_stmt_seq
+  ;
+
+try_stmt
+  = 'try', scope_stmt_seq, else_line_opt
+  ;
+
+yield_stmt
+  = 'yield', expr_entry_opt, scope_stmt_opt
+  ;
+
+match_stmt
+  = 'match', bundle_list, '{', newline_, match_stmt_line_seq, match_else_line_opt, '}'
+  ;
+
+match_stmt_line_seq
+  = {match_factor_line}
+  ;
+
+match_stmt_line
+  = (is_typecase | in_range | expr_entry), gate_stmt_opt, scope_stmt_seq, newline_
+  ;
+
+match_else_line_opt
+  = ['else', scope_stmt_seq, newline_]
   ;
 
 while_stmt
-  =  'while', ['comptime'], bool_expr, new_scope
+  =  'while', expr_entry, scope_stmt_seq
   ;
 
 for_stmt
-  =  'for', ['comptime'], identifier, 'in', tup_expr_list, new_scope
+  =  'for', identifier, in_range, scope_stmt_seq
   ;
 
 ctrl_stmt
   = 'continue' | 'break' | 'return'
   ;
 
+(* default pass is "let" "comb" *)
 ass_fcall_stmt
-  = assign_attribute, variable_base, assignment_cont
-  | ['comptime'], variable_base, (assignment_cont | (fcall_args | tup_expr_list), {'|>', fcall_stmt})
+  = assign_attr_opt
+  , variable_base, (assignment_cont | ass_fcall_func_cont | bundle_list)
   ;
 
-assign_attribute
-  = ('let' | 'mut' | 'var' | 'set' | 'raw'), (
-   [('pipe' | 'comb')], ['comptime']
-   | ['type']
-  )
-  ;
-
-fcall_stmt
-  = variable_base, fcall_args, {'|>', fcall_stmt}
-  ;
-
-(* this can only happen when "mut xx +=..." or " xx +=..." *)
-assignment_cont
-  = [typecase], ('=' | ':=' | '+=' | '-=' | '++=' | '|=' | '&=' | '^=' | '*=' | '/='), tup_expr_list
+ass_fcall_func_cont
+  = fcall_args, fcall_pipe_seq
   ;
 
 fcall_args
-  = '(', [expr_list], ')', [fcall_def, ['else', new_fun_scope]]
+  = bundle, fcall_args_lambda_opt
   ;
 
+fcall_args_lambda_opt
+  = [pipe_check_opt, lambda_def, fcall_args_lambda_else_opt]
+  ;
+
+fcall_args_lambda_else_opt
+  = ['else', pipe_check_opt, lambda_def ]
+  ;
+
+fcall_pipe_seq
+  = {fcall_pipe}
+  ;
+
+fcall_pipe
+  = [newline_], '|>', variable_base, fcall_args
+  ;
+
+assign_attr_opt
+  = [(stmt_attr_opt, 'let', let_attr_opt) | 'mut' | 'var' | 'set']
+  ;
+
+let_attr_opt
+  = [pipe_check | repipe_check | 'type']
+  ;
+
+assignment_cont
+  = typecase_opt, [newline_], ('=' | ':=' | '+=' | '-=' | '++=' | '|=' | '&=' | '^=' | '*=' | '/='), bundle_list
+  ;
+
+
+pipe_check
+  = (('pipe' | 'async'), '(', range, ')' | 'anypipe')
+  ;
+
+pipe_check_opt
+  = [pipe_check]
+  ;
+
+repipe_check
+  = ('repipe' | 'reasync'), '(', range, ')'
+  ;
+
+(* variable_base has no fluid or bit operations @ *)
 typecase
-  = ':', variable_base, ['constrain', new_fun_scope]
+  = ':', [(variable_base|literal|bundle), where_opt]
+  ;
+
+where_opt
+  = ['where', lambda_def]
+  ;
+
+typecase_opt
+  = [typecase]
+  ;
+
+is_typecase
+  = ('is' | 'isnot'), typecase
   ;
 
 variable_base
-  = ['$' | '%' | '#'], identifier, {'.', (identifier|constant) | '[', expr_list, ']'}
+  = variable_base_start
+   ,variable_base_field_seq
+   ,variable_prev_field_opt
+   ,variable_base_last_opt
   ;
 
-variable_bit_sel
-  = '@', ['sext' | 'zext' | '|' | '&' | '^' | '+'], '(', [expr_list], ')'
+variable_base_start
+  = (('$' | '%' | '#'), [(identifier|literal)] | identifier)
   ;
 
-expr_list
-  = expr_element, { ',', expr_element}
+variable_base_last_opt
+  = ['?' | '!' | variable_bit_sel_seq]
   ;
 
-(* if '=' the factor can only be identifier [typecase] *)
-expr_element
-  = {','}, ['comptime'], factor, ( '=' | tup_expr_cont)
+variable_prev_field_opt
+  = ['#','[', [newline_], expr_entry, [newline_], ']']
   ;
 
-tup_expr
-  = factor, {tup_expr_cont|scalar_expr_cont|bool_expr_cont}
+variable_base_field_seq
+  = {variable_base_field}
   ;
 
-tup_expr_list
-  = tup_expr, {',', tup_expr}
+variable_base_field
+  = ['?'] , (dot_selector | selector)
   ;
 
-tup_expr_cont
-  = ('++' | 'in' | 'notin'), factor
-  | 'between', range
-  | range_cont
+dot_selector
+  = [newline_], '.', (identifier|literal)
   ;
 
-scalar_expr
-  = factor, {scalar_expr_cont|bool_expr_cont}
+selector
+  = '[', expr_seq, [newline_], ']'
   ;
 
-scalar_expr_cont
-  = ('+' | '*' | '/' | '|' | '&' | '^'), factor
-  | '|>', fcall_stmt
+bundle
+  = '(', bundle_seq, [newline_], ')', typecase_opt
   ;
 
-bool_expr
-  = factor, {bool_expr_cont}
+expr_seq
+  = comma_seq_, {expr_entry, {comma, comma_seq_, expr_entry}}, comma_seq_
   ;
 
-bool_expr_cont
-  = ('or' | 'and' | 'implies' | 'is' | 'isnot' | '<' | '<=' | '==' | '!=' | '>=' | '>'), factor
+bundle_seq
+  = comma_seq_, {bundle_entry, {comma, comma_seq_, bundle_entry}}, comma_seq_
+  ;
+
+bundle_list
+  = bundle_entry, {comma, comma_seq_, bundle_entry}
+  ;
+
+comma_seq_
+  = {comma}
+  ;
+
+comma
+  = [newline_], ','
+  ;
+
+(* if = hits, 1st factor can be only "identifier typecase_opt" *)
+bundle_entry
+  = factor, [ '=', factor], expr_cont_seq
+  ;
+
+expr_entry
+  = factor , expr_cont_seq
+  ;
+
+expr_entry_opt
+  = [expr_entry]
+  ;
+
+(* all the operator (+,*,/...) have + and newline__+ *)
+expr_cont
+  = (('++' | '+' | '*' | '/' | '|' | '&' | '^' | 'or' | 'and' | 'has' | 'implies' | '<' | '<=' | '==' | '!=' | '>=' | '>'), factor)
+  | is_typecase
+  | in_range
+  | fcall_pipe
+  ;
+
+expr_cont_seq
+  = {expr_cont}
+  ;
+
+factor_opt
+  = [factor]
   ;
 
 factor
-  = ['!' | '-' | '~'], (variable_base, [variable_bit_sel | fcall_args | typecase]
-    | constant
-    | '(', [expr_list], ')', [typecase]
-    | 'if', bool_expr, '{', tup_expr_list, '}', 'else', '{', tup_expr_list, '}'
-    | fcall_def
+  = stmt_attr_opt, ['!' | '-' | '~']
+  , ( factor_var_fcall_type
+    | literal
+    | bundle
+    | if_expr
+    | match_expr
+    | lambda_def
   )
   ;
 
+factor_var_fcall_type
+  = variable_base, [fcall_args | typecase]
+  ;
+
+if_expr
+  = 'if', expr_entry, '{', expr_entry, '}', 'else', '{', expr_entry, '}'
+  ;
+
+match_expr
+  = 'match', bundle_list, '{', match_factor_line_seq, match_expr_else_opt, '}'
+  ;
+
+match_expr_else_opt
+  = [[newline_], 'else', '{', expr_entry, '}']
+  ;
+
+variable_bit_sel_seq
+  = {variable_bit_sel}
+  ;
+
+variable_bit_sel
+  = '@', ['sext' | 'zext' | '|' | '&' | '^' | '+'], selector
+  ;
+
+match_factor_line_seq
+  = {match_factor_line}
+  ;
+
+match_factor_line
+  = [newline_], (is_typecase | in_range | expr_entry), gate_stmt_opt, '{', expr_entry, '}'
+  ;
+
 range
-  = [factor], range_cont
+  = factor_opt, (':' | '+:' | '..'), factor_opt, range_step_opt
   ;
 
-range_cont
-  = (':' | '..'), [factor], ['step', factor]
+range_step_opt
+  = [':', factor]
   ;
 
-fcall_def
-  = '|', [ '(', {','}, {'$', identifier}, {','} ')'], '|', new_fun_scope
+in_range
+  = ('in' | 'notin'), range
   ;
 
-new_fun_scope
-  = '{', (newline, {stmt} | tup_expr_list), '}'
+lambda_def
+  = '{|', (newline_, stmt_seq | expr_entry), '}'
   ;
 
-new_scope
-  = '{', newline, {stmt}, '}'
+(* multiline string
+  a = "multi\n
+   ++ "  line\n"
+   ++ "string"
+*)
+
+literal
+  = LITERAL_INTEGER
+  | LITERAL_STRING
+  | LITERAL_BOOLEAN
   ;
+
+LITERAL_INTEGER
+  = '0b',  ('0'|'1'|'?'), {'_'|'0'|'1'|'?'}
+  | '0sb', ('0'|'1'|'?'), {'_'|'0'|'1'|'?'}
+  | '0o',  ('0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'), {'_'|'0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'}
+  | '0x',  ('0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'|'a'|'A'|'b'|'B'|'c'|'C'|'d'|'D'|'e'|'E'|'f'|'F'), {'_'|'0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'|'a'|'A'|'b'|'B'|'c'|'C'|'d'|'D'|'e'|'E'|'f'|'F'}
+  | '0sx',  ('0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'|'a'|'A'|'b'|'B'|'c'|'C'|'d'|'D'|'e'|'E'|'f'|'F'), {'_'|'0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'|'a'|'A'|'b'|'B'|'c'|'C'|'d'|'D'|'e'|'E'|'f'|'F'}
+  | ('1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'), {'_'|'0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'}
+  ;
+
+LITERAL_STRING
+  = "'", STRING1_SEQ, "'"
+  | '"', STRING2_SEQ, '"'
+  ;
+
+LITERAL_BOOLEAN
+  = 'true' | 'false'
+  ;
+
+STRING1_SEQ
+  = {"^'\n"}
+  ;
+STRING2_SEQ
+  = {'^"\n'}
+  ;
+

@@ -1,0 +1,27 @@
+
+#flop1.__clk_pin = clk1
+#flop2.__clk_pin = clk2
+
+if $enable {
+  #flop1 := #flop1 + $a
+}
+
+//-----------------------------------
+// Dirty cross clock flop (not good)
+
+#flop2 = #flop1
+
+//-----------------------------------
+
+async_clock_sync = ::{
+  %output.__fluid = true  // output is a fluid flop
+  close = import("crossclock.close_clock_edges")
+  if close($clock1,$clock2) {
+     $input!  = true // push retry signal
+     %output? = false // no valid output
+  }else{
+    %output = $input
+  }
+}
+
+#flop2 = async_clock_sync(clock1=clk1,clock2=clk2,input=#flop1)
