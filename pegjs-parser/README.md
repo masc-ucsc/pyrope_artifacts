@@ -1,3 +1,6 @@
+
+*** WARNING: This PEGJS grammar is for an older version of Pyrope 0.2. It is not consistent with LiveHD ***
+
 # build
 ```
 yarn install
