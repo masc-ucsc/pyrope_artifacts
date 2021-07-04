@@ -33,6 +33,9 @@ These are some potential ideas for Pyrope v3 based on RUST/V ideas
 
  x = 3  // immutable x : same as let x = 3
  x += 3 // mutable x : same as mut x = x + 3
+%x = 3  // mutable %x output: same as mut %x = 3
+
+ mut $foo = 3 // compile error?
 
  comptime mut foo.bar.xx = // comptime -> the rhs/value/tuple to assign must be known at compile time
  comptime raw foo.bar.xx = // ....
@@ -105,6 +108,19 @@ These are some potential ideas for Pyrope v3 based on RUST/V ideas
  restrict foo < 4 // constrain to help in verif mode
 
 5.Easier function type check
+
+ XXX is YYY  "same as" XXX.__type == YYY.__type
+
+ XX:YY "same as" for each YY var, XX implements it with same type
+
+ XX:YY "could be read as" XX implements YY type (but it can be more)
+ XX is YY "could be read as" XX has the same methods/vars as YY
+
+ XX has YY "could be read as" XX.YYY exists
+
+XX implements YY // XX can be more than YY
+XX is         YY // XX is the same as YY
+XX
 
  fun = {|
    ensure $ is :(foo,bar)

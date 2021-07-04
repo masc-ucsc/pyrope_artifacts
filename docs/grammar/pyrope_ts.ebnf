@@ -21,6 +21,10 @@
 
 *)
 
+start
+  = ['|', lambda_def_constrains_opt, '|'], stmt_seq
+  ;
+
 stmt_seq
   = {stmt}
   ;
@@ -184,11 +188,12 @@ repipe_check
 
 (* variable_base has no fluid or bit operations @ *)
 typecase
-  = ':', [(variable_base|literal|bundle), where_opt]
+  = (':', [(variable_base|bundle)])
+  | (':{', [(variable_base|bundle)], where_opt, '}')
   ;
 
 where_opt
-  = ['where', lambda_def]
+  = ['where', '(', expr_entry, ')']
   ;
 
 typecase_opt
@@ -196,7 +201,7 @@ typecase_opt
   ;
 
 is_typecase
-  = ('is' | 'isnot'), typecase
+  = ('is' | 'implements' | 'isnot'), typecase
   ;
 
 variable_base
@@ -231,19 +236,19 @@ dot_selector
   ;
 
 selector
-  = '[', expr_seq, [newline_], ']'
+  = '[', [expr_seq1], [newline_], ']'
   ;
 
 bundle
-  = '(', bundle_seq, [newline_], ')', typecase_opt
+  = '(', [bundle_seq1], [newline_], ')', typecase_opt
   ;
 
-expr_seq
-  = comma_seq_, {expr_entry, {comma, comma_seq_, expr_entry}}, comma_seq_
+expr_seq1
+  = comma_seq_, expr_entry, {comma, comma_seq_, expr_entry}, comma_seq_
   ;
 
-bundle_seq
-  = comma_seq_, {bundle_entry, {comma, comma_seq_, bundle_entry}}, comma_seq_
+bundle_seq1
+  = comma_seq_, bundle_entry, {comma, comma_seq_, bundle_entry}, comma_seq_
   ;
 
 bundle_list
@@ -264,7 +269,7 @@ bundle_entry
   ;
 
 expr_entry
-  = factor , expr_cont_seq
+  = factor , expr_cont_seq, in_range_opt
   ;
 
 expr_entry_opt
@@ -275,7 +280,6 @@ expr_entry_opt
 expr_cont
   = (('++' | '+' | '*' | '/' | '|' | '&' | '^' | 'or' | 'and' | 'has' | 'implies' | '<' | '<=' | '==' | '!=' | '>=' | '>'), factor)
   | is_typecase
-  | in_range
   | fcall_pipe
   ;
 
@@ -335,15 +339,31 @@ range
   ;
 
 range_step_opt
-  = [':', factor]
+  = ['step' factor]
   ;
 
 in_range
   = ('in' | 'notin'), range
   ;
 
+in_range_opt
+  = [in_range]
+  ;
+
 lambda_def
-  = '{|', (newline_, stmt_seq | expr_entry), '}'
+  = '{|', lambda_def_constrains_opt, '|', (newline_, stmt_seq | expr_entry), '}'
+  ;
+
+lambda_def_constrains_opt
+  = ['mut'], ['<', argument_seq, '>'], ['(', argument_seq, ')'], ['->', '(', argument_seq, ')'], where_opt
+  ;
+
+argument_seq
+  = comma_seq_, {argument, {comma, comma_seq_, argument}}, comma_seq_
+  ;
+
+argument
+  = (identifier | '_'), typecase_opt
   ;
 
 (* multiline string

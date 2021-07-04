@@ -3,11 +3,8 @@ Use Kate Grammar Tool
 
  git clone --recursive https://github.com/katef/kgt.git
 
- # Uses BSD bmake to build
-
- kgt -l wsn -e rrdot <c_grammar.wsn >pp.dot
+ kgt -l iso-ebnf -e html5 <pyrope_ts.ebnf >pp.html
  kgt -l wsn -e svg   <c_grammar.wsn >pp.svg
-
 
 To convert tree-sitter to EBNF
 

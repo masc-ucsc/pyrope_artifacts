@@ -1,12 +1,4 @@
 const PREC = {
-  fcall : 21,
-  fcallimp : 20,
-  unary : 20,
-  mult : 19,
-  addtv : 19,
-  addplusmns : 18,
-  comparators : 17,
-  logical : 16,
 }
 
 const IDENTIFIER_CHARS = /[^\x00-\x1F\s:;`"'@$#.,|^&<=>+\-*/\\%?!~()\[\]{}]*/;
@@ -27,58 +19,55 @@ module.exports = grammar({
 
   rules: {
 
-    file_top: $ => repeat($.stmt),
+    start: $ =>
+      repeat($.stmt)
 
-    stmt: $ => seq(
-      $._stmt_itself,
-      // optional($.gate_stmt),
-      $._newline
-    ),
+    ,stmt: $ =>
+      seq(
+        choice(
+           $.if_stmt
+          ,$.while_stmt
+          ,$.for_stmt
+          ,$.ass_fcall_stmt
+          ,$.ctrl_stmt
+        )
+        ,optional($.gate_stmt)
+        ,$._newline
+      )
 
-    gate_stmt: $ => seq(
-      choice('when','unless'),
-      $.bool_expr
-    ),
-
-    _stmt_itself: $ => choice(
-      $.if_stmt,
-      $.while_stmt,
-      $.for_stmt,
-      $.ass_fcall_stmt,
-      $.ctrl_stmt,
-    ),
+    ,gate_stmt: $ =>
+      seq(
+        choice('when','unless')
+        ,$.expr_entry
+      ),
 
     if_stmt: $ => seq(
       optional('unique'),
       'if',
-      optional('comptime'),
-      $.bool_expr,
-      $.new_scope,
+      $.expr_entry,
+      $.scope_stmt,
       repeat(seq('elif',
-        optional('comptime'),
-        $.bool_expr,
-        $.new_scope)
+        $.expr_entry,
+        $.scope_stmt)
       ),
       optional(seq(
         'else',
-        $.new_scope)
+        $.scope_stmt)
       )
     ),
 
     while_stmt: $ => seq(
       'while',
-      optional('comptime'),
-      $.bool_expr,
-      $.new_scope,
+      $.expr_entry,
+      $.scope_stmt,
     ),
 
     for_stmt: $ => seq(
       'for',
-      optional('comptime'),
       $.identifier,
       'in',
-      $.bool_expr, // FIXME: tup_expr_list
-      $.new_scope,
+      $.expr_entry, // FIXME: tup_expr_list
+      $.scope_stmt,
     ),
 
     ctrl_stmt: $ => choice('continue', 'break', 'return'),
@@ -102,72 +91,172 @@ module.exports = grammar({
     assignment_cont: $ => seq(
       optional($.typecase),
       choice('=', ':=', '+=', '-=', '++=', '|=', '&=', '^=', '*=', '/=', 'or=', 'and='),
-      $.bool_expr, // FIXME: tup_expr_list
+      $.expr_entry, // FIXME: tup_expr_list
     ),
 
-    new_scope: $ => seq(
-      '{',
-      $._newline,
-      repeat($.stmt),
-      '}'
-    ),
+    scope_stmt: $ =>
+      seq(
+         '{'
+        ,$._newline
+        ,repeat($.stmt)
+        ,'}'
+      )
 
-    bool_expr: $ => seq(
-      $.factor,
-      repeat($.bool_expr_cont)
-    ),
+    ,expr_entry: $ =>
+      seq(
+         $.factor
+        ,repeat($.expr_cont)
+        ,optional($.in_range)
+      )
 
-    bool_expr_cont: $ => seq(
-      choice('or', 'has', 'and', 'implies', 'is', 'isnot', '<', '<=', '==', '!=', '>=', '>'),
-      $.factor
-    ),
-
-    factor: $ => seq(
-      optional(choice('!', '-', '~')),
+    ,expr_cont: $ =>
       choice(
         seq(
-          $.variable_base,
-          optional(choice($.variable_bit_sel, $.typecase, $.fcall_args)),
-        ),
-        $.constant,
-        seq('(',
-          optional($.bool_expr), // FIXME: expr_list
-          ')',
-          optional($.typecase)
-        ),
-        $.fcall_def,
-      ),
-    ), // FIXME: add fcall, if...
+           choice('++', '+', '*', '/', '|', '&', '^', 'or', 'and', 'has', 'implies', '<', '<=', '==', '!=', '>=', '>')
+          ,$.factor
+        )
+       ,$.is_typecase // FIXME: add fcall_pipe
+      )
 
-    fcall_args: $ => seq(
-      '(',
-      optional($.bool_expr), // FIXME: expr_list
-      ')',
-      optional(
+    ,is_typecase: $ =>
+      seq(
+        choice(
+           'is'
+          ,'implements'
+          ,'isnot'
+        )
+        ,$.typecase
+      )
+
+    ,in_range: $ =>
+      seq(
+        choice(
+           'in'
+          ,'notint'
+        )
+        ,$.range
+      )
+
+    ,range: $ => // FIXME: patch _ts to be consistent
+      seq(
+         choice(
+          seq(
+             $.factor
+            ,choice(
+              seq(
+                choice('+:', '<:' , '=:')
+               ,$.factor
+              )
+              ,'..'
+            )
+          )
+          ,seq(
+            '..'
+            ,optional($.factor)
+          )
+        )
+        ,optional(
+          seq(
+            'step'
+           ,$.factor)
+        )
+      )
+
+    ,factor: $ => seq(
+      optional($.stmt_attr)
+      ,optional(choice('!', '-', '~'))
+      ,choice(
+        $.factor_var_fcall_type
+      )
+    )
+
+    ,factor_var_fcall_type: $ =>
+      seq(
+        $.variable_base
+        ,choice($.fcall_args, $.typecase)
+      )
+
+    ,stmt_attr: $ =>
+      seq(
+        choice(
+           seq('comptime', optional('debug'))
+          ,'debug'
+        )
+      )
+
+    ,fcall_args: $ =>
+      seq(
+         $.bundle
+        ,optional($.fcall_args_lambda)
+      )
+
+    ,fcall_args_lambda: $ =>
+      seq(
+         optional($.pipe_check)
+        ,$.lambda_def
+        ,optional($.fcall_args_lambda_else)
+      )
+
+    ,pipe_check: $ =>
+      choice(
         seq(
-          $.fcall_def,
-          optional(
-            seq(
-              'else',
-              $.new_fun_scope
-            ),
-          ),
-        ),
-      ),
-    ),
+          choice('pipe', 'async')
+          ,'('
+          ,$.range
+          ,')'
+        )
+        ,'anypipe'
+      )
 
-    typecase: $ => seq(
-      ':',
-      $.variable_base,
-      optional(
-        seq(
-          'constrain',
-          $.new_fun_scope,
-        ),
-      ),
-    ),
+    ,fcall_args_lambda_else: $ =>
+      seq(
+         'else'
+        ,optional($.pipe_check)
+        ,$.lambda_def
+      )
 
-    fcall_def: $ => seq(
+    ,lambda_def: $ =>
+      seq(
+        '{|' // FIXME lambda_def_constrains_opt, '|'
+        ,choice(
+           seq($._newline, repeat($.stmt))
+          ,$.expr_entry
+        )
+        ,'}'
+      )
+
+    ,typecase: $ =>
+      seq(
+         choice(
+          seq(
+             ':'
+            ,optional(
+              seq(
+                 choice($.variable_base, $.bundle)
+                ,optional($.where_stmt)
+              )
+            )
+          )
+        )
+        ,seq(
+           ':{'
+          ,seq(
+             choice($.variable_base, $.bundle)
+            ,$.where_stmt
+          )
+          ,'}'
+        )
+      )
+
+    ,where_stmt: $ =>
+      seq(
+         'where'
+        ,'('
+        , $.expr_entry
+        ,')'
+      )
+
+    ,fcall_def: $ => seq(
       '|',
       optional(
         seq(
@@ -194,43 +283,133 @@ module.exports = grammar({
           $._newline,
           repeat($.stmt),
         ),
-        $.bool_expr // FIXMEL tup_expr_list
+        $.expr_entry // FIXMEL tup_expr_list
       ),
       '}'
     ),
 
-    variable_base: $ => seq(
-      optional(choice('$', '%', '#')),
-      $.identifier,
-      repeat(
-        choice(
-          seq(
-            '.',
-            choice(
-              $.identifier,
-              $.constant
-            )
-          ),
-          seq(
-            '[',
-            $.bool_expr, // FIXME: expr_list
-            ']'
-          )
+    variable_base: $ =>
+      seq(
+         $.variable_base_start
+        ,repeat($.variable_base_field)
+        //,optional($.variable_prev_field)
+        //,optional($.variable_base_last)
+      )
+
+    ,variable_base_start: $ =>
+      seq(
+         choice('$', '%', '#')
+        ,choice(
+           $.identifier
+          ,$.literal
         )
       )
-    ),
 
-    variable_bit_sel: $ => seq(
-      '@',
-      optional(choice('sext', 'zext', '|', '&', '^', '+')),
-      '(',
-      optional($.bool_expr), // FIXME: expr_list
-      ')'
-    ),
+    ,variable_base_field: $ =>
+      seq(
+         optional('?')
+        ,choice(
+           $.dot_selector
+          ,$.selector
+        )
+      )
 
-    identifier: $ => token(seq(LOWER_ALPHA_CHAR, IDENTIFIER_CHARS)),
+    ,variable_prev_field: $ =>
+      seq(
+         '#['
+        ,$._newline
+        ,$.expr_entry
+        ,$._newline
+        ,']'
+      )
 
-    integer: $ => /0[bB][01\?](_?[01\?])*|0[oO]?[0-7](_?[0-7])*|(0[dD])?\d(_?\d)*|0[xX][0-9a-fA-F](_?[0-9a-fA-F])*/,
+    ,variable_base_last: $ =>
+      seq(
+         choice(
+            '?'
+           ,'!'
+           ,repeat1($.variable_bit_sel)
+         )
+      )
+
+    ,dot_selector: $ =>
+      seq(
+         choice('.', /\n./) // FIXME: scanner? , seq($._newline, '.'))
+        ,choice($.identifier, $.literal)
+      )
+
+    ,selector: $ =>
+      seq(
+        '['
+        ,optional($.expr_seq1)
+        ,optional($._newline)
+        ,']'
+      )
+
+    ,expr_seq1: $ =>
+      seq(
+         repeat(',')
+        ,seq(
+          $.expr_entry
+          ,repeat(
+            seq(
+               repeat1(',')
+              ,$.expr_entry
+            )
+          )
+        )
+        ,repeat(',')
+      )
+
+    ,bundle: $ =>
+      seq(
+        '('
+        ,optional($.bundle_seq1)
+        ,optional($._newline)
+        ,')'
+        ,optional($.typecase)
+      )
+
+    ,bundle_seq1: $ =>
+      seq(
+         repeat(',')
+        ,seq(
+          $.bundle_entry
+          ,repeat(
+            seq(
+               repeat1(',')
+              ,$.bundle_entry
+            )
+          )
+        )
+        ,repeat(',')
+      )
+
+    ,bundle_entry: $ =>
+      seq(
+        $.factor
+        ,optional(
+          seq(
+             '='
+            ,$.factor
+          )
+        )
+        ,repeat($.expr_cont)
+      )
+
+    ,variable_bit_sel: $ =>
+      seq(
+         '@'
+        ,optional(choice('sext', 'zext', '|', '&', '^', '+'))
+        ,$.selector
+      )
+
+    ,identifier: $ => token(seq(LOWER_ALPHA_CHAR, IDENTIFIER_CHARS))
+
+    ,literal: $ =>
+      $.integer  // FIXME: integer or string or boolean
+
+    ,integer: $ => /0[bB][01\?](_?[01\?])*|0[oO]?[0-7](_?[0-7])*|(0[dD])?\d(_?\d)*|0[xX][0-9a-fA-F](_?[0-9a-fA-F])*/,
 
     string: $ => seq(
       '"',
