@@ -41,6 +41,12 @@ module.exports = grammar({
           ,$.for_stmt
           ,$.ass_fcall_stmt
           ,$.ctrl_stmt
+          ,$.scope_stmt
+          ,$.try_stmt
+          ,$.debug_comptime_stmt
+          ,$.yield_stmt
+          ,$.fail_stmt
+          ,$.test_stmt
         )
         ,optional($.gate_stmt)
         ,$._newline
@@ -90,12 +96,23 @@ module.exports = grammar({
         ,$.scope_stmt
       )
 
-    ,ctrl_stmt: $ => choice('continue', 'break', 'return'),
+    ,ctrl_stmt: $ =>
+      choice(
+        'continue'
+        ,'break'
+        ,seq(
+          'return'
+          ,$.expr_seq1
+        )
+      )
 
-    ass_fcall_stmt: $ =>
+    ,ass_fcall_stmt: $ =>
       seq(
         optional($.assign_attr)
-        ,$.variable_base
+        ,choice(
+          $.variable_base
+          ,$.argument_list
+        )
         ,seq(
           choice(
             $.assignment_cont
@@ -153,6 +170,40 @@ module.exports = grammar({
         ,'}'
       )
 
+    ,try_stmt: $ =>
+      seq(
+         'try'
+        ,$.scope_stmt
+        ,optional($.else_line)
+      )
+
+    ,debug_comptime_stmt: $ =>
+      seq(
+         $.expr_attr
+        ,$.scope_stmt
+      )
+
+    ,yield_stmt: $ =>
+      seq(
+         'yield'
+        ,optional($.expr_entry)
+        ,$.scope_stmt
+      )
+
+    ,fail_stmt: $ =>
+      seq(
+         'fail'
+        ,$.string_literal
+        ,$.scope_stmt
+      )
+
+    ,test_stmt: $ =>
+      seq(
+         'test'
+        ,$.string_literal
+        ,$.scope_stmt
+      )
+
     ,expr_entry: $ =>
       seq(
         optional($.expr_attr)
@@ -163,12 +214,9 @@ module.exports = grammar({
       )
 
     ,expr_cont: $ =>
-      choice(
-        seq(
-           choice('++', '+', '-', '*', '/', '|', '&', '^', 'or', 'and', 'has', 'implies', '<<', '>>', '<', '<=', '==', '!=', '>=', '>')
-          ,$.factor
-        )
-       // FIXME: add fcall_pipe
+      seq(
+        $.op_tok
+        ,$.factor
       )
 
     ,is_typecase: $ =>
@@ -207,7 +255,7 @@ module.exports = grammar({
        optional(choice('!', '-', '~'))
       ,choice(
          $.factor_var_fcall_type
-				,$.literal // FIXME: add remaining
+				,$.literal // FIXME: add if_expr match_expr
         ,$.bundle
         ,$.lambda_def
       )
@@ -283,23 +331,22 @@ module.exports = grammar({
             ,'>'
           )
         )
-        ,optional(
-          seq(
-            '('
-            ,optional($.argument_seq1)
-            ,')'
-          )
-        )
+        ,optional($.argument_list)
         ,optional(
           seq(
             '->'
-            ,'('
-            ,optional($.argument_seq1)
-            ,')'
+            ,$.argument_list
           )
         )
         ,optional($.where_modifier)
         ,'|'
+      )
+
+    ,argument_list: $ =>
+      seq(
+        '('
+        ,optional($.argument_seq1)
+        ,')'
       )
 
     ,argument_seq1: $ =>
@@ -427,7 +474,7 @@ module.exports = grammar({
 
     ,dot_selector: $ =>
       seq(
-        '.' // FIXME: scanner? , seq($._newline, '.'))
+        $.dot_tok
         ,choice($.identifier, $.literal)
       )
 
@@ -513,11 +560,28 @@ module.exports = grammar({
     //,identifier: $ => token(seq(LOWER_ALPHA_CHAR, IDENTIFIER_CHARS))
 
     ,literal: $ =>
-      $.integer  // FIXME: integer or string or boolean
+      choice(
+        $.integer_literal
+        ,$.string_literal
+        ,$.boolean_literal
+      )
 
-    ,integer: $ => /0[bB][01\?](_?[01\?])*|0[oO]?[0-7](_?[0-7])*|(0[dD])?\d(_?\d)*|0[xX][0-9a-fA-F](_?[0-9a-fA-F])*/,
+    ,integer_literal: (_) =>
+      token(choice(/[0-9][0-9_]*/, /0x[_0-9a-fA-F]+/, /0sb[_01?]+/, /0b[_01?]+/, /0o[_0-7]+/))
 
-    string: $ => seq(
+    ,boolean_literal: (_) => choice("true", "false")
+
+    ,dot_tok: () => token(/\s*\./)
+
+    ,op_tok: () =>
+      token(
+        seq(
+          /\s*/
+          ,choice('++', '+', '-', '*', '/', '|', '&', '^', 'or', 'and', 'has', 'implies', '<<', '>>', '<', '<=', '==', '!=', '>=', '>')
+        )
+      )
+
+    ,string_literal: $ => seq(
       '"',
       repeat(choice(
         token.immediate(prec(1, /[^\\"\n]+/)),
@@ -540,8 +604,6 @@ module.exports = grammar({
         )
       )
     ),
-
-    constant: $ => choice($.integer, $.string),
 
     _newline: $ => repeat1(choice(/;/,/\n/,/\\\r?\n/)),
 
