@@ -22,7 +22,7 @@
 *)
 
 start
-  = ['|', lambda_def_constrains_opt, '|'], stmt_seq
+  = ['|', lambda_def_constrains], stmt_seq
   ;
 
 stmt_seq
@@ -36,7 +36,7 @@ stmt
     | for_stmt
     | ass_fcall_stmt
     | ctrl_stmt
-    | scope_stmt_seq
+    | scope_stmt
     | try_stmt
     | debug_comptime_stmt
     | yield_stmt
@@ -50,11 +50,11 @@ gate_stmt_opt
   ;
 
 if_stmt
-  = ['unique'], 'if', expr_entry, scope_stmt_seq, if_elif_seq, else_line_opt
+  = ['unique'], 'if', expr_entry, scope_stmt, if_elif_seq, else_line_opt
   ;
 
 else_line_opt
-  = ['else', scope_stmt_seq]
+  = ['else', scope_stmt]
   ;
 
 if_elif_seq
@@ -62,41 +62,41 @@ if_elif_seq
   ;
 
 if_elif_line
-  = 'elif', expr_entry, scope_stmt_seq
+  = 'elif', expr_entry, scope_stmt
   ;
 
 (* after '}' there must be a newline_ or a when or an unless, but already in
    other rules.  If possible to "peek" it could be checked *)
-scope_stmt_seq
+scope_stmt
   = '{', newline_, stmt_seq, '}'
   ;
 
 scope_stmt_opt
-  = [scope_stmt_seq]
+  = [scope_stmt]
   ;
 
 debug_comptime_stmt
-  = stmt_attr, scope_stmt_seq
+  = expr_attr, scope_stmt
   ;
 
-stmt_attr
+expr_attr
   = (('comptime', ['debug']) | 'debug')
   ;
 
-stmt_attr_opt
-  = [stmt_attr]
+expr_attr_opt
+  = [expr_attr]
   ;
 
 test_stmt
-  = 'test', LITERAL_STRING, scope_stmt_seq
+  = 'test', LITERAL_STRING, scope_stmt
   ;
 
 fail_stmt
-  = 'fail', LITERAL_STRING, scope_stmt_seq
+  = 'fail', LITERAL_STRING, scope_stmt
   ;
 
 try_stmt
-  = 'try', scope_stmt_seq, else_line_opt
+  = 'try', scope_stmt, else_line_opt
   ;
 
 yield_stmt
@@ -112,19 +112,19 @@ match_stmt_line_seq
   ;
 
 match_stmt_line
-  = (is_typecase | in_range | expr_entry), gate_stmt_opt, scope_stmt_seq, newline_
+  = (is_typecase | in_range | expr_entry), gate_stmt_opt, scope_stmt, newline_
   ;
 
 match_else_line_opt
-  = ['else', scope_stmt_seq, newline_]
+  = ['else', scope_stmt, newline_]
   ;
 
 while_stmt
-  =  'while', expr_entry, scope_stmt_seq
+  =  'while', expr_entry, scope_stmt
   ;
 
 for_stmt
-  =  'for', identifier, in_range, scope_stmt_seq
+  =  'for', identifier, in_range, scope_stmt
   ;
 
 ctrl_stmt
@@ -162,7 +162,7 @@ fcall_pipe
   ;
 
 assign_attr_opt
-  = [(stmt_attr_opt, 'let', let_attr_opt) | 'mut' | 'var' | 'set']
+  = [(expr_attr_opt, 'let', let_attr_opt) | 'mut' | 'var' | 'set']
   ;
 
 let_attr_opt
@@ -173,9 +173,8 @@ assignment_cont
   = typecase_opt, [newline_], ('=' | ':=' | '+=' | '-=' | '++=' | '|=' | '&=' | '^=' | '*=' | '/='), bundle_list
   ;
 
-
 pipe_check
-  = (('pipe' | 'async'), '(', range, ')' | 'anypipe')
+  = (('pipe' | 'async'), bundle) | 'anypipe'
   ;
 
 pipe_check_opt
@@ -183,17 +182,16 @@ pipe_check_opt
   ;
 
 repipe_check
-  = ('repipe' | 'reasync'), '(', range, ')'
+  = ('repipe' | 'reasync'), bundle
   ;
 
 (* variable_base has no fluid or bit operations @ *)
 typecase
-  = (':', [(variable_base|bundle)])
-  | (':{', [(variable_base|bundle)], where_opt, '}')
+  = (':', [(variable_base|bundle), where_modifier_opt])
   ;
 
-where_opt
-  = ['where', '(', expr_entry, ')']
+where_modifier_opt
+  = ['where', '{', (newline_, stmt_seq | expr_entry), '}']
   ;
 
 typecase_opt
@@ -269,7 +267,7 @@ bundle_entry
   ;
 
 expr_entry
-  = factor , expr_cont_seq, in_range_opt
+  = expr_attr_opt, factor , expr_cont_seq, in_range_opt
   ;
 
 expr_entry_opt
@@ -292,7 +290,7 @@ factor_opt
   ;
 
 factor
-  = stmt_attr_opt, ['!' | '-' | '~']
+  = ['!' | '-' | '~']
   , ( factor_var_fcall_type
     | literal
     | bundle
@@ -351,11 +349,11 @@ in_range_opt
   ;
 
 lambda_def
-  = '{|', lambda_def_constrains_opt, '|', (newline_, stmt_seq | expr_entry), '}'
+  = '{|', lambda_def_constrains, (newline_, stmt_seq | expr_entry), '}'
   ;
 
-lambda_def_constrains_opt
-  = ['mut'], ['<', argument_seq, '>'], ['(', argument_seq, ')'], ['->', '(', argument_seq, ')'], where_opt
+lambda_def_constrains
+  = [['mut'], ['<', argument_seq, '>'], ['(', argument_seq, ')'], ['->', '(', argument_seq, ')'], where_modifier_opt], '|'
   ;
 
 argument_seq
@@ -363,7 +361,8 @@ argument_seq
   ;
 
 argument
-  = (identifier | '_'), typecase_opt
+  = (identifier, typecase_opt)
+  | typecase
   ;
 
 (* multiline string

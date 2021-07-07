@@ -35,6 +35,8 @@ These are some potential ideas for Pyrope v3 based on RUST/V ideas
  x += 3 // mutable x : same as mut x = x + 3
 %x = 3  // mutable %x output: same as mut %x = 3
 
+ a[xx] = // implies mutable, No need to say mut a[xx]
+
  mut $foo = 3 // compile error?
 
  comptime mut foo.bar.xx = // comptime -> the rhs/value/tuple to assign must be known at compile time
@@ -74,6 +76,7 @@ These are some potential ideas for Pyrope v3 based on RUST/V ideas
  1:2 is more verilog/python friendly and easier to understand
 
  1:10 set 3 -> (1,3,5,7,9)
+
 
 3.Bit selection
 
@@ -828,7 +831,7 @@ let async a = fcall_1pipe_add_3(val)
 let pipe  b = fcall_1pipe_add_3(val)
 let       c = val + 3 // combinational
 
-let d = fcall_1pipe_add_3(val) // compile error (fcall is pipelined)
+d = fcall_1pipe_add_3(val) // compile error (fcall is pipelined)
 
 await a { // async, flops live-ins as needed
   assert val==0 and a==3 and c==3 // evaluated 1 cycle later (one cycle c is computer, but c is flopped like val)
@@ -866,3 +869,124 @@ yield { // flop all live-ins
       or val==2 and b==4
       or val>2
 }
+
+
+---------------------------------------------
+Verilog inline: case 1
+
+// filename: myfile
+
+var verilog = "module do_add(\n"
+verilog   ++= "  input signed [31:0] a\n"
+verilog   ++= " ,input signed [16:0] b\n"
+verilog   ++= " ,output reg [32:0] out);\n"
+
+verilog   ++= " always @(*) begin\n"
+verilog   ++= "   out = a + b;\n"
+verilog   ++= " end\n"
+verilog   ++= "endmodule\n"
+
+lg = import "livehd"
+comptime lg.pass.compile(verilog)
+
+tmp = do_add(3,4)
+assert tmp == 7
+
+---------------------------------------------
+Verilog inline: case 2
+
+comptime genTable = {|
+  rnd = import "util.rand"
+
+  var arr = ()
+  for a in 0..1024 {
+    arr[a] = rnd(0..256)
+  }
+
+  return arr
+}
+
+comptime genTable_verilog = {|
+
+  var verilog = "module my_genTable_verilog(\n"
+  verilog   ++= "  input [9:0] addr\n"
+  verilog   ++= " ,output reg [7:0] data);\n"
+
+  verilog   ++= " always @(*) begin\n"
+  verilog   ++= "   case(addr)\n"
+
+  rnd = import "util.rand"
+  fmt = import "string.fmt"
+
+  for a in 0..1024 {
+    verilog   ++= fmt("  {}:{};\n", a, rnd(0..256))
+  }
+
+  verilog   ++= "     default: data = 0;\n"
+  verilog   ++= "   endcase\n"
+  verilog   ++= " end\n"
+  verilog   ++= "endmodule\n"
+
+  lg = import "livehd"
+  lg.pass.compile(verilog)
+}
+
+rom = genTable()
+%data1 = rom[$addr]
+
+genTable_verilog()
+
+out = my_genTable_verilog(addr=$addr)
+%data2 = out.data
+
+//--------------------------------------------
+mut/let/set/var translation to LNAST
+
+Orig:
+  var foo = ....
+Becomes:
+  assert(foo is undef, "foo is previously defined")
+  foo = ...
+
+Orig:
+  var foo.bar = ....
+Becomes:
+  assert(foo.bar is undef, "foo is previously defined")
+  foo.bar = ...
+
+Orig:
+  let foo = ...
+Becomes:
+  assert(foo is undef, "foo is previously defined")
+  foo = ...
+
+Orig:
+  let foo.bar = ...
+Becomes:
+  assert(foo.bar is undef, "foo.bar is previously defined")
+  foo.bar = ...
+
+Orig:
+  mut foo = ...
+Becomes:
+  assert(foo is def, "foo is not previously defined")
+  foo = ...
+
+Orig:
+  mut foo.bar = ...
+Becomes:
+  assert(foo is def, "foo is not previously defined")
+  assert(foo.bar is def, "foo.bar is not previously defined")
+  foo.bar = ...
+
+Orig:
+  set foo = ...
+Becomes:
+  foo = ... // no checks
+
+Orig:
+  set foo.bar = ...
+Becomes:
+  assert(foo is def, "foo is not previously defined")
+  foo.bar = ...
+

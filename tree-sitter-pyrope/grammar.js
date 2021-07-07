@@ -8,7 +8,8 @@ module.exports = grammar({
   name: 'pyrope',
 
   extras: $ => [
-    /\s/,
+    / /,
+    /\t/,
     $.comment,
   ],
 
@@ -20,7 +21,17 @@ module.exports = grammar({
   rules: {
 
     start: $ =>
-      repeat($.stmt)
+      seq(
+        optional($._newline)
+        ,optional(
+          seq(
+            '|'
+            ,$.lambda_def_constrains
+            ,$._newline
+          )
+        )
+       ,repeat($.stmt)
+      )
 
     ,stmt: $ =>
       seq(
@@ -41,60 +52,100 @@ module.exports = grammar({
         ,$.expr_entry
       ),
 
-    if_stmt: $ => seq(
-      optional('unique'),
-      'if',
-      $.expr_entry,
-      $.scope_stmt,
-      repeat(seq('elif',
-        $.expr_entry,
-        $.scope_stmt)
-      ),
-      optional(seq(
-        'else',
-        $.scope_stmt)
+    if_stmt: $ =>
+      seq(
+        optional('unique')
+        ,'if'
+        ,$.expr_entry
+        ,$.scope_stmt
+        ,repeat($.if_elif)
+        ,optional($.else_line)
       )
-    ),
 
-    while_stmt: $ => seq(
-      'while',
-      $.expr_entry,
-      $.scope_stmt,
-    ),
+    ,if_elif: $ =>
+      seq(
+        'elif'
+        ,$.expr_entry
+        ,$.scope_stmt
+      )
 
-    for_stmt: $ => seq(
-      'for',
-      $.identifier,
-      'in',
-      $.expr_entry, // FIXME: tup_expr_list
-      $.scope_stmt,
-    ),
+    ,else_line: $ =>
+      seq(
+        'else'
+        ,$.scope_stmt
+      )
 
-    ctrl_stmt: $ => choice('continue', 'break', 'return'),
+    ,while_stmt: $ =>
+      seq(
+        'while'
+        ,$.expr_entry
+        ,$.scope_stmt
+      )
 
-    ass_fcall_stmt: $ => choice(
-      seq($.assign_attribute, $.variable_base, $.assignment_cont),
-      $.variable_base, // FIXME:
-    ),
+    ,for_stmt: $ =>
+      seq(
+        'for'
+        ,$.identifier
+        ,$.in_range
+        ,$.scope_stmt
+      )
 
-    assign_attribute: $ => seq(
-      choice('let', 'mut', 'var', 'set', 'raw'),
+    ,ctrl_stmt: $ => choice('continue', 'break', 'return'),
+
+    ass_fcall_stmt: $ =>
+      seq(
+        optional($.assign_attr)
+        ,$.variable_base
+        ,seq(
+          choice(
+            $.assignment_cont
+            ,$.expr_seq1
+          )
+          ,repeat($.fcall_pipe)
+        )
+      )
+
+    ,ass_fcall_func_cont: $ =>
+      seq(
+        $.fcall_args
+        ,optional($.fcall_pipe)
+      )
+
+    ,fcall_pipe: $ =>
+      seq(
+        //optional($._newline)
+        '|>'
+        ,$.variable_base
+        ,$.fcall_args
+      )
+
+    ,assign_attr: $ =>
       choice(
         seq(
-          optional(choice('pipe', 'comb')),
-          optional('comptime'),
-        ),
-        optional('type'),
-      ),
-    ),
+          $.expr_attr
+          ,'let'
+          ,$.let_attr
+        )
+        ,'mut'
+        ,'set'
+        ,'var'
+      )
 
-    assignment_cont: $ => seq(
-      optional($.typecase),
-      choice('=', ':=', '+=', '-=', '++=', '|=', '&=', '^=', '*=', '/=', 'or=', 'and='),
-      $.expr_entry, // FIXME: tup_expr_list
-    ),
+    ,let_attr: $ =>
+      choice(
+        $.pipe_check
+        ,$.repipe_check
+        ,'type'
+      )
 
-    scope_stmt: $ =>
+    ,assignment_cont: $ =>
+      seq(
+        optional($.typecase)
+        ,choice('=', ':=', '+=', '-=', '++=', '|=', '&=', '^=', '*=', '/=', 'or=', 'and=')
+        ,$.expr_entry
+      )
+
+    ,scope_stmt: $ =>
       seq(
          '{'
         ,$._newline
@@ -104,18 +155,20 @@ module.exports = grammar({
 
     ,expr_entry: $ =>
       seq(
-         $.factor
+        optional($.expr_attr)
+        ,$.factor
         ,repeat($.expr_cont)
         ,optional($.in_range)
+        ,optional($.is_typecase)
       )
 
     ,expr_cont: $ =>
       choice(
         seq(
-           choice('++', '+', '*', '/', '|', '&', '^', 'or', 'and', 'has', 'implies', '<', '<=', '==', '!=', '>=', '>')
+           choice('++', '+', '-', '*', '/', '|', '&', '^', 'or', 'and', 'has', 'implies', '<<', '>>', '<', '<=', '==', '!=', '>=', '>')
           ,$.factor
         )
-       ,$.is_typecase // FIXME: add fcall_pipe
+       // FIXME: add fcall_pipe
       )
 
     ,is_typecase: $ =>
@@ -134,49 +187,39 @@ module.exports = grammar({
            'in'
           ,'notint'
         )
-        ,$.range
+        ,choice($.bundle, $.range)
+        //,$.bundle
       )
 
     ,range: $ => // FIXME: patch _ts to be consistent
       seq(
-         choice(
-          seq(
-             $.factor
-            ,choice(
-              seq(
-                choice('+:', '<:' , '=:')
-               ,$.factor
-              )
-              ,'..'
-            )
-          )
-          ,seq(
-            '..'
-            ,optional($.factor)
-          )
-        )
+        $.factor
+        ,choice('..<', '..=', '..+')
+        ,$.factor
         ,optional(
           seq(
-            'step'
+            'by'
            ,$.factor)
         )
       )
 
     ,factor: $ => seq(
-      optional($.stmt_attr)
-      ,optional(choice('!', '-', '~'))
+       optional(choice('!', '-', '~'))
       ,choice(
-        $.factor_var_fcall_type
+         $.factor_var_fcall_type
+				,$.literal // FIXME: add remaining
+        ,$.bundle
+        ,$.lambda_def
       )
     )
 
     ,factor_var_fcall_type: $ =>
       seq(
         $.variable_base
-        ,choice($.fcall_args, $.typecase)
+        ,optional(choice($.fcall_args, $.typecase))
       )
 
-    ,stmt_attr: $ =>
+    ,expr_attr: $ =>
       seq(
         choice(
            seq('comptime', optional('debug'))
@@ -201,11 +244,15 @@ module.exports = grammar({
       choice(
         seq(
           choice('pipe', 'async')
-          ,'('
-          ,$.range
-          ,')'
+          ,$.bundle
         )
         ,'anypipe'
+      )
+
+    ,repipe_check: $ =>
+      seq(
+        choice('repipe', 'reasync')
+        ,$.bundle
       )
 
     ,fcall_args_lambda_else: $ =>
@@ -217,7 +264,8 @@ module.exports = grammar({
 
     ,lambda_def: $ =>
       seq(
-        '{|' // FIXME lambda_def_constrains_opt, '|'
+        '{|'
+        ,$.lambda_def_constrains
         ,choice(
            seq($._newline, repeat($.stmt))
           ,$.expr_entry
@@ -225,35 +273,76 @@ module.exports = grammar({
         ,'}'
       )
 
-    ,typecase: $ =>
+    ,lambda_def_constrains: $ =>
       seq(
-         choice(
+        optional('mut')
+        ,optional(
           seq(
-             ':'
-            ,optional(
-              seq(
-                 choice($.variable_base, $.bundle)
-                ,optional($.where_stmt)
-              )
+            '<'
+            ,$.argument_seq1
+            ,'>'
+          )
+        )
+        ,optional(
+          seq(
+            '('
+            ,optional($.argument_seq1)
+            ,')'
+          )
+        )
+        ,optional(
+          seq(
+            '->'
+            ,'('
+            ,optional($.argument_seq1)
+            ,')'
+          )
+        )
+        ,optional($.where_modifier)
+        ,'|'
+      )
+
+    ,argument_seq1: $ =>
+      seq(
+         repeat(',')
+        ,seq(
+          $.argument
+          ,repeat(
+            seq(
+               repeat1(',')
+              ,$.argument
             )
           )
         )
-        ,seq(
-           ':{'
-          ,seq(
-             choice($.variable_base, $.bundle)
-            ,$.where_stmt
+        ,repeat(',')
+      )
+
+    ,argument: $ =>
+      choice(
+        seq($.identifier ,optional($.typecase))
+       ,$.typecase
+      )
+
+    ,typecase: $ =>
+      seq(
+        ':'
+        ,optional(
+          seq(
+            choice($.variable_base, $.bundle)
+            ,optional($.where_modifier)
           )
-          ,'}'
         )
       )
 
-    ,where_stmt: $ =>
+    ,where_modifier: $ =>
       seq(
-         'where'
-        ,'('
-        , $.expr_entry
-        ,')'
+        'where'
+        ,'{'
+        ,choice(
+           seq($._newline, repeat($.stmt))
+          ,$.expr_entry
+        )
+        ,'}'
       )
 
     ,fcall_def: $ => seq(
@@ -292,17 +381,21 @@ module.exports = grammar({
       seq(
          $.variable_base_start
         ,repeat($.variable_base_field)
-        //,optional($.variable_prev_field)
-        //,optional($.variable_base_last)
+        ,optional($.variable_prev_field)
+        ,optional($.variable_base_last)
       )
 
     ,variable_base_start: $ =>
       seq(
-         choice('$', '%', '#')
-        ,choice(
-           $.identifier
-          ,$.literal
-        )
+				choice(
+					 seq( choice('$', '%', '#')
+						,choice(
+							$.identifier
+							,$.literal
+						)
+					)
+					,$.identifier
+				)
       )
 
     ,variable_base_field: $ =>
@@ -327,21 +420,29 @@ module.exports = grammar({
       seq(
          choice(
             '?'
-           ,'!'
+           //,'!'
            ,repeat1($.variable_bit_sel)
          )
       )
 
     ,dot_selector: $ =>
       seq(
-         choice('.', /\n./) // FIXME: scanner? , seq($._newline, '.'))
+        '.' // FIXME: scanner? , seq($._newline, '.'))
         ,choice($.identifier, $.literal)
       )
 
     ,selector: $ =>
       seq(
         '['
-        ,optional($.expr_seq1)
+        ,choice($.range, $.expr_seq1)
+        ,optional($._newline)
+        ,']'
+      )
+
+    ,selector_empty: $ =>
+      seq(
+        '['
+        ,optional(choice($.range, $.expr_seq1))
         ,optional($._newline)
         ,']'
       )
@@ -364,10 +465,14 @@ module.exports = grammar({
     ,bundle: $ =>
       seq(
         '('
-        ,optional($.bundle_seq1)
-        ,optional($._newline)
+        ,choice(
+          seq(
+            optional($.bundle_seq1)
+            ,optional($._newline)
+          )
+         ,$.range
+        )
         ,')'
-        ,optional($.typecase)
       )
 
     ,bundle_seq1: $ =>
@@ -401,10 +506,11 @@ module.exports = grammar({
       seq(
          '@'
         ,optional(choice('sext', 'zext', '|', '&', '^', '+'))
-        ,$.selector
+        ,$.selector_empty
       )
 
-    ,identifier: $ => token(seq(LOWER_ALPHA_CHAR, IDENTIFIER_CHARS))
+    ,identifier: (_) => token(/[a-zA-Zα-ωΑ-Ωµ_][a-zA-Zα-ωΑ-Ωµ\d_]*/)
+    //,identifier: $ => token(seq(LOWER_ALPHA_CHAR, IDENTIFIER_CHARS))
 
     ,literal: $ =>
       $.integer  // FIXME: integer or string or boolean

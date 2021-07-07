@@ -1,5 +1,39 @@
 [
   {
+    "type": "argument",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "typecase",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "argument_seq1",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "argument",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "ass_fcall_stmt",
     "named": true,
     "fields": {},
@@ -8,11 +42,19 @@
       "required": true,
       "types": [
         {
-          "type": "assign_attribute",
+          "type": "assign_attr",
           "named": true
         },
         {
           "type": "assignment_cont",
+          "named": true
+        },
+        {
+          "type": "expr_seq1",
+          "named": true
+        },
+        {
+          "type": "fcall_pipe",
           "named": true
         },
         {
@@ -23,9 +65,23 @@
     }
   },
   {
-    "type": "assign_attribute",
+    "type": "assign_attr",
     "named": true,
-    "fields": {}
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "expr_attr",
+          "named": true
+        },
+        {
+          "type": "let_attr",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "assignment_cont",
@@ -51,7 +107,7 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": false,
       "types": [
         {
@@ -59,7 +115,7 @@
           "named": true
         },
         {
-          "type": "typecase",
+          "type": "range",
           "named": true
         }
       ]
@@ -124,6 +180,26 @@
     }
   },
   {
+    "type": "else_line",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "scope_stmt",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "expr_attr",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "expr_cont",
     "named": true,
     "fields": {},
@@ -133,10 +209,6 @@
       "types": [
         {
           "type": "factor",
-          "named": true
-        },
-        {
-          "type": "is_typecase",
           "named": true
         }
       ]
@@ -151,6 +223,10 @@
       "required": true,
       "types": [
         {
+          "type": "expr_attr",
+          "named": true
+        },
+        {
           "type": "expr_cont",
           "named": true
         },
@@ -160,6 +236,10 @@
         },
         {
           "type": "in_range",
+          "named": true
+        },
+        {
+          "type": "is_typecase",
           "named": true
         }
       ]
@@ -185,15 +265,23 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
+        {
+          "type": "bundle",
+          "named": true
+        },
         {
           "type": "factor_var_fcall_type",
           "named": true
         },
         {
-          "type": "stmt_attr",
+          "type": "lambda_def",
+          "named": true
+        },
+        {
+          "type": "literal",
           "named": true
         }
       ]
@@ -284,6 +372,25 @@
     }
   },
   {
+    "type": "fcall_pipe",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "fcall_args",
+          "named": true
+        },
+        {
+          "type": "variable_base",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "for_stmt",
     "named": true,
     "fields": {},
@@ -292,11 +399,11 @@
       "required": true,
       "types": [
         {
-          "type": "expr_entry",
+          "type": "identifier",
           "named": true
         },
         {
-          "type": "identifier",
+          "type": "in_range",
           "named": true
         },
         {
@@ -322,7 +429,7 @@
     }
   },
   {
-    "type": "if_stmt",
+    "type": "if_elif",
     "named": true,
     "fields": {},
     "children": {
@@ -341,6 +448,33 @@
     }
   },
   {
+    "type": "if_stmt",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "else_line",
+          "named": true
+        },
+        {
+          "type": "expr_entry",
+          "named": true
+        },
+        {
+          "type": "if_elif",
+          "named": true
+        },
+        {
+          "type": "scope_stmt",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "in_range",
     "named": true,
     "fields": {},
@@ -348,6 +482,10 @@
       "multiple": false,
       "required": true,
       "types": [
+        {
+          "type": "bundle",
+          "named": true
+        },
         {
           "type": "range",
           "named": true
@@ -376,14 +514,56 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": false,
+      "required": true,
       "types": [
         {
           "type": "expr_entry",
           "named": true
         },
         {
+          "type": "lambda_def_constrains",
+          "named": true
+        },
+        {
           "type": "stmt",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "lambda_def_constrains",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "argument_seq1",
+          "named": true
+        },
+        {
+          "type": "where_modifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "let_attr",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "pipe_check",
+          "named": true
+        },
+        {
+          "type": "repipe_check",
           "named": true
         }
       ]
@@ -432,7 +612,7 @@
       "required": false,
       "types": [
         {
-          "type": "range",
+          "type": "bundle",
           "named": true
         }
       ]
@@ -444,10 +624,25 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": false,
+      "required": true,
       "types": [
         {
           "type": "factor",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "repipe_check",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "bundle",
           "named": true
         }
       ]
@@ -474,10 +669,33 @@
     "fields": {},
     "children": {
       "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "expr_seq1",
+          "named": true
+        },
+        {
+          "type": "range",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "selector_empty",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
       "required": false,
       "types": [
         {
           "type": "expr_seq1",
+          "named": true
+        },
+        {
+          "type": "range",
           "named": true
         }
       ]
@@ -491,6 +709,10 @@
       "multiple": true,
       "required": false,
       "types": [
+        {
+          "type": "lambda_def_constrains",
+          "named": true
+        },
         {
           "type": "stmt",
           "named": true
@@ -534,11 +756,6 @@
     }
   },
   {
-    "type": "stmt_attr",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "string",
     "named": true,
     "fields": {}
@@ -549,7 +766,7 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "bundle",
@@ -560,7 +777,7 @@
           "named": true
         },
         {
-          "type": "where_stmt",
+          "type": "where_modifier",
           "named": true
         }
       ]
@@ -579,7 +796,15 @@
           "named": true
         },
         {
+          "type": "variable_base_last",
+          "named": true
+        },
+        {
           "type": "variable_base_start",
+          "named": true
+        },
+        {
+          "type": "variable_prev_field",
           "named": true
         }
       ]
@@ -599,6 +824,21 @@
         },
         {
           "type": "selector",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "variable_base_last",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "variable_bit_sel",
           "named": true
         }
       ]
@@ -632,14 +872,14 @@
       "required": true,
       "types": [
         {
-          "type": "selector",
+          "type": "selector_empty",
           "named": true
         }
       ]
     }
   },
   {
-    "type": "where_stmt",
+    "type": "variable_prev_field",
     "named": true,
     "fields": {},
     "children": {
@@ -648,6 +888,25 @@
       "types": [
         {
           "type": "expr_entry",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "where_modifier",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "expr_entry",
+          "named": true
+        },
+        {
+          "type": "stmt",
           "named": true
         }
       ]
@@ -737,10 +996,6 @@
     "named": false
   },
   {
-    "type": "+:",
-    "named": false
-  },
-  {
     "type": "+=",
     "named": false
   },
@@ -757,11 +1012,23 @@
     "named": false
   },
   {
+    "type": "->",
+    "named": false
+  },
+  {
     "type": ".",
     "named": false
   },
   {
-    "type": "..",
+    "type": "..+",
+    "named": false
+  },
+  {
+    "type": "..<",
+    "named": false
+  },
+  {
+    "type": "..=",
     "named": false
   },
   {
@@ -781,15 +1048,11 @@
     "named": false
   },
   {
-    "type": ":{",
-    "named": false
-  },
-  {
     "type": "<",
     "named": false
   },
   {
-    "type": "<:",
+    "type": "<<",
     "named": false
   },
   {
@@ -798,10 +1061,6 @@
   },
   {
     "type": "=",
-    "named": false
-  },
-  {
-    "type": "=:",
     "named": false
   },
   {
@@ -814,6 +1073,10 @@
   },
   {
     "type": ">=",
+    "named": false
+  },
+  {
+    "type": ">>",
     "named": false
   },
   {
@@ -861,7 +1124,7 @@
     "named": false
   },
   {
-    "type": "comb",
+    "type": "by",
     "named": false
   },
   {
@@ -953,7 +1216,11 @@
     "named": false
   },
   {
-    "type": "raw",
+    "type": "reasync",
+    "named": false
+  },
+  {
+    "type": "repipe",
     "named": false
   },
   {
@@ -966,10 +1233,6 @@
   },
   {
     "type": "sext",
-    "named": false
-  },
-  {
-    "type": "step",
     "named": false
   },
   {
@@ -1018,6 +1281,10 @@
   },
   {
     "type": "|=",
+    "named": false
+  },
+  {
+    "type": "|>",
     "named": false
   },
   {
