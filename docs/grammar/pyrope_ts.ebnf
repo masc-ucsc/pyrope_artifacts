@@ -108,7 +108,7 @@ match_stmt
   ;
 
 match_stmt_line_seq
-  = {match_factor_line}
+  = {match_expr_line}
   ;
 
 match_stmt_line
@@ -309,7 +309,7 @@ if_expr
   ;
 
 match_expr
-  = 'match', bundle_list, '{', match_factor_line_seq, match_expr_else_opt, '}'
+  = 'match', bundle_list, '{', match_expr_line_seq, match_expr_else_opt, '}'
   ;
 
 match_expr_else_opt
@@ -324,11 +324,11 @@ variable_bit_sel
   = '@', ['sext' | 'zext' | '|' | '&' | '^' | '+'], selector
   ;
 
-match_factor_line_seq
-  = {match_factor_line}
+match_expr_line_seq
+  = {match_expr_line}
   ;
 
-match_factor_line
+match_expr_line
   = [newline_], (is_typecase | in_range | expr_entry), gate_stmt_opt, '{', expr_entry, '}'
   ;
 

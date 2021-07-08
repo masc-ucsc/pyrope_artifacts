@@ -44,6 +44,10 @@
         {
           "type": "argument",
           "named": true
+        },
+        {
+          "type": "comma_tok",
+          "named": true
         }
       ]
     }
@@ -69,6 +73,10 @@
           "named": true
         },
         {
+          "type": "expr_attr",
+          "named": true
+        },
+        {
           "type": "expr_seq1",
           "named": true
         },
@@ -88,13 +96,9 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": false,
       "types": [
-        {
-          "type": "expr_attr",
-          "named": true
-        },
         {
           "type": "let_attr",
           "named": true
@@ -111,7 +115,11 @@
       "required": true,
       "types": [
         {
-          "type": "expr_entry",
+          "type": "assign_tok",
+          "named": true
+        },
+        {
+          "type": "expr_seq1",
           "named": true
         },
         {
@@ -154,6 +162,10 @@
       "required": true,
       "types": [
         {
+          "type": "equal_tok",
+          "named": true
+        },
+        {
           "type": "expr_cont",
           "named": true
         },
@@ -174,6 +186,10 @@
       "types": [
         {
           "type": "bundle_entry",
+          "named": true
+        },
+        {
+          "type": "comma_tok",
           "named": true
         }
       ]
@@ -296,10 +312,6 @@
           "named": true
         },
         {
-          "type": "in_range",
-          "named": true
-        },
-        {
           "type": "is_typecase",
           "named": true
         }
@@ -315,7 +327,15 @@
       "required": true,
       "types": [
         {
+          "type": "comma_tok",
+          "named": true
+        },
+        {
           "type": "expr_entry",
+          "named": true
+        },
+        {
+          "type": "range",
           "named": true
         }
       ]
@@ -326,7 +346,7 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
         {
@@ -334,7 +354,11 @@
           "named": true
         },
         {
-          "type": "factor_var_fcall_type",
+          "type": "fcall_args",
+          "named": true
+        },
+        {
+          "type": "if_expr",
           "named": true
         },
         {
@@ -344,20 +368,9 @@
         {
           "type": "literal",
           "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "factor_var_fcall_type",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
+        },
         {
-          "type": "fcall_args",
+          "type": "match_expr",
           "named": true
         },
         {
@@ -528,6 +541,25 @@
     }
   },
   {
+    "type": "if_expr",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expr_entry",
+          "named": true
+        },
+        {
+          "type": "expr_seq1",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "if_stmt",
     "named": true,
     "fields": {},
@@ -563,11 +595,7 @@
       "required": true,
       "types": [
         {
-          "type": "bundle",
-          "named": true
-        },
-        {
-          "type": "range",
+          "type": "expr_seq1",
           "named": true
         }
       ]
@@ -597,7 +625,7 @@
       "required": true,
       "types": [
         {
-          "type": "expr_entry",
+          "type": "expr_seq1",
           "named": true
         },
         {
@@ -614,24 +642,59 @@
   {
     "type": "lambda_def_constrains",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "argument_list",
-          "named": true
-        },
-        {
-          "type": "argument_seq1",
-          "named": true
-        },
-        {
-          "type": "where_modifier",
-          "named": true
-        }
-      ]
+    "fields": {
+      "input": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "argument_list",
+            "named": true
+          }
+        ]
+      },
+      "meta": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "<",
+            "named": false
+          },
+          {
+            "type": ">",
+            "named": false
+          },
+          {
+            "type": "argument_seq1",
+            "named": true
+          }
+        ]
+      },
+      "output": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "->",
+            "named": false
+          },
+          {
+            "type": "argument_list",
+            "named": true
+          }
+        ]
+      },
+      "where": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "where_modifier",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
@@ -677,19 +740,134 @@
     }
   },
   {
-    "type": "new_fun_scope",
+    "type": "match_expr",
     "named": true,
     "fields": {},
     "children": {
       "multiple": true,
-      "required": false,
+      "required": true,
       "types": [
         {
-          "type": "expr_entry",
+          "type": "expr_seq1",
           "named": true
         },
         {
-          "type": "stmt",
+          "type": "match_expr_else",
+          "named": true
+        },
+        {
+          "type": "match_expr_line",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "match_expr_else",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "expr_seq1",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "match_expr_line",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expr_seq1",
+          "named": true
+        },
+        {
+          "type": "gate_stmt",
+          "named": true
+        },
+        {
+          "type": "in_range",
+          "named": true
+        },
+        {
+          "type": "is_typecase",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "match_stmt",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expr_seq1",
+          "named": true
+        },
+        {
+          "type": "match_stmt_else",
+          "named": true
+        },
+        {
+          "type": "match_stmt_line",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "match_stmt_else",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "scope_stmt",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "match_stmt_line",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expr_seq1",
+          "named": true
+        },
+        {
+          "type": "gate_stmt",
+          "named": true
+        },
+        {
+          "type": "in_range",
+          "named": true
+        },
+        {
+          "type": "is_typecase",
+          "named": true
+        },
+        {
+          "type": "scope_stmt",
           "named": true
         }
       ]
@@ -766,10 +944,6 @@
         {
           "type": "expr_seq1",
           "named": true
-        },
-        {
-          "type": "range",
-          "named": true
         }
       ]
     }
@@ -784,10 +958,6 @@
       "types": [
         {
           "type": "expr_seq1",
-          "named": true
-        },
-        {
-          "type": "range",
           "named": true
         }
       ]
@@ -846,6 +1016,10 @@
         },
         {
           "type": "if_stmt",
+          "named": true
+        },
+        {
+          "type": "match_stmt",
           "named": true
         },
         {
@@ -919,8 +1093,46 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "typecase_simple",
+          "named": true
+        },
+        {
+          "type": "typecase_where",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "typecase_simple",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
       "required": false,
+      "types": [
+        {
+          "type": "bundle",
+          "named": true
+        },
+        {
+          "type": "variable_base",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "typecase_where",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
       "types": [
         {
           "type": "bundle",
@@ -1011,7 +1223,7 @@
           "named": true
         },
         {
-          "type": "literal",
+          "type": "ioreg_id_tok",
           "named": true
         }
       ]
@@ -1041,7 +1253,7 @@
       "required": true,
       "types": [
         {
-          "type": "expr_entry",
+          "type": "expr_seq1",
           "named": true
         }
       ]
@@ -1052,15 +1264,11 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
-      "required": false,
+      "multiple": false,
+      "required": true,
       "types": [
         {
           "type": "expr_entry",
-          "named": true
-        },
-        {
-          "type": "stmt",
           "named": true
         }
       ]
@@ -1113,27 +1321,11 @@
     "named": false
   },
   {
-    "type": "#",
-    "named": false
-  },
-  {
     "type": "#[",
     "named": false
   },
   {
-    "type": "$",
-    "named": false
-  },
-  {
-    "type": "%",
-    "named": false
-  },
-  {
     "type": "&",
-    "named": false
-  },
-  {
-    "type": "&=",
     "named": false
   },
   {
@@ -1145,31 +1337,11 @@
     "named": false
   },
   {
-    "type": "*=",
-    "named": false
-  },
-  {
     "type": "+",
     "named": false
   },
   {
-    "type": "++=",
-    "named": false
-  },
-  {
-    "type": "+=",
-    "named": false
-  },
-  {
-    "type": ",",
-    "named": false
-  },
-  {
     "type": "-",
-    "named": false
-  },
-  {
-    "type": "-=",
     "named": false
   },
   {
@@ -1189,23 +1361,15 @@
     "named": false
   },
   {
-    "type": "/=",
-    "named": false
-  },
-  {
     "type": ":",
     "named": false
   },
   {
-    "type": ":=",
+    "type": ":{",
     "named": false
   },
   {
     "type": "<",
-    "named": false
-  },
-  {
-    "type": "=",
     "named": false
   },
   {
@@ -1233,16 +1397,12 @@
     "named": false
   },
   {
-    "type": "^=",
-    "named": false
-  },
-  {
-    "type": "and=",
-    "named": false
-  },
-  {
     "type": "anypipe",
     "named": false
+  },
+  {
+    "type": "assign_tok",
+    "named": true
   },
   {
     "type": "async",
@@ -1255,6 +1415,10 @@
   {
     "type": "by",
     "named": false
+  },
+  {
+    "type": "comma_tok",
+    "named": true
   },
   {
     "type": "comment",
@@ -1283,6 +1447,10 @@
   {
     "type": "else",
     "named": false
+  },
+  {
+    "type": "equal_tok",
+    "named": true
   },
   {
     "type": "fail",
@@ -1317,6 +1485,10 @@
     "named": true
   },
   {
+    "type": "ioreg_id_tok",
+    "named": true
+  },
+  {
     "type": "is",
     "named": false
   },
@@ -1326,6 +1498,10 @@
   },
   {
     "type": "let",
+    "named": false
+  },
+  {
+    "type": "match",
     "named": false
   },
   {
@@ -1339,10 +1515,6 @@
   {
     "type": "op_tok",
     "named": true
-  },
-  {
-    "type": "or=",
-    "named": false
   },
   {
     "type": "pipe",
@@ -1426,10 +1598,6 @@
   },
   {
     "type": "|",
-    "named": false
-  },
-  {
-    "type": "|=",
     "named": false
   },
   {
