@@ -35,23 +35,27 @@ module.exports = grammar({
 
     ,stmt: $ =>
       seq(
-        choice(
-           $.if_stmt
-          ,$.match_stmt
-          ,$.while_stmt
-          ,$.for_stmt
-          ,$.ass_fcall_stmt
-          ,$.ctrl_stmt
-          ,$.scope_stmt
-          ,$.try_stmt
-          ,$.debug_comptime_stmt
-          ,$.yield_stmt
-          ,$.fail_stmt
-          ,$.test_stmt
-        )
+        $.stmt_base
         ,optional($.gate_stmt)
         ,$._newline
       )
+
+    ,stmt_base: $ =>
+      choice(
+         $.if_stmt
+        ,$.match_stmt
+        ,$.while_stmt
+        ,$.for_stmt
+        ,$.ass_fcall_stmt
+        ,$.ctrl_stmt
+        ,$.scope_stmt
+        ,$.try_stmt
+        ,$.debug_comptime_stmt
+        ,$.yield_stmt
+        ,$.fail_stmt
+        ,$.test_stmt
+      )
+
 
     ,gate_stmt: $ =>
       seq(
@@ -74,16 +78,12 @@ module.exports = grammar({
         'if'
         ,$.expr_entry
         ,'{'
-        ,optional($._newline)
         ,$.expr_seq1
-        ,optional($._newline)
-        ,'}'
+        ,$.ck_tok
         ,'else'
         ,'{'
-        ,optional($._newline)
         ,$.expr_seq1
-        ,optional($._newline)
-        ,'}'
+        ,$.ck_tok
       )
 
     ,match_stmt: $ =>
@@ -93,8 +93,7 @@ module.exports = grammar({
         ,'{'
         ,repeat($.match_stmt_line)
         ,optional($.match_stmt_else)
-        ,optional($._newline)
-        ,'}'
+        ,$.ck_tok
       )
 
     ,match_expr: $ =>
@@ -104,8 +103,7 @@ module.exports = grammar({
         ,'{'
         ,repeat($.match_expr_line)
         ,optional($.match_expr_else)
-        ,optional($._newline)
-        ,'}'
+        ,$.ck_tok
       )
 
     ,match_stmt_line: $ =>
@@ -130,10 +128,8 @@ module.exports = grammar({
         )
         ,optional($.gate_stmt)
         ,'{'
-        ,optional($._newline)
         ,$.expr_seq1
-        ,optional($._newline)
-        ,'}'
+        ,$.ck_tok
       )
 
     ,match_stmt_else: $ =>
@@ -148,10 +144,8 @@ module.exports = grammar({
         optional($._newline)
         ,'else'
         ,'{'
-        ,optional($._newline)
         ,$.expr_seq1
-        ,optional($._newline)
-        ,'}'
+        ,$.ck_tok
       )
 
     ,if_elif: $ =>
@@ -211,10 +205,9 @@ module.exports = grammar({
 
     ,fcall_pipe: $ =>
       seq(
-        //optional($._newline)
-        '|>'
+        $.pipe_tok
         ,$.variable_base
-        ,$.fcall_args
+        ,optional($.fcall_args)
       )
 
     ,assign_attr: $ =>
@@ -245,9 +238,17 @@ module.exports = grammar({
     ,scope_stmt: $ =>
       seq(
          '{'
-        ,optional($._newline)
-        ,repeat($.stmt)
-        ,'}'
+        ,choice(
+          seq(
+             $._newline
+            ,repeat($.stmt)
+          )
+          ,seq(
+            $.stmt_base
+            ,optional($._newline)
+          )
+        )
+        ,$.ck_tok
       )
 
     ,try_stmt: $ =>
@@ -295,7 +296,7 @@ module.exports = grammar({
 
     ,expr_cont: $ =>
       seq(
-        $.op_tok
+        $.binary_op_tok
         ,$.factor
       )
 
@@ -321,7 +322,7 @@ module.exports = grammar({
     ,range: $ =>
       seq(
         $.factor
-        ,choice('..<', '..=', '..+')
+        ,$.range_op_tok
         ,$.factor
         ,optional(
           seq(
@@ -331,7 +332,7 @@ module.exports = grammar({
       )
 
     ,factor: $ => seq(
-       optional(choice('!', '-', '~'))
+       optional($.unary_op_tok)
       ,choice(
          seq(
            $.variable_base
@@ -352,9 +353,12 @@ module.exports = grammar({
       )
 
     ,fcall_args: $ =>
-      seq(
-         $.bundle
-        ,optional($.fcall_args_lambda)
+      choice(
+        seq(
+           $.bundle
+          ,optional($.fcall_args_lambda)
+        )
+        ,$.fcall_args_lambda
       )
 
     ,fcall_args_lambda: $ =>
@@ -394,7 +398,7 @@ module.exports = grammar({
            seq($._newline, repeat($.stmt))
           ,$.expr_seq1
         )
-        ,'}'
+        ,$.ck_tok
       )
 
     ,lambda_def_constrains: $ =>
@@ -403,9 +407,9 @@ module.exports = grammar({
         ,field("meta"
           ,optional(
             seq(
-              '<'
+              $.olt_tok
               ,$.argument_seq1
-              ,'>'
+              ,$.clt_tok
             )
           )
         )
@@ -428,9 +432,9 @@ module.exports = grammar({
 
     ,argument_list: $ =>
       seq(
-        '('
+        $.op_tok
         ,optional($.argument_seq1)
-        ,')'
+        ,$.cp_tok
       )
 
     ,argument_seq1: $ =>
@@ -465,7 +469,7 @@ module.exports = grammar({
         ':{'
         ,choice($.variable_base, $.bundle)
         ,$.where_modifier
-        ,'}'
+        ,$.ck_tok
       )
 
     ,typecase_simple: $ =>
@@ -510,8 +514,7 @@ module.exports = grammar({
       seq(
          '#['
         ,$.expr_seq1
-        ,optional($._newline)
-        ,']'
+        ,$.cb_tok
       )
 
     ,variable_base_last: $ =>
@@ -531,18 +534,16 @@ module.exports = grammar({
 
     ,selector: $ =>
       seq(
-        '['
+         $.ob_tok
         ,$.expr_seq1
-        ,optional($._newline)
-        ,']'
+        ,$.cb_tok
       )
 
     ,selector_empty: $ =>
       seq(
-        '['
+         $.ob_tok
         ,optional($.expr_seq1)
-        ,optional($._newline)
-        ,']'
+        ,$.cb_tok
       )
 
     ,expr_seq1: $ =>
@@ -565,7 +566,7 @@ module.exports = grammar({
 
     ,bundle: $ =>
       seq(
-        '('
+        $.op_tok
         ,choice(
           seq(
             optional($.bundle_seq1)
@@ -573,7 +574,7 @@ module.exports = grammar({
           )
          ,$.range
         )
-        ,')'
+        ,$.cp_tok
       )
 
     ,bundle_seq1: $ =>
@@ -626,11 +627,27 @@ module.exports = grammar({
     ,comma_tok: () => token(/\s*,/)
     ,dot_tok: () => token(/\s*\./)
 
-    ,op_tok: () =>
+    ,binary_op_tok: () =>
       token(
         seq(
           /\s*/
           ,choice('++', '+', '-', '*', '/', '|', '&', '^', 'or', 'and', 'has', 'implies', '<<', '>>', '<', '<=', '==', '!=', '>=', '>')
+        )
+      )
+
+    ,unary_op_tok: () =>
+      token(
+        seq(
+          /\s*/
+          ,choice('!', '-', '~')
+        )
+      )
+
+    ,range_op_tok: () =>
+      token(
+        seq(
+          /\s*/
+          ,choice('..<', '..=', '..+')
         )
       )
 
@@ -642,7 +659,21 @@ module.exports = grammar({
         )
       )
 
+    ,pipe_tok: () => token(/\s*\|>/)
+
     ,equal_tok: () => token(/\s*=/)
+
+    // No ok_tok because it should have space after only if statement (more complicated per rule case)
+    ,ck_tok: () => token(/\s*}/)
+
+    ,ob_tok: () => token(/\[/) // No newline because the following line may be a expr (not a self-contained statement)
+    ,cb_tok: () => token(/\s*\]/)
+
+    ,olt_tok: () => token(/<\s*/)
+    ,clt_tok: () => token(/\s*>/)
+
+    ,op_tok: () => token(/\(s*/)
+    ,cp_tok: () => token(/\s*\)/)
 
     ,string_literal: $ => seq(
       '"',

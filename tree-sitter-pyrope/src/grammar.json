@@ -55,57 +55,8 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "if_stmt"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "match_stmt"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "while_stmt"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "for_stmt"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "ass_fcall_stmt"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "ctrl_stmt"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "scope_stmt"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "try_stmt"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "debug_comptime_stmt"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "yield_stmt"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "fail_stmt"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "test_stmt"
-            }
-          ]
+          "type": "SYMBOL",
+          "name": "stmt_base"
         },
         {
           "type": "CHOICE",
@@ -122,6 +73,59 @@
         {
           "type": "SYMBOL",
           "name": "_newline"
+        }
+      ]
+    },
+    "stmt_base": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "if_stmt"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "match_stmt"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "while_stmt"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "for_stmt"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "ass_fcall_stmt"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "ctrl_stmt"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "scope_stmt"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "try_stmt"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "debug_comptime_stmt"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "yield_stmt"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "fail_stmt"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "test_stmt"
         }
       ]
     },
@@ -211,36 +215,12 @@
           "value": "{"
         },
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "_newline"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
           "type": "SYMBOL",
           "name": "expr_seq1"
         },
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "_newline"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "STRING",
-          "value": "}"
+          "type": "SYMBOL",
+          "name": "ck_tok"
         },
         {
           "type": "STRING",
@@ -251,36 +231,12 @@
           "value": "{"
         },
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "_newline"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
           "type": "SYMBOL",
           "name": "expr_seq1"
         },
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "_newline"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "STRING",
-          "value": "}"
+          "type": "SYMBOL",
+          "name": "ck_tok"
         }
       ]
     },
@@ -319,20 +275,8 @@
           ]
         },
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "_newline"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "STRING",
-          "value": "}"
+          "type": "SYMBOL",
+          "name": "ck_tok"
         }
       ]
     },
@@ -371,20 +315,8 @@
           ]
         },
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "_newline"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "STRING",
-          "value": "}"
+          "type": "SYMBOL",
+          "name": "ck_tok"
         }
       ]
     },
@@ -487,36 +419,12 @@
           "value": "{"
         },
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "_newline"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
           "type": "SYMBOL",
           "name": "expr_seq1"
         },
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "_newline"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "STRING",
-          "value": "}"
+          "type": "SYMBOL",
+          "name": "ck_tok"
         }
       ]
     },
@@ -569,36 +477,12 @@
           "value": "{"
         },
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "_newline"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
           "type": "SYMBOL",
           "name": "expr_seq1"
         },
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "_newline"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "STRING",
-          "value": "}"
+          "type": "SYMBOL",
+          "name": "ck_tok"
         }
       ]
     },
@@ -767,16 +651,24 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
-          "value": "|>"
+          "type": "SYMBOL",
+          "name": "pipe_tok"
         },
         {
           "type": "SYMBOL",
           "name": "variable_base"
         },
         {
-          "type": "SYMBOL",
-          "name": "fcall_args"
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "fcall_args"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
         }
       ]
     },
@@ -871,24 +763,47 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "SYMBOL",
-              "name": "_newline"
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "_newline"
+                },
+                {
+                  "type": "REPEAT",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "stmt"
+                  }
+                }
+              ]
             },
             {
-              "type": "BLANK"
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "stmt_base"
+                },
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "_newline"
+                    },
+                    {
+                      "type": "BLANK"
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
         {
-          "type": "REPEAT",
-          "content": {
-            "type": "SYMBOL",
-            "name": "stmt"
-          }
-        },
-        {
-          "type": "STRING",
-          "value": "}"
+          "type": "SYMBOL",
+          "name": "ck_tok"
         }
       ]
     },
@@ -1034,7 +949,7 @@
       "members": [
         {
           "type": "SYMBOL",
-          "name": "op_tok"
+          "name": "binary_op_tok"
         },
         {
           "type": "SYMBOL",
@@ -1098,21 +1013,8 @@
           "name": "factor"
         },
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "..<"
-            },
-            {
-              "type": "STRING",
-              "value": "..="
-            },
-            {
-              "type": "STRING",
-              "value": "..+"
-            }
-          ]
+          "type": "SYMBOL",
+          "name": "range_op_tok"
         },
         {
           "type": "SYMBOL",
@@ -1148,21 +1050,8 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": "!"
-                },
-                {
-                  "type": "STRING",
-                  "value": "-"
-                },
-                {
-                  "type": "STRING",
-                  "value": "~"
-                }
-              ]
+              "type": "SYMBOL",
+              "name": "unary_op_tok"
             },
             {
               "type": "BLANK"
@@ -1257,23 +1146,32 @@
       ]
     },
     "fcall_args": {
-      "type": "SEQ",
+      "type": "CHOICE",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "bundle"
-        },
-        {
-          "type": "CHOICE",
+          "type": "SEQ",
           "members": [
             {
               "type": "SYMBOL",
-              "name": "fcall_args_lambda"
+              "name": "bundle"
             },
             {
-              "type": "BLANK"
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "fcall_args_lambda"
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
             }
           ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "fcall_args_lambda"
         }
       ]
     },
@@ -1425,8 +1323,8 @@
           ]
         },
         {
-          "type": "STRING",
-          "value": "}"
+          "type": "SYMBOL",
+          "name": "ck_tok"
         }
       ]
     },
@@ -1455,16 +1353,16 @@
                 "type": "SEQ",
                 "members": [
                   {
-                    "type": "STRING",
-                    "value": "<"
+                    "type": "SYMBOL",
+                    "name": "olt_tok"
                   },
                   {
                     "type": "SYMBOL",
                     "name": "argument_seq1"
                   },
                   {
-                    "type": "STRING",
-                    "value": ">"
+                    "type": "SYMBOL",
+                    "name": "clt_tok"
                   }
                 ]
               },
@@ -1541,8 +1439,8 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
-          "value": "("
+          "type": "SYMBOL",
+          "name": "op_tok"
         },
         {
           "type": "CHOICE",
@@ -1557,8 +1455,8 @@
           ]
         },
         {
-          "type": "STRING",
-          "value": ")"
+          "type": "SYMBOL",
+          "name": "cp_tok"
         }
       ]
     },
@@ -1677,8 +1575,8 @@
           "name": "where_modifier"
         },
         {
-          "type": "STRING",
-          "value": "}"
+          "type": "SYMBOL",
+          "name": "ck_tok"
         }
       ]
     },
@@ -1820,20 +1718,8 @@
           "name": "expr_seq1"
         },
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "_newline"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "STRING",
-          "value": "]"
+          "type": "SYMBOL",
+          "name": "cb_tok"
         }
       ]
     },
@@ -1884,28 +1770,16 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
-          "value": "["
+          "type": "SYMBOL",
+          "name": "ob_tok"
         },
         {
           "type": "SYMBOL",
           "name": "expr_seq1"
         },
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "_newline"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "STRING",
-          "value": "]"
+          "type": "SYMBOL",
+          "name": "cb_tok"
         }
       ]
     },
@@ -1913,8 +1787,8 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
-          "value": "["
+          "type": "SYMBOL",
+          "name": "ob_tok"
         },
         {
           "type": "CHOICE",
@@ -1929,20 +1803,8 @@
           ]
         },
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "_newline"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "STRING",
-          "value": "]"
+          "type": "SYMBOL",
+          "name": "cb_tok"
         }
       ]
     },
@@ -2006,8 +1868,8 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
-          "value": "("
+          "type": "SYMBOL",
+          "name": "op_tok"
         },
         {
           "type": "CHOICE",
@@ -2048,8 +1910,8 @@
           ]
         },
         {
-          "type": "STRING",
-          "value": ")"
+          "type": "SYMBOL",
+          "name": "cp_tok"
         }
       ]
     },
@@ -2259,7 +2121,7 @@
         "value": "\\s*\\."
       }
     },
-    "op_tok": {
+    "binary_op_tok": {
       "type": "TOKEN",
       "content": {
         "type": "SEQ",
@@ -2356,6 +2218,64 @@
         ]
       }
     },
+    "unary_op_tok": {
+      "type": "TOKEN",
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "PATTERN",
+            "value": "\\s*"
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "STRING",
+                "value": "!"
+              },
+              {
+                "type": "STRING",
+                "value": "-"
+              },
+              {
+                "type": "STRING",
+                "value": "~"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "range_op_tok": {
+      "type": "TOKEN",
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "PATTERN",
+            "value": "\\s*"
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "STRING",
+                "value": "..<"
+              },
+              {
+                "type": "STRING",
+                "value": "..="
+              },
+              {
+                "type": "STRING",
+                "value": "..+"
+              }
+            ]
+          }
+        ]
+      }
+    },
     "assign_tok": {
       "type": "TOKEN",
       "content": {
@@ -2425,11 +2345,67 @@
         ]
       }
     },
+    "pipe_tok": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "\\s*\\|>"
+      }
+    },
     "equal_tok": {
       "type": "TOKEN",
       "content": {
         "type": "PATTERN",
         "value": "\\s*="
+      }
+    },
+    "ck_tok": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "\\s*}"
+      }
+    },
+    "ob_tok": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "\\["
+      }
+    },
+    "cb_tok": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "\\s*\\]"
+      }
+    },
+    "olt_tok": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "<\\s*"
+      }
+    },
+    "clt_tok": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "\\s*>"
+      }
+    },
+    "op_tok": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "\\(s*"
+      }
+    },
+    "cp_tok": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "\\s*\\)"
       }
     },
     "string_literal": {
