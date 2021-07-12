@@ -95,11 +95,11 @@
         "required": false,
         "types": [
           {
-            "type": "expr_entry_no_in",
+            "type": "factor_simple",
             "named": true
           },
           {
-            "type": "range",
+            "type": "fcall_args",
             "named": true
           }
         ]
@@ -449,6 +449,29 @@
         },
         {
           "type": "unary_op_tok",
+          "named": true
+        },
+        {
+          "type": "variable_base",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "factor_simple",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "literal",
+          "named": true
+        },
+        {
+          "type": "string_literal",
           "named": true
         },
         {

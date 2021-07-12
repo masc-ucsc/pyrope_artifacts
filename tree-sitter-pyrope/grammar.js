@@ -25,6 +25,7 @@ module.exports = grammar({
   ,inline: $ => [
     $.variable_base_field
     ,$.expr_seq1
+    ,$.expr_simple_seq1
     ,$.bundle_seq1
     ,$.argument_seq1
     ,$.comma_tok
@@ -37,6 +38,8 @@ module.exports = grammar({
     ,$.cp_tok
     ,$.olt_tok
     ,$.clt_tok
+    ,$.colonp_tok
+    ,$.colon_tok
     ,$.argument
     ,$.assignment_cont
     ,$.stmt
@@ -227,7 +230,12 @@ module.exports = grammar({
         ,seq(
           choice(
             field("rhs",$.assignment_cont)
-            ,field("args",$.expr_seq1)
+            ,field("args",
+              choice(
+                $.expr_simple_seq1
+                ,$.fcall_args
+              )
+            )
           )
           ,repeat($.fcall_pipe)
         )
@@ -371,16 +379,24 @@ module.exports = grammar({
     ,factor: $ => seq(
        optional($.unary_op_tok)
       ,choice(
-         seq(
+				 $.literal
+        ,$.string_literal
+        ,seq(
            $.variable_base
            ,optional(choice($.fcall_args, $.typecase))
          )
-				,$.literal
-        ,$.string_literal
         ,$.bundle
         ,$.lambda_def
         ,$.if_expr
         ,$.match_expr
+      )
+    )
+
+    ,factor_simple: $ => seq(
+       choice(
+         $.variable_base
+				,$.literal
+        ,$.string_literal
       )
     )
 
@@ -391,12 +407,9 @@ module.exports = grammar({
       )
 
     ,fcall_args: $ =>
-      choice(
-        seq(
-           $.bundle
-          ,optional($.fcall_args_lambda)
-        )
-        ,$.fcall_args_lambda
+      seq(
+         $.bundle
+        ,optional($.fcall_args_lambda)
       )
 
     ,fcall_args_lambda: $ =>
@@ -505,7 +518,7 @@ module.exports = grammar({
 
     ,typecase_where: $ =>
       seq(
-        ':{'
+        $.colonp_tok
         ,choice($.variable_base, $.bundle)
         ,$.where_modifier
         ,$.ck_tok
@@ -513,12 +526,11 @@ module.exports = grammar({
 
     ,typecase_simple: $ =>
       seq(
-        ':'
+        $.colon_tok
         ,optional(
           choice($.variable_base, $.bundle)
         )
       )
-
 
     ,where_modifier: $ =>
       seq(
@@ -575,6 +587,17 @@ module.exports = grammar({
          $.ob_tok
         ,optional($.expr_seq1)
         ,$.cb_tok
+      )
+
+    ,expr_simple_seq1: $ =>
+      seq(
+        $.factor_simple
+        ,repeat(
+          seq(
+            repeat1($.comma_tok)
+            ,$.factor_simple
+          )
+        )
       )
 
     ,expr_seq1: $ =>
@@ -696,6 +719,9 @@ module.exports = grammar({
 
     ,op_tok: () => seq(/\(s*/)
     ,cp_tok: () => seq(/\s*\)/)
+
+    ,colonp_tok: () => seq(':{')
+    ,colon_tok: () => seq(':')
 
     ,string_literal: $ => seq(
       '"',
