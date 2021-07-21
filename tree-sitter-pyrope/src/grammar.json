@@ -256,6 +256,43 @@
         }
       ]
     },
+    "for_expr": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "for"
+        },
+        {
+          "type": "FIELD",
+          "name": "id",
+          "content": {
+            "type": "SYMBOL",
+            "name": "identifier"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "range",
+          "content": {
+            "type": "SYMBOL",
+            "name": "in_range"
+          }
+        },
+        {
+          "type": "SYMBOL",
+          "name": "ok_tok"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "expr_seq1"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "ck_tok"
+        }
+      ]
+    },
     "match_stmt": {
       "type": "SEQ",
       "members": [
@@ -1170,8 +1207,17 @@
           ]
         },
         {
-          "type": "SYMBOL",
-          "name": "expr_seq1"
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "factor_simple"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "bundle"
+            }
+          ]
         }
       ]
     },
@@ -1283,6 +1329,10 @@
             },
             {
               "type": "SYMBOL",
+              "name": "for_expr"
+            },
+            {
+              "type": "SYMBOL",
               "name": "match_expr"
             }
           ]
@@ -1306,6 +1356,10 @@
             {
               "type": "SYMBOL",
               "name": "string_literal"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "range"
             }
           ]
         }
@@ -2225,6 +2279,18 @@
               "name": "expr_cont"
             }
           }
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "gate_stmt"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
         }
       ]
     },

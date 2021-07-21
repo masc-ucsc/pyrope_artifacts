@@ -117,6 +117,16 @@ module.exports = grammar({
         ,$.ck_tok
       )
 
+    ,for_expr: $ =>
+      seq(
+        'for'
+        ,field("id",$.identifier)
+        ,field("range",$.in_range)
+        ,$.ok_tok
+        ,$.expr_seq1
+        ,$.ck_tok
+      )
+
     ,match_stmt: $ =>
       seq(
         'match'
@@ -361,7 +371,8 @@ module.exports = grammar({
            'in'
           ,'notint'
         )
-        ,$.expr_seq1
+        // ,$.expr_seq1
+        ,choice($.factor_simple,$.bundle)
       )
 
     ,range: $ =>
@@ -388,6 +399,7 @@ module.exports = grammar({
         ,$.bundle
         ,$.lambda_def
         ,$.if_expr
+        ,$.for_expr
         ,$.match_expr
       )
     )
@@ -397,6 +409,7 @@ module.exports = grammar({
          $.variable_base
 				,$.literal
         ,$.string_literal
+        ,$.range
       )
     )
 
@@ -656,6 +669,7 @@ module.exports = grammar({
           )
         )
         ,field("cont",repeat($.expr_cont))
+        ,optional($.gate_stmt)
       )
 
     ,variable_bit_sel: $ =>

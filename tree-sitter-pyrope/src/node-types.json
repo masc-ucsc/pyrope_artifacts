@@ -232,6 +232,16 @@
           }
         ]
       }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "gate_stmt",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -424,6 +434,10 @@
           "named": true
         },
         {
+          "type": "for_expr",
+          "named": true
+        },
+        {
           "type": "if_expr",
           "named": true
         },
@@ -468,6 +482,10 @@
       "types": [
         {
           "type": "literal",
+          "named": true
+        },
+        {
+          "type": "range",
           "named": true
         },
         {
@@ -586,6 +604,46 @@
         },
         {
           "type": "variable_base",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "for_expr",
+    "named": true,
+    "fields": {
+      "id": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "range": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "in_range",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expr_entry_no_in",
+          "named": true
+        },
+        {
+          "type": "range",
           "named": true
         }
       ]
@@ -714,15 +772,15 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {
-          "type": "expr_entry_no_in",
+          "type": "bundle",
           "named": true
         },
         {
-          "type": "range",
+          "type": "factor_simple",
           "named": true
         }
       ]
