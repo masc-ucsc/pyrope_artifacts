@@ -1,25 +1,9 @@
 
-new reserved keywords in pyrope for potential future updates:
-
- msb,lsb
- var,let,mut,set
- comptime
-
- guard,assert,ensure,assume,restrict,when
-
- import, export, punch
-
- is, isnot, subset, superset
-
- int, string, bool, mem
-
---------------------------
-
 These are some potential ideas for Pyrope v3 based on RUST/V ideas
 
  //NOTE: default value must be given to xx "var xx" not OK
 
- var xx =  // xx should not exist, xx is mutable
+ var xx =  // xx should not exist, xx is mutable (if type set, type can not be changed)
  let xx =  // xx should not exist, xx is immutable
 
  var foo.bar.xx  = // foo.bar should exist , xx should not exist. xx is mutable
@@ -37,7 +21,7 @@ These are some potential ideas for Pyrope v3 based on RUST/V ideas
 
  a[xx] = // implies mutable, No need to say mut a[xx]
 
- mut $foo = 3 // compile error?
+ mut $foo = 3 // compile error
 
  comptime mut foo.bar.xx = // comptime -> the rhs/value/tuple to assign must be known at compile time
  comptime raw foo.bar.xx = // ....
@@ -48,8 +32,7 @@ These are some potential ideas for Pyrope v3 based on RUST/V ideas
 
  // Default value must be given to the type "var type xt" not OK
 
- var type xt =  // xt is type and mutable
- let type xt =  // xt is type and immutable, type implies comptime (types must be compile time)
+ type xt:xxx  // xt is type and immutable
 
  var xx:xt       // xx is type xt
  var xx:xt = ... // xx is type xt with contructor values of ...
@@ -57,7 +40,7 @@ These are some potential ideas for Pyrope v3 based on RUST/V ideas
  let xx:xt = ... // immutable version
 
  // Tuple syntax
- foo = (comptime bar = (var xx = 3, let yy = 4), zz = 5)
+ foo = (comptime bar = (mut xx = 3, let yy = 4), zz = 5)
 
  var lhs = rhs // lhs should not exist, lhs is mutable
  let lhs = rhs // lhs should not exist, lhs is immutable
@@ -146,9 +129,9 @@ m.read(port=0,300) {|
 
 m.write(port=2,addr=301+x, data=33+a)
 
-let counter:signed where {| ret $ is int and $.__bits<4 and $.__min>2 }
+type counter:{signed where signed is int and signed__bits<4 and signed__min>2 }
 
-let xxx_type:signed where {| ret $ between 7:23 }
+let xxx_type:{signed where signed in 7..<23 } = 20
 
 a:unsigned(0:3) = b:signed(10:20) - c:xxx_type;
 
@@ -938,6 +921,61 @@ genTable_verilog()
 
 out = my_genTable_verilog(addr=$addr)
 %data2 = out.data
+
+//--------------------------------------------
+
+a = 1
+
+// Using default bundles
+fun1 = {|$=(b:,c:) capture(a) -> (ret1)| ... }
+
+// C++ like syntax
+fun2 = {|[a]<T>(b:T,c)-> (ret1)| ... }
+
+fun2<myT>(b=3,c=4)
+
+// Captures with code blocks
+fun3 = {|[a](b)-> [do](ret1)| %ret = do(a,$b) }
+
+xx = fun3(b=2) {|| $0 + $1 }
+assert xx.ret == (1+2)
+
+// How to capture a $bar
+
+{
+  tmp = $bar
+  fun4 = {|[tmp](a,b)->(c)|
+     %c = tmp + $a + $b
+  }
+}
+
+fun4 = {|[tmp=$bar](a,b)->(c)|
+   %c = tmp + $a + $b
+}
+
+//--------------------------------------------
+
+fun1 = {|| $0 + $1 } // no args no where
+fun2 = {|(a,b,c)| $a + $.b | $['c'] } // 3 args
+fun3 = {|(a,b,c) where $c<10| $a + $.b | $['c'] } // 3 args where c<10
+
+fun = fun1 ++ fun2 ++ fun3
+
+fun(1,2)     // calls fun1
+fun(1,2,300) // calls fun2
+fun(1,2,3)   // calls fun3
+
+
+//---------------------------
+
+All caps is a unique ID
+
+let type states:{x where x in (ONE, TWO, THREE)} = ONE
+
+
+
+if a = ONE
+
 
 //--------------------------------------------
 mut/let/set/var translation to LNAST
