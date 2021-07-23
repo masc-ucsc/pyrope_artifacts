@@ -34,9 +34,7 @@ These are some potential ideas for Pyrope v3 based on RUST/V ideas
 
  type xt:xxx  // xt is type and immutable
 
- var xx:xt       // xx is type xt
  var xx:xt = ... // xx is type xt with contructor values of ...
-
  let xx:xt = ... // immutable version
 
  // Tuple syntax
@@ -45,34 +43,20 @@ These are some potential ideas for Pyrope v3 based on RUST/V ideas
  var lhs = rhs // lhs should not exist, lhs is mutable
  let lhs = rhs // lhs should not exist, lhs is immutable
 
- add XXX lhs1.lhs2 = rhs // lhs1 may not exist, but lhs2 should not exist
-
  mut lhs = rhs // lhs should exist as mutable
- comptime XXX lhs = rhs // rhs must be known at compile time
-
- raw lhs = rhs // no checks besides lhs is not already declared as immutable (mutable or may not exist)
-
-2.Ranges
-
- 1..3 is a bit confusing. Is it 1,2,3 or 1,2?
-
- 1:2 is more verilog/python friendly and easier to understand
-
- 1:10 set 3 -> (1,3,5,7,9)
+ comptime lhs = rhs // rhs must be known at compile time
 
 
 3.Bit selection
 
- Reserve msb/lsb keywords that can be used in ranges/bit selection
+ x= foo@[3]            // pick bit 3 from foo
 
- foo@[3]            // pick bit 3 from foo
-
- foo@[1,3]        // pick bits 1 and 3
- foo@[0..=-1]     // pick all bits
- foo@[0..=]       // pick all bits
- foo@[]           // pick all bits
- foo@[1..<-1]     //pick all bits but LSB
- foo@[1..=-2]     //pick all bits but LSB
+ x= foo@[1,3]        // pick bits 1 and 3
+ x= foo@[0..=-1]     // pick all bits
+ x= foo@[0..=]       // pick all bits
+ x= foo@[]           // pick all bits
+ x= foo@[1..<-1]     //pick all bits but LSB
+ x= foo@[1..=-2]     //pick all bits but LSB
 
  foo@[] == bar@[]  // typecast, get all bits
 
@@ -95,12 +79,12 @@ These are some potential ideas for Pyrope v3 based on RUST/V ideas
 
 5.Easier function type check
 
- XXX is YYY  "same as" XXX.__type == YYY.__type
+ XXX is :YYY // same as (XXX:YYY and YYY:XXX)
 
  XX:YY "same as" for each YY var, XX implements it with same type
 
  XX:YY "could be read as" XX implements YY type (but it can be more)
- XX is YY "could be read as" XX has the same methods/vars as YY
+ XX is YY "could be read as" XX has the the methods/vars as YY
 
  XX has YY "could be read as" XX.YYY exists
 
@@ -108,7 +92,7 @@ XX implements YY // XX can be more than YY
 XX is         YY // XX is the same as YY
 XX
 
- fun = {|
+ fun = {||
    ensure $ is :(foo,bar)
    ensure %.__size == 1
    ensure % is :(sum)
@@ -121,39 +105,36 @@ BRAIN DUMP:
 
 iris2 f* use some
 
-var m:my_mem(size=1K, initial="foo.json", xxxx=3);
+type m:my_mem(size=1K, initial="foo.json", xxxx=3);
 
-m.read(port=0,300) {|
+m.read(port=0,300) {||
   puts "One cycle later, the read is {}", $
 }
 
 m.write(port=2,addr=301+x, data=33+a)
 
-type counter:{signed where signed is int and signed__bits<4 and signed__min>2 }
+type counter:{signed where signed is :int and signed__bits<4 and signed__min>2 }
 
 let xxx_type:{signed where signed in 7..<23 } = 20
 
-a:unsigned(0:3) = b:signed(10:20) - c:xxx_type;
+a:unsigned(0..=3) = b:signed(10..=20) - c:xxx_type;
 
 
-Bar : (a,b) where {| ret $a.__sbits>6 and $b is Foo }
+x = Bar :{(a,b) where a.__sbits>6 and b is Foo}
 
 Base types: int, string
-
-Bool : int where {| $ is int and $.__sbits==1}
 
 ---
 
 Method IOs
 
-foo = {|
-  let type T=$a  // T is the Type of $a
-  let $:(a:T,b:T)
-  let %:(sum:T)
-
+foo = {||
+  type T:$a  // T is the Type of $a
+  type $:(a:T,b:T)
+  type %:(sum:T)
 }
 
-let $:(a:,b:) // $ is a bundle with a and b fields that have any type "foo:" is a type def without type
+type $:(a:,b:) // $ is a bundle with a and b fields that have any type "foo:" is a type def without type
 
 ---
 

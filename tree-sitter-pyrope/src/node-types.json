@@ -99,13 +99,9 @@
     "named": true,
     "fields": {
       "args": {
-        "multiple": true,
+        "multiple": false,
         "required": false,
         "types": [
-          {
-            "type": "expr_simple_entry",
-            "named": true
-          },
           {
             "type": "fcall_args",
             "named": true
@@ -131,7 +127,7 @@
             "named": true
           },
           {
-            "type": "variable_base",
+            "type": "complex_lhs_variable_base",
             "named": true
           }
         ]
@@ -208,7 +204,7 @@
         "required": true,
         "types": [
           {
-            "type": "variable_base",
+            "type": "complex_lhs_variable_base",
             "named": true
           }
         ]
@@ -320,6 +316,84 @@
     }
   },
   {
+    "type": "complex_lhs_variable_base",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "complex_identifier",
+          "named": true
+        },
+        {
+          "type": "dot_selector",
+          "named": true
+        },
+        {
+          "type": "selector",
+          "named": true
+        },
+        {
+          "type": "trivial_identifier",
+          "named": true
+        },
+        {
+          "type": "variable_base_last",
+          "named": true
+        },
+        {
+          "type": "variable_prev_field",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "complex_variable_base",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "bundle",
+          "named": true
+        },
+        {
+          "type": "complex_identifier",
+          "named": true
+        },
+        {
+          "type": "dot_selector",
+          "named": true
+        },
+        {
+          "type": "selector",
+          "named": true
+        },
+        {
+          "type": "trivial_identifier",
+          "named": true
+        },
+        {
+          "type": "typecase",
+          "named": true
+        },
+        {
+          "type": "variable_base_last",
+          "named": true
+        },
+        {
+          "type": "variable_prev_field",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "ctrl_stmt",
     "named": true,
     "fields": {},
@@ -369,11 +443,11 @@
       "required": true,
       "types": [
         {
-          "type": "identifier",
+          "type": "literal",
           "named": true
         },
         {
-          "type": "literal",
+          "type": "trivial_identifier",
           "named": true
         }
       ]
@@ -552,7 +626,7 @@
           "named": true
         },
         {
-          "type": "fcall_args",
+          "type": "complex_variable_base",
           "named": true
         },
         {
@@ -580,15 +654,7 @@
           "named": true
         },
         {
-          "type": "typecase",
-          "named": true
-        },
-        {
           "type": "unary_op_tok",
-          "named": true
-        },
-        {
-          "type": "variable_base",
           "named": true
         }
       ]
@@ -607,15 +673,15 @@
           "named": true
         },
         {
+          "type": "fcall_or_variable",
+          "named": true
+        },
+        {
           "type": "literal",
           "named": true
         },
         {
           "type": "string_literal",
-          "named": true
-        },
-        {
-          "type": "variable_base",
           "named": true
         }
       ]
@@ -657,6 +723,10 @@
       "types": [
         {
           "type": "bundle",
+          "named": true
+        },
+        {
+          "type": "expr_simple_entry",
           "named": true
         },
         {
@@ -709,6 +779,45 @@
     }
   },
   {
+    "type": "fcall_or_variable",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "bundle",
+          "named": true
+        },
+        {
+          "type": "complex_identifier",
+          "named": true
+        },
+        {
+          "type": "dot_selector",
+          "named": true
+        },
+        {
+          "type": "selector",
+          "named": true
+        },
+        {
+          "type": "trivial_identifier",
+          "named": true
+        },
+        {
+          "type": "variable_base_last",
+          "named": true
+        },
+        {
+          "type": "variable_prev_field",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "fcall_pipe",
     "named": true,
     "fields": {},
@@ -725,7 +834,7 @@
           "named": true
         },
         {
-          "type": "variable_base",
+          "type": "simple_variable_base",
           "named": true
         }
       ]
@@ -817,25 +926,6 @@
           }
         ]
       }
-    }
-  },
-  {
-    "type": "identifier",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "complex_identifier",
-          "named": true
-        },
-        {
-          "type": "trivial_identifier",
-          "named": true
-        }
-      ]
     }
   },
   {
@@ -946,6 +1036,10 @@
       "multiple": false,
       "required": true,
       "types": [
+        {
+          "type": "simple_fcall_or_variable",
+          "named": true
+        },
         {
           "type": "typecase",
           "named": true
@@ -1266,7 +1360,7 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": false,
+      "required": true,
       "types": [
         {
           "type": "gate_stmt",
@@ -1304,6 +1398,64 @@
       "types": [
         {
           "type": "expr_entry",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "simple_fcall_or_variable",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "bundle",
+          "named": true
+        },
+        {
+          "type": "complex_identifier",
+          "named": true
+        },
+        {
+          "type": "dot_selector",
+          "named": true
+        },
+        {
+          "type": "selector",
+          "named": true
+        },
+        {
+          "type": "trivial_identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "simple_variable_base",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "complex_identifier",
+          "named": true
+        },
+        {
+          "type": "dot_selector",
+          "named": true
+        },
+        {
+          "type": "selector",
+          "named": true
+        },
+        {
+          "type": "trivial_identifier",
           "named": true
         }
       ]
@@ -1398,11 +1550,11 @@
       "required": true,
       "types": [
         {
-          "type": "typecase",
+          "type": "simple_variable_base",
           "named": true
         },
         {
-          "type": "variable_base",
+          "type": "typecase",
           "named": true
         }
       ]
@@ -1421,7 +1573,7 @@
           "named": true
         },
         {
-          "type": "variable_base",
+          "type": "simple_fcall_or_variable",
           "named": true
         }
       ]
@@ -1440,42 +1592,11 @@
           "named": true
         },
         {
-          "type": "variable_base",
+          "type": "simple_fcall_or_variable",
           "named": true
         },
         {
           "type": "where_modifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "variable_base",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "dot_selector",
-          "named": true
-        },
-        {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "selector",
-          "named": true
-        },
-        {
-          "type": "variable_base_last",
-          "named": true
-        },
-        {
-          "type": "variable_prev_field",
           "named": true
         }
       ]
