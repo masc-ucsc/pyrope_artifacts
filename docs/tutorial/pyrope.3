@@ -1058,4 +1058,53 @@ foo = /xx.bar.a*/.import
 foo = /xx.bar.a*/.connect
 
 
+----------------------------------------------
+Inline lambda
 
+- Captures as needed unless [] restrict to nothing to capture?
+
+var a = 1
+
+{
+  mut a = 3
+}
+
+{|->(a)| // only 'a' as output
+  mut a = 3
+}
+
+{|| // unconstrained output[s]
+  %a = 3
+
+  // The diff with {|| vs {  is that the % and $ are changed to current lambda scope
+}
+
+//-------------------------
+
+if cond {|(x) -> (a)|
+  %a = $x // or "mut a = x" or "%a = x"
+}
+
+if cond {
+  mut a = x
+}
+
+//-------------------------
+
+var a=1
+a += 2
+a += xx
+
+var a=1
+a += 2
+{|[xx]->(a)|
+  a += xx
+}
+
+//-------------------------
+
+var x = 3 + {|| var v = 3 ; % = b/2 } /3
+
+if {|[x]| var tmp = x+3 ; return fcall(tmp) or fcall2(tmp)} {
+  puts "hello"
+}

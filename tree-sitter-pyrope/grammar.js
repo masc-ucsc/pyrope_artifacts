@@ -270,7 +270,9 @@ module.exports = grammar({
             )
           )
           ,seq(
-            field("lhs",$.argument_list)
+            $.op_tok
+            ,field("lhs",$.trivial_or_caps_identifier_seq1)
+            ,$.cp_tok
             ,$.assignment_cont
           )
         )
@@ -334,6 +336,7 @@ module.exports = grammar({
         )
         ,choice(
            seq($._newline, optional($.stmt_seq))
+          ,seq($.assign_stmt, $._newline, $.stmt_seq)
           ,$.expr_seq1
         )
         ,$.ck_tok
@@ -444,29 +447,26 @@ module.exports = grammar({
         ,$.expr_seq1
       )
 
-    ,factor: $ => seq(
-       optional($.unary_op_tok)
-      ,choice(
-				 $.bool_literal
-				,$.natural_literal
-        ,$.string_literal
-        ,$.all_cap_identifier
-        ,$.complex_rhs_variable_base
-        ,$.bundle
+    ,factor: $ =>
+      choice(
+        $.factor_simple
         ,$.lambda_def
         ,$.if_expr
         ,$.for_expr
         ,$.match_expr
       )
-    )
 
     ,factor_simple: $ => seq(
-       choice(
-         $.fcall_or_variable
-				,$.bool_literal
-				,$.natural_literal
-        ,$.string_literal
-        ,$.all_cap_identifier
+      seq(
+        optional($.unary_op_tok)
+        ,choice(
+          $.fcall_or_variable
+          ,$.bool_literal
+          ,$.natural_literal
+          ,$.string_literal
+          ,$.all_cap_identifier
+        )
+        ,optional($.typecase)
       )
     )
 
@@ -490,8 +490,7 @@ module.exports = grammar({
 
     ,fcall_args_lambda: $ =>
       seq(
-         optional($.pipe_check)
-        ,$.lambda_def
+        $.lambda_def
         ,optional($.fcall_args_lambda_else)
       )
 
@@ -513,13 +512,14 @@ module.exports = grammar({
     ,fcall_args_lambda_else: $ =>
       seq(
          'else'
-        ,optional($.pipe_check)
         ,$.lambda_def
       )
 
     ,lambda_def_constrains: $ =>
       seq(
         optional($.mut_tok)
+        ,optional($.pipe_check)
+        ,field("attr",optional($.expr_attr))
         ,field("meta"
           ,optional($.meta_list)
         )
@@ -544,16 +544,12 @@ module.exports = grammar({
       )
 
     ,argument_list: $ =>
-      seq(
-        $.op_tok
-        ,optional($.bundle_seq1)
-        ,$.cp_tok
-      )
+      $.bundle
 
     ,meta_list: $ =>
       seq(
         $.lt_tok
-        ,$.trivial_or_caps_identifier_seq1 // WARNING; This should be just a list of identifiers
+        ,$.trivial_or_caps_identifier_seq1
         ,$.gt_tok
       )
 
@@ -637,7 +633,7 @@ module.exports = grammar({
       seq(
         $.variable_base_field
         ,optional($.variable_prev_field)
-        ,optional(choice($.variable_base_last, $.bundle, $.typecase))
+        ,optional(choice($.variable_base_last, $.bundle))
       )
 
     ,complex_lhs_variable_base: $ =>

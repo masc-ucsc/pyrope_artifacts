@@ -80,11 +80,11 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
-      "required": false,
+      "multiple": false,
+      "required": true,
       "types": [
         {
-          "type": "bundle_entry",
+          "type": "bundle",
           "named": true
         }
       ]
@@ -109,11 +109,11 @@
         "required": true,
         "types": [
           {
-            "type": "argument_list",
+            "type": "complex_lhs_variable_base",
             "named": true
           },
           {
-            "type": "complex_lhs_variable_base",
+            "type": "trivial_or_caps_identifier_seq1",
             "named": true
           }
         ]
@@ -570,19 +570,11 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {
-          "type": "all_cap_identifier",
-          "named": true
-        },
-        {
-          "type": "bool_literal",
-          "named": true
-        },
-        {
-          "type": "bundle",
+          "type": "factor_simple",
           "named": true
         },
         {
@@ -600,34 +592,6 @@
         {
           "type": "match_expr",
           "named": true
-        },
-        {
-          "type": "natural_literal",
-          "named": true
-        },
-        {
-          "type": "string_literal",
-          "named": true
-        },
-        {
-          "type": "typecase",
-          "named": true
-        },
-        {
-          "type": "unary_op_tok",
-          "named": true
-        },
-        {
-          "type": "variable_base_field",
-          "named": true
-        },
-        {
-          "type": "variable_base_last",
-          "named": true
-        },
-        {
-          "type": "variable_prev_field",
-          "named": true
         }
       ]
     }
@@ -637,7 +601,7 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
         {
@@ -658,6 +622,14 @@
         },
         {
           "type": "string_literal",
+          "named": true
+        },
+        {
+          "type": "typecase",
+          "named": true
+        },
+        {
+          "type": "unary_op_tok",
           "named": true
         }
       ]
@@ -727,10 +699,6 @@
         {
           "type": "lambda_def",
           "named": true
-        },
-        {
-          "type": "pipe_check",
-          "named": true
         }
       ]
     }
@@ -740,15 +708,11 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {
           "type": "lambda_def",
-          "named": true
-        },
-        {
-          "type": "pipe_check",
           "named": true
         }
       ]
@@ -1061,6 +1025,16 @@
     "type": "lambda_def_constrains",
     "named": true,
     "fields": {
+      "attr": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "expr_attr",
+            "named": true
+          }
+        ]
+      },
       "capture": {
         "multiple": false,
         "required": false,
@@ -1117,11 +1091,15 @@
       }
     },
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": false,
       "types": [
         {
           "type": "mut_tok",
+          "named": true
+        },
+        {
+          "type": "pipe_check",
           "named": true
         }
       ]
