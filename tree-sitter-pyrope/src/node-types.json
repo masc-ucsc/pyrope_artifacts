@@ -84,11 +84,7 @@
       "required": false,
       "types": [
         {
-          "type": "trivial_identifier",
-          "named": true
-        },
-        {
-          "type": "typecase",
+          "type": "bundle_entry",
           "named": true
         }
       ]
@@ -138,6 +134,10 @@
         "types": [
           {
             "type": "assign_tok",
+            "named": true
+          },
+          {
+            "type": "equal_tok",
             "named": true
           },
           {
@@ -218,6 +218,10 @@
             "named": true
           },
           {
+            "type": "equal_tok",
+            "named": true
+          },
+          {
             "type": "expr_entry",
             "named": true
           },
@@ -262,12 +266,22 @@
     "type": "bundle_entry",
     "named": true,
     "fields": {
-      "attr": {
+      "lhsrhs": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "expr_entry",
+            "named": true
+          }
+        ]
+      },
+      "rhs": {
         "multiple": false,
         "required": false,
         "types": [
           {
-            "type": "expr_attr",
+            "type": "expr_entry",
             "named": true
           }
         ]
@@ -275,10 +289,10 @@
     },
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
-          "type": "expr_entry",
+          "type": "equal_tok",
           "named": true
         },
         {
@@ -287,10 +301,6 @@
         },
         {
           "type": "mut_tok",
-          "named": true
-        },
-        {
-          "type": "trivial_identifier",
           "named": true
         }
       ]
@@ -305,11 +315,7 @@
       "required": false,
       "types": [
         {
-          "type": "trivial_identifier",
-          "named": true
-        },
-        {
-          "type": "typecase",
+          "type": "bundle_entry",
           "named": true
         }
       ]
@@ -324,19 +330,7 @@
       "required": true,
       "types": [
         {
-          "type": "complex_identifier",
-          "named": true
-        },
-        {
-          "type": "dot_selector",
-          "named": true
-        },
-        {
-          "type": "selector",
-          "named": true
-        },
-        {
-          "type": "trivial_identifier",
+          "type": "variable_base_field",
           "named": true
         },
         {
@@ -351,7 +345,7 @@
     }
   },
   {
-    "type": "complex_variable_base",
+    "type": "complex_rhs_variable_base",
     "named": true,
     "fields": {},
     "children": {
@@ -363,23 +357,11 @@
           "named": true
         },
         {
-          "type": "complex_identifier",
-          "named": true
-        },
-        {
-          "type": "dot_selector",
-          "named": true
-        },
-        {
-          "type": "selector",
-          "named": true
-        },
-        {
-          "type": "trivial_identifier",
-          "named": true
-        },
-        {
           "type": "typecase",
+          "named": true
+        },
+        {
+          "type": "variable_base_field",
           "named": true
         },
         {
@@ -443,7 +425,7 @@
       "required": true,
       "types": [
         {
-          "type": "literal",
+          "type": "natural_literal",
           "named": true
         },
         {
@@ -622,11 +604,15 @@
           "named": true
         },
         {
+          "type": "bool_literal",
+          "named": true
+        },
+        {
           "type": "bundle",
           "named": true
         },
         {
-          "type": "complex_variable_base",
+          "type": "complex_rhs_variable_base",
           "named": true
         },
         {
@@ -642,11 +628,11 @@
           "named": true
         },
         {
-          "type": "literal",
+          "type": "match_expr",
           "named": true
         },
         {
-          "type": "match_expr",
+          "type": "natural_literal",
           "named": true
         },
         {
@@ -673,11 +659,15 @@
           "named": true
         },
         {
+          "type": "bool_literal",
+          "named": true
+        },
+        {
           "type": "fcall_or_variable",
           "named": true
         },
         {
-          "type": "literal",
+          "type": "natural_literal",
           "named": true
         },
         {
@@ -791,19 +781,7 @@
           "named": true
         },
         {
-          "type": "complex_identifier",
-          "named": true
-        },
-        {
-          "type": "dot_selector",
-          "named": true
-        },
-        {
-          "type": "selector",
-          "named": true
-        },
-        {
-          "type": "trivial_identifier",
+          "type": "variable_base_field",
           "named": true
         },
         {
@@ -834,7 +812,7 @@
           "named": true
         },
         {
-          "type": "simple_variable_base",
+          "type": "variable_base_field",
           "named": true
         }
       ]
@@ -1314,11 +1292,7 @@
       "required": false,
       "types": [
         {
-          "type": "trivial_identifier",
-          "named": true
-        },
-        {
-          "type": "typecase",
+          "type": "bundle_entry",
           "named": true
         }
       ]
@@ -1416,46 +1390,7 @@
           "named": true
         },
         {
-          "type": "complex_identifier",
-          "named": true
-        },
-        {
-          "type": "dot_selector",
-          "named": true
-        },
-        {
-          "type": "selector",
-          "named": true
-        },
-        {
-          "type": "trivial_identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "simple_variable_base",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "complex_identifier",
-          "named": true
-        },
-        {
-          "type": "dot_selector",
-          "named": true
-        },
-        {
-          "type": "selector",
-          "named": true
-        },
-        {
-          "type": "trivial_identifier",
+          "type": "variable_base_field",
           "named": true
         }
       ]
@@ -1516,6 +1451,25 @@
     }
   },
   {
+    "type": "trivial_identifier_with_dots",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "dot_selector",
+          "named": true
+        },
+        {
+          "type": "trivial_identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "try_stmt",
     "named": true,
     "fields": {
@@ -1550,7 +1504,7 @@
       "required": true,
       "types": [
         {
-          "type": "simple_variable_base",
+          "type": "trivial_identifier_with_dots",
           "named": true
         },
         {
@@ -1569,11 +1523,23 @@
       "required": false,
       "types": [
         {
+          "type": "btype",
+          "named": true
+        },
+        {
           "type": "bundle",
           "named": true
         },
         {
+          "type": "itype",
+          "named": true
+        },
+        {
           "type": "simple_fcall_or_variable",
+          "named": true
+        },
+        {
+          "type": "utype",
           "named": true
         }
       ]
@@ -1588,7 +1554,15 @@
       "required": true,
       "types": [
         {
+          "type": "btype",
+          "named": true
+        },
+        {
           "type": "bundle",
+          "named": true
+        },
+        {
+          "type": "itype",
           "named": true
         },
         {
@@ -1596,7 +1570,38 @@
           "named": true
         },
         {
+          "type": "utype",
+          "named": true
+        },
+        {
           "type": "where_modifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "variable_base_field",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "complex_identifier",
+          "named": true
+        },
+        {
+          "type": "dot_selector",
+          "named": true
+        },
+        {
+          "type": "selector",
+          "named": true
+        },
+        {
+          "type": "trivial_identifier",
           "named": true
         }
       ]
@@ -1780,8 +1785,16 @@
     "named": true
   },
   {
+    "type": "bool_literal",
+    "named": true
+  },
+  {
     "type": "break",
     "named": false
+  },
+  {
+    "type": "btype",
+    "named": true
   },
   {
     "type": "by",
@@ -1816,6 +1829,14 @@
     "named": false
   },
   {
+    "type": "equal_tok",
+    "named": true
+  },
+  {
+    "type": "equals",
+    "named": false
+  },
+  {
     "type": "fail",
     "named": false
   },
@@ -1836,19 +1857,11 @@
     "named": false
   },
   {
-    "type": "is",
-    "named": false
-  },
-  {
-    "type": "isnot",
-    "named": false
-  },
-  {
-    "type": "let_tok",
+    "type": "itype",
     "named": true
   },
   {
-    "type": "literal",
+    "type": "let_tok",
     "named": true
   },
   {
@@ -1860,7 +1873,11 @@
     "named": true
   },
   {
-    "type": "notint",
+    "type": "natural_literal",
+    "named": true
+  },
+  {
+    "type": "not",
     "named": false
   },
   {
@@ -1922,6 +1939,10 @@
   {
     "type": "unless",
     "named": false
+  },
+  {
+    "type": "utype",
+    "named": true
   },
   {
     "type": "var",

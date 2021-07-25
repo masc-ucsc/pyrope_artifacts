@@ -79,21 +79,21 @@ These are some potential ideas for Pyrope v3 based on RUST/V ideas
 
 5.Easier function type check
 
- XXX is :YYY // same as (XXX:YYY and YYY:XXX)
+ XXX equals :YYY // same as (XXX implements :YYY and YYY implements :XXX)
 
  XX:YY "same as" for each YY var, XX implements it with same type
 
  XX:YY "could be read as" XX implements YY type (but it can be more)
- XX is YY "could be read as" XX has the the methods/vars as YY
+ XX equals YY "could be read as" XX has the the methods/vars as YY
 
  XX has YY "could be read as" XX.YYY exists
 
-XX implements YY // XX can be more than YY
-XX is         YY // XX is the same as YY
+XX implements :YY // XX can be more than YY (values can be different)
+XX equals     :YY // XX exactly the same type as YY (values can be different)
 XX
 
  fun = {||
-   ensure $ is :(foo,bar)
+   ensure $ implements :(foo,bar)
    ensure %.__size == 1
    ensure % is :(sum)
 
@@ -113,14 +113,14 @@ m.read(port=0,300) {||
 
 m.write(port=2,addr=301+x, data=33+a)
 
-type counter:{signed where signed is :int and signed__bits<4 and signed__min>2 }
+type counter:{signed where signed implements :int and signed__bits<4 and signed__min>2 }
 
 let xxx_type:{signed where signed in 7..<23 } = 20
 
 a:unsigned(0..=3) = b:signed(10..=20) - c:xxx_type;
 
 
-x = Bar :{(a,b) where a.__sbits>6 and b is Foo}
+x = Bar :{(a,b) where a.__sbits>6 and b equals Foo}
 
 Base types: int, string
 
@@ -135,6 +135,33 @@ foo = {||
 }
 
 type $:(a:,b:) // $ is a bundle with a and b fields that have any type "foo:" is a type def without type
+---
+
+Argument name match
+
+fun1 = {|(a,b)| ... $a ... $b ...}
+fun2 = {|| ...$a...$b...}
+fun3 = {|| ...$0...$1...}
+fun4 = {|(a)| ... $a.complex.tuple...} // LL may expand to a.complex.foo a.complex.bar
+
+a = 1
+c = 2
+
+xx = fun1(a,b=c) // OK: if no name provided b=, try to match the current variable name
+xx = fun1(a,c)   // compile error
+
+xx = fun2(a,b=c) // OK: if no name provided b=, try to match the current variable name
+xx = fun2(a,c)   // compile error
+
+xx = fun2(a,b=c) // compile error, no b defined
+xx = fun2(a,c)   // OK, just position based
+
+xx = fun4(a=zz) // OK
+xx = fun4(a)    // OK
+xx = fun4(a)    // OK
+xx = fun4(a.complex=zz)    // compile error
+
+xx = fun4(a=(complex=zz)) // OK
 
 ---
 
@@ -163,18 +190,16 @@ type $:(a:,b:) // $ is a bundle with a and b fields that have any type "foo:" is
 
 8.Tuple/Type check
 
- is, type keyword
-
  a = 3
  assert a is :1030
 
  b = (c=3,d=4)
- assert b is :(c=0,d=0)   // value does not matter
- assert b isnot :(d=0,c=0)  // ordered tuple
- assert b is :(c:,d:)   // syntax sugar for (c=0,d=0)
+ assert b equals :(c=0,d=0)   // value does not matter
+ assert b not equals :(d=0,c=0)  // ordered tuple
+ assert b implements :(c:,d:)   // syntax sugar for (c=0,d=0)
 
  process_tree = {|
-   assert $ is :(left:,right:,value:) or is :(value)
+   assert $ implements :(left:,right:,value:) or implements :(value)
  }
 
 9.Init for modules/directories
@@ -1008,4 +1033,29 @@ Orig:
 Becomes:
   assert(foo is def, "foo is not previously defined")
   foo.bar = ...
+---------------------------------
+
+TO FIX?
+
+1-dot in args
+
+xx = fun4(a=(complex=zz)) // OK
+xx = fun4(a.complex=zz)   // compile error (WHY NOT?)
+
+2-simplified fcalls rule
+xx = method foo.bar,"asss"
+mut xx = method foo.bar,"asss"
+
+3-regex?
+
+xx = import //foo.bar.*//
+
+// go to top directory, try to match xx dir, then bar mod, then a* outputs.
+// If no match, go down a path up to reaching current directory, with xx sub and bar mod
+foo = /xx.bar.a*/.import
+
+// Similarly but go through hierarchy (not directories)
+foo = /xx.bar.a*/.connect
+
+
 
