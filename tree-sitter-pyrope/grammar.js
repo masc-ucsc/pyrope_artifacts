@@ -680,14 +680,20 @@ module.exports = grammar({
 
     ,expr_seq1: $ =>
       seq(
-        repeat($.comma_tok)
-        ,seq(
-          $.expr_entry
-          ,repeat(
+        $.expr_entry
+        ,choice(
+          repeat1(
             seq(
-              repeat1($.comma_tok)
-              ,$.expr_entry
+              $.comma_tok
+              ,optional($.expr_entry)
             )
+          )
+          ,$.expr_entry
+        )
+        ,repeat(
+          seq(
+            repeat1($.comma_tok)
+            ,$.expr_entry
           )
         )
         ,repeat($.comma_tok)
