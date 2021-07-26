@@ -200,6 +200,10 @@
           {
             "type": "complex_lhs_variable_base",
             "named": true
+          },
+          {
+            "type": "trivial_or_caps_identifier_seq1",
+            "named": true
           }
         ]
       },
@@ -1096,8 +1100,12 @@
     },
     "children": {
       "multiple": true,
-      "required": false,
+      "required": true,
       "types": [
+        {
+          "type": "bar_tok",
+          "named": true
+        },
         {
           "type": "mut_tok",
           "named": true
@@ -1379,21 +1387,6 @@
     }
   },
   {
-    "type": "selector_empty",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "expr_entry",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "simple_fcall_or_variable",
     "named": true,
     "fields": {},
@@ -1420,6 +1413,10 @@
       "multiple": true,
       "required": false,
       "types": [
+        {
+          "type": "bar_tok",
+          "named": true
+        },
         {
           "type": "gate_stmt",
           "named": true
@@ -1558,6 +1555,10 @@
       "required": false,
       "types": [
         {
+          "type": "all_cap_identifier",
+          "named": true
+        },
+        {
           "type": "btype",
           "named": true
         },
@@ -1588,6 +1589,10 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "all_cap_identifier",
+          "named": true
+        },
         {
           "type": "btype",
           "named": true
@@ -1648,8 +1653,16 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": false,
+      "required": true,
       "types": [
+        {
+          "type": "bang_tok",
+          "named": true
+        },
+        {
+          "type": "qmark_tok",
+          "named": true
+        },
         {
           "type": "variable_bit_sel",
           "named": true
@@ -1662,11 +1675,15 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
         {
-          "type": "selector_empty",
+          "type": "at_tok",
+          "named": true
+        },
+        {
+          "type": "expr_entry",
           "named": true
         }
       ]
@@ -1682,6 +1699,10 @@
       "types": [
         {
           "type": "expr_entry",
+          "named": true
+        },
+        {
+          "type": "pob_tok",
           "named": true
         }
       ]
@@ -1746,47 +1767,11 @@
     }
   },
   {
-    "type": "!",
-    "named": false
-  },
-  {
     "type": "\"",
     "named": false
   },
   {
-    "type": "#[",
-    "named": false
-  },
-  {
-    "type": "&",
-    "named": false
-  },
-  {
-    "type": "+",
-    "named": false
-  },
-  {
     "type": "->",
-    "named": false
-  },
-  {
-    "type": ":",
-    "named": false
-  },
-  {
-    "type": ":{",
-    "named": false
-  },
-  {
-    "type": "?",
-    "named": false
-  },
-  {
-    "type": "@",
-    "named": false
-  },
-  {
-    "type": "^",
     "named": false
   },
   {
@@ -1804,6 +1789,18 @@
   {
     "type": "async",
     "named": false
+  },
+  {
+    "type": "at_tok",
+    "named": true
+  },
+  {
+    "type": "bang_tok",
+    "named": true
+  },
+  {
+    "type": "bar_tok",
+    "named": true
   },
   {
     "type": "binary_op_tok",
@@ -1910,6 +1907,14 @@
     "named": true
   },
   {
+    "type": "pob_tok",
+    "named": true
+  },
+  {
+    "type": "qmark_tok",
+    "named": true
+  },
+  {
     "type": "range_op_tok",
     "named": true
   },
@@ -1927,10 +1932,6 @@
   },
   {
     "type": "set",
-    "named": false
-  },
-  {
-    "type": "sext",
     "named": false
   },
   {
@@ -1983,22 +1984,6 @@
   },
   {
     "type": "yield",
-    "named": false
-  },
-  {
-    "type": "zext",
-    "named": false
-  },
-  {
-    "type": "{",
-    "named": false
-  },
-  {
-    "type": "{|",
-    "named": false
-  },
-  {
-    "type": "|",
     "named": false
   }
 ]

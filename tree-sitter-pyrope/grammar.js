@@ -60,7 +60,7 @@ module.exports = grammar({
         optional($._newline)
         ,optional(
           seq(
-            '|'
+            $.bar_tok
             ,$.lambda_def_constrains
             ,$._newline
           )
@@ -254,7 +254,14 @@ module.exports = grammar({
       seq(
         $.assign_attr
         ,field("attr",optional($.expr_attr))
-        ,field("lhs", $.complex_lhs_variable_base)
+        ,choice(
+          field("lhs", $.complex_lhs_variable_base)
+          ,seq(
+            $.op_tok
+            ,field("lhs",$.trivial_or_caps_identifier_seq1)
+            ,$.cp_tok
+          )
+        )
         ,$.assignment_cont
         ,repeat($.fcall_pipe)
       )
@@ -337,7 +344,8 @@ module.exports = grammar({
         )
         ,choice(
            seq($._newline, optional($.stmt_seq))
-          ,seq($.assign_stmt, $._newline, $.stmt_seq)
+          // var ... type... can also avoid the newline just to make it nicer
+          ,seq(choice($.assign_stmt, $.type_stmt), $._newline, $.stmt_seq)
           ,$.expr_seq1
         )
         ,$.ck_tok
@@ -542,7 +550,7 @@ module.exports = grammar({
         ,field("where"
           ,optional($.where_modifier)
         )
-        ,'|'
+        ,$.bar_tok
       )
 
     ,argument_list: $ =>
@@ -604,6 +612,7 @@ module.exports = grammar({
         ,$.btype
         ,$.simple_fcall_or_variable
         ,$.bundle
+        ,$.all_cap_identifier
       )
 
     ,where_modifier: $ =>
@@ -664,15 +673,15 @@ module.exports = grammar({
 
     ,variable_prev_field: $ =>
       seq(
-         '#['
+         $.pob_tok
         ,$.expr_seq1
         ,$.cb_tok
       )
 
     ,variable_base_last: $ =>
        choice(
-          '?'
-         ,'!'
+         $.qmark_tok
+         ,$.bang_tok
          ,repeat1($.variable_bit_sel)
        )
 
@@ -689,12 +698,6 @@ module.exports = grammar({
         ,$.cb_tok
       )
 
-    ,selector_empty: $ =>
-      seq(
-         $.ob_tok
-        ,optional($.expr_seq1)
-        ,$.cb_tok
-      )
 
     ,expr_simple_seq1: $ =>
       seq(
@@ -762,11 +765,12 @@ module.exports = grammar({
 
     ,variable_bit_sel: $ =>
       seq(
-         '@'
-        ,optional(choice('sext', 'zext', '|', '&', '^', '+'))
-        ,$.selector_empty
+        $.at_tok
+        ,optional(token(choice('sext', 'zext', '|', '&', '^', '+')))
+        ,$.ob_tok
+        ,optional($.expr_seq1)
+        ,$.cb_tok
       )
-
 
     ,bool_literal: (_) => token(choice("true","false"))
     ,natural_literal: (_) => token(/[0-9][a-fA-F\d_]*/)
@@ -827,26 +831,33 @@ module.exports = grammar({
         )
       )
 
-    ,equal_tok: () => token('=')
+    ,equal_tok: () => token(/\s*=/)
 
     ,pipe_tok: () => token(/\s*\|>/)
 
     // No ok_tok because it should have space after only if statement (more complicated per rule case)
-    ,ok_lambda_tok: () => seq('{|')
-    ,ok_tok: () => seq('{')
+    ,ok_lambda_tok: () => seq(/\{\|/)
+    ,ok_tok: () => seq(/\{/)
     ,ck_tok: () => seq(/\s*}/)
 
     ,ob_tok: () => seq(/\[/) // No newline because the following line may be a expr (not a self-contained statement)
     ,cb_tok: () => seq(/\s*\]/)
 
-    ,lt_tok: () => seq(/<\s*/)
+    ,lt_tok: () => seq(/</)
     ,gt_tok: () => seq(/\s*>/)
 
-    ,op_tok: () => seq(/\(s*/)
+    ,op_tok: () => seq(/\(/)
     ,cp_tok: () => seq(/\s*\)/)
 
-    ,colonp_tok: () => seq(':{')
-    ,colon_tok: () => seq(':')
+    ,colonp_tok: () => seq(/\s*:\{/)
+    ,colon_tok: () => seq(/\s*:/)
+
+    ,bar_tok: () => token('|')
+    ,pob_tok: () => token('#[')
+
+    ,qmark_tok: () => token('?')
+    ,bang_tok: () => token('!')
+    ,at_tok: () => token('@')
 
     ,string_literal: ($) =>
       seq(
@@ -859,11 +870,11 @@ module.exports = grammar({
 
     ,utype: (_) => token(prec(2,/u[\d]+/))
     ,itype: (_) => token(prec(2,/i[\d]+/))
-    ,btype: (_) => token(prec(2,/boolean/))
+    ,btype: (_) => token(prec(2,/bool/))
 
     ,complex_identifier: (_) => token(/[$%#][\.a-zA-Z\d_]*/)
-    ,all_cap_identifier: (_) => token(prec(2,/[A-Z][A-Z\d_]+/))
-    ,trivial_identifier: (_) => token(/[a-zA-Z_][a-zA-Z\d_]*/)
+    ,all_cap_identifier: (_) => token(/[A-Z][A-Z\d_]*/)
+    ,trivial_identifier: (_) => token(/[a-z_][a-zA-Z\d_]*/)
 
     //,identifier: (_) => token(/[a-zA-Zα-ωΑ-Ωµ_][\.a-zA-Zα-ωΑ-Ωµ\d_]*/)
 

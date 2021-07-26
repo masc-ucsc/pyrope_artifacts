@@ -24,8 +24,8 @@
               "type": "SEQ",
               "members": [
                 {
-                  "type": "STRING",
-                  "value": "|"
+                  "type": "SYMBOL",
+                  "name": "bar_tok"
                 },
                 {
                   "type": "SYMBOL",
@@ -776,12 +776,38 @@
           }
         },
         {
-          "type": "FIELD",
-          "name": "lhs",
-          "content": {
-            "type": "SYMBOL",
-            "name": "complex_lhs_variable_base"
-          }
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "FIELD",
+              "name": "lhs",
+              "content": {
+                "type": "SYMBOL",
+                "name": "complex_lhs_variable_base"
+              }
+            },
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "op_tok"
+                },
+                {
+                  "type": "FIELD",
+                  "name": "lhs",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "trivial_or_caps_identifier_seq1"
+                  }
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "cp_tok"
+                }
+              ]
+            }
+          ]
         },
         {
           "type": "SYMBOL",
@@ -1107,8 +1133,17 @@
               "type": "SEQ",
               "members": [
                 {
-                  "type": "SYMBOL",
-                  "name": "assign_stmt"
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "assign_stmt"
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "type_stmt"
+                    }
+                  ]
                 },
                 {
                   "type": "SYMBOL",
@@ -1893,8 +1928,8 @@
           }
         },
         {
-          "type": "STRING",
-          "value": "|"
+          "type": "SYMBOL",
+          "name": "bar_tok"
         }
       ]
     },
@@ -2086,6 +2121,10 @@
         {
           "type": "SYMBOL",
           "name": "bundle"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "all_cap_identifier"
         }
       ]
     },
@@ -2303,8 +2342,8 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
-          "value": "#["
+          "type": "SYMBOL",
+          "name": "pob_tok"
         },
         {
           "type": "SYMBOL",
@@ -2320,12 +2359,12 @@
       "type": "CHOICE",
       "members": [
         {
-          "type": "STRING",
-          "value": "?"
+          "type": "SYMBOL",
+          "name": "qmark_tok"
         },
         {
-          "type": "STRING",
-          "value": "!"
+          "type": "SYMBOL",
+          "name": "bang_tok"
         },
         {
           "type": "REPEAT1",
@@ -2368,31 +2407,6 @@
         {
           "type": "SYMBOL",
           "name": "expr_seq1"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "cb_tok"
-        }
-      ]
-    },
-    "selector_empty": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "ob_tok"
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "expr_seq1"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
         },
         {
           "type": "SYMBOL",
@@ -2625,40 +2639,43 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
-          "value": "@"
+          "type": "SYMBOL",
+          "name": "at_tok"
         },
         {
           "type": "CHOICE",
           "members": [
             {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": "sext"
-                },
-                {
-                  "type": "STRING",
-                  "value": "zext"
-                },
-                {
-                  "type": "STRING",
-                  "value": "|"
-                },
-                {
-                  "type": "STRING",
-                  "value": "&"
-                },
-                {
-                  "type": "STRING",
-                  "value": "^"
-                },
-                {
-                  "type": "STRING",
-                  "value": "+"
-                }
-              ]
+              "type": "TOKEN",
+              "content": {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": "sext"
+                  },
+                  {
+                    "type": "STRING",
+                    "value": "zext"
+                  },
+                  {
+                    "type": "STRING",
+                    "value": "|"
+                  },
+                  {
+                    "type": "STRING",
+                    "value": "&"
+                  },
+                  {
+                    "type": "STRING",
+                    "value": "^"
+                  },
+                  {
+                    "type": "STRING",
+                    "value": "+"
+                  }
+                ]
+              }
             },
             {
               "type": "BLANK"
@@ -2667,7 +2684,23 @@
         },
         {
           "type": "SYMBOL",
-          "name": "selector_empty"
+          "name": "ob_tok"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "expr_seq1"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "cb_tok"
         }
       ]
     },
@@ -2971,8 +3004,8 @@
     "equal_tok": {
       "type": "TOKEN",
       "content": {
-        "type": "STRING",
-        "value": "="
+        "type": "PATTERN",
+        "value": "\\s*="
       }
     },
     "pipe_tok": {
@@ -2986,8 +3019,8 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
-          "value": "{|"
+          "type": "PATTERN",
+          "value": "\\{\\|"
         }
       ]
     },
@@ -2995,8 +3028,8 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
-          "value": "{"
+          "type": "PATTERN",
+          "value": "\\{"
         }
       ]
     },
@@ -3032,7 +3065,7 @@
       "members": [
         {
           "type": "PATTERN",
-          "value": "<\\s*"
+          "value": "<"
         }
       ]
     },
@@ -3050,7 +3083,7 @@
       "members": [
         {
           "type": "PATTERN",
-          "value": "\\(s*"
+          "value": "\\("
         }
       ]
     },
@@ -3067,8 +3100,8 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
-          "value": ":{"
+          "type": "PATTERN",
+          "value": "\\s*:\\{"
         }
       ]
     },
@@ -3076,10 +3109,45 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
-          "value": ":"
+          "type": "PATTERN",
+          "value": "\\s*:"
         }
       ]
+    },
+    "bar_tok": {
+      "type": "TOKEN",
+      "content": {
+        "type": "STRING",
+        "value": "|"
+      }
+    },
+    "pob_tok": {
+      "type": "TOKEN",
+      "content": {
+        "type": "STRING",
+        "value": "#["
+      }
+    },
+    "qmark_tok": {
+      "type": "TOKEN",
+      "content": {
+        "type": "STRING",
+        "value": "?"
+      }
+    },
+    "bang_tok": {
+      "type": "TOKEN",
+      "content": {
+        "type": "STRING",
+        "value": "!"
+      }
+    },
+    "at_tok": {
+      "type": "TOKEN",
+      "content": {
+        "type": "STRING",
+        "value": "@"
+      }
     },
     "string_literal": {
       "type": "SEQ",
@@ -3153,7 +3221,7 @@
         "value": 2,
         "content": {
           "type": "PATTERN",
-          "value": "boolean"
+          "value": "bool"
         }
       }
     },
@@ -3167,19 +3235,15 @@
     "all_cap_identifier": {
       "type": "TOKEN",
       "content": {
-        "type": "PREC",
-        "value": 2,
-        "content": {
-          "type": "PATTERN",
-          "value": "[A-Z][A-Z\\d_]+"
-        }
+        "type": "PATTERN",
+        "value": "[A-Z][A-Z\\d_]*"
       }
     },
     "trivial_identifier": {
       "type": "TOKEN",
       "content": {
         "type": "PATTERN",
-        "value": "[a-zA-Z_][a-zA-Z\\d_]*"
+        "value": "[a-z_][a-zA-Z\\d_]*"
       }
     },
     "_comment": {
