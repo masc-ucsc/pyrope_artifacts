@@ -574,6 +574,10 @@
       "required": true,
       "types": [
         {
+          "type": "bundle",
+          "named": true
+        },
+        {
           "type": "factor_simple",
           "named": true
         },
@@ -1820,10 +1824,6 @@
   {
     "type": "by",
     "named": false
-  },
-  {
-    "type": "comment",
-    "named": true
   },
   {
     "type": "complex_identifier",

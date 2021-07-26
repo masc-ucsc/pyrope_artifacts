@@ -10,7 +10,8 @@ module.exports = grammar({
   extras: $ => [
     / /,
     /\t/,
-    $.comment,
+    $._comment,
+    $._comment2,
   ]
 
   ,word: $ => $.trivial_identifier
@@ -454,6 +455,7 @@ module.exports = grammar({
         ,$.if_expr
         ,$.for_expr
         ,$.match_expr
+        ,$.bundle
       )
 
     ,factor_simple: $ => seq(
@@ -772,6 +774,7 @@ module.exports = grammar({
     ,comma_tok: () => seq(/\s*,/)
     ,dot_tok: () => seq(/\s*\./)
 
+
     ,binary_op_tok: () =>
       token(
         seq(
@@ -845,29 +848,14 @@ module.exports = grammar({
     ,colonp_tok: () => seq(':{')
     ,colon_tok: () => seq(':')
 
-    ,string_literal: $ => seq(
-      '"',
-      repeat(choice(
-        token.immediate(prec(1, /[^\\"\n]+/)),
-        $._escape_sequence
-      )),
-      '"',
-    ),
-
-    _escape_sequence: $ => token(
-      prec(1,
-        seq(
-          '\\',
-          choice(
-            /[^xuU]/,
-            /\d{2,3}/,
-            /x[0-9a-fA-F]{2,}/,
-            /u[0-9a-fA-F]{4}/,
-            /U[0-9a-fA-F]{8}/
-          )
-        )
+    ,string_literal: ($) =>
+      seq(
+        '"'
+        ,repeat(choice($._escape_sequence, /[^"\\\n]+/))
+        ,token.immediate('"')
       )
-    )
+
+    ,_escape_sequence: (_) => token( prec(1, /\\./))
 
     ,utype: (_) => token(prec(2,/u[\d]+/))
     ,itype: (_) => token(prec(2,/i[\d]+/))
@@ -879,8 +867,10 @@ module.exports = grammar({
 
     //,identifier: (_) => token(/[a-zA-Zα-ωΑ-Ωµ_][\.a-zA-Zα-ωΑ-Ωµ\d_]*/)
 
-    ,_newline: $ => repeat1(choice(/;/,/\n/,/\\\r?\n/))
+    ,_comment: (_) => token(prec(1,/\/\/[^\n]*/))
+    ,_comment2: (_) => token(prec(1,/\s+\/\/[^\n]*/))
 
-    ,comment: (_) => token(seq("//", /.*/))
+    ,_newline: (_) => token(prec(-1,/[; \n\t\r]+/))
+    //,_newline: $ => repeat1(choice(/;/,/\n/,/\\\r?\n/))
   }
 });
