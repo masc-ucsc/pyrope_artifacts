@@ -247,7 +247,7 @@ module.exports = grammar({
       seq(
         'type'
         ,$.trivial_identifier_with_dots
-        ,$.typecase
+        ,$.assignment_cont
       )
 
     ,assign_stmt: $ =>
@@ -342,12 +342,8 @@ module.exports = grammar({
           )
           ,$.ok_tok
         )
-        ,choice(
-           seq($._newline, optional($.stmt_seq))
-          // var ... type... can also avoid the newline just to make it nicer
-          ,seq(choice($.assign_stmt, $.type_stmt), $._newline, $.stmt_seq)
-          ,$.expr_seq1
-        )
+        ,seq(optional($._newline), optional($.stmt_seq))
+        //,$.expr_seq1
         ,$.ck_tok
       )
 
@@ -367,21 +363,21 @@ module.exports = grammar({
     ,yield_stmt: $ =>
       seq(
          'yield'
-        //,optional($.expr_entry)
+        ,optional($.expr_entry)
         ,field("code",$.scope_stmt)
       )
 
     ,fail_stmt: $ =>
       seq(
          'fail'
-        ,$.string_literal
+        ,choice($.string_literal,$.simple_string_literal)
         ,field("code",$.scope_stmt)
       )
 
     ,test_stmt: $ =>
       seq(
          'test'
-        ,$.string_literal
+        ,choice($.string_literal,$.simple_string_literal)
         ,field("code",$.scope_stmt)
       )
 
@@ -474,7 +470,7 @@ module.exports = grammar({
           ,$.bool_literal
           ,$.natural_literal
           ,$.string_literal
-          ,$.all_cap_identifier
+          ,$.simple_string_literal
         )
         ,optional($.typecase)
       )
@@ -594,8 +590,16 @@ module.exports = grammar({
     ,typecase_where: $ =>
       seq(
         $.colonp_tok
-        ,$.typecase_base
-        ,$.where_modifier
+        ,choice(
+          seq(
+            '|'
+            ,$.lambda_def_constrains
+          )
+          ,seq(
+            $.typecase_base
+            ,$.where_modifier
+          )
+        )
         ,$.ck_tok
       )
 
@@ -612,7 +616,7 @@ module.exports = grammar({
         ,$.btype
         ,$.simple_fcall_or_variable
         ,$.bundle
-        ,$.all_cap_identifier
+        //,$.all_cap_identifier
       )
 
     ,where_modifier: $ =>
@@ -656,7 +660,7 @@ module.exports = grammar({
 
     ,variable_base_field: $ =>
       seq(
-        choice($.complex_identifier, $.trivial_identifier)
+        choice($.complex_identifier, $.trivial_identifier, $.all_cap_identifier)
         ,repeat(
           choice(
             $.dot_selector
@@ -859,6 +863,9 @@ module.exports = grammar({
     ,bang_tok: () => token('!')
     ,at_tok: () => token('@')
 
+
+    ,simple_string_literal: (_) => token(/\'[^\'\n]*\'/)
+
     ,string_literal: ($) =>
       seq(
         '"'
@@ -874,7 +881,7 @@ module.exports = grammar({
 
     ,complex_identifier: (_) => token(/[$%#][\.a-zA-Z\d_]*/)
     ,all_cap_identifier: (_) => token(/[A-Z][A-Z\d_]*/)
-    ,trivial_identifier: (_) => token(/[a-z_][a-zA-Z\d_]*/)
+    ,trivial_identifier: (_) => token(/[A-Z]?[a-z_][a-zA-Z\d_]*/)
 
     //,identifier: (_) => token(/[a-zA-Zα-ωΑ-Ωµ_][\.a-zA-Zα-ωΑ-Ωµ\d_]*/)
 

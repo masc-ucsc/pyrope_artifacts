@@ -1,0 +1,143 @@
+
+"C++ Convepcts vs Rust Traits vs Haskell Typeclasses vs Swift Protocols - talk ACCU 21"
+
+C++   : templace<typename T> auto add        (T a   , T b   )      { return a + b; }
+C++   : auto add                             (auto a, auto b)      { return a + b; }
+D     : T    add(T)                          (T    a, T b   )      { return a + b; }
+rust  : fn   add<T:std::ops::Add<Output = T>>(a: T  , b: T  ) -> T { a + b }
+swift : func add<T:Numeric>                  (_ a: T, _ b: T) -> T { a + b }
+
+// like C++ auto, no constraints
+Pyrope:      add = {|(a,b) -> (c)|       %c = $a + $b }
+Pyrope:      add = {|(a,b) -> (_)|       %  = $a + $b }
+Pyrope:      add = {|(a,b) -> (_)|            $a + $b }
+Pyrope:      add = {|(a,b)       |            $a + $b }
+
+// Like C++ template
+Pyrope:      add = {|(a,b) -> (c) where (a equals b and b equals c)| %c = $a + $b } // a,b,c must have same type
+Pyrope:      add = {|<T>(a:T,b:T) -> (c:T)                     | %c = $a + $b } // a,b,c must have same type
+
+Pyrope:      add = {|<T>(a:T,b:T) -> (c:T) where (T implements:Int)    | %c = $a + $b } // a,b,c must have same integer type
+Pyrope:      add = {|<T:int>(a:T,b:T) -> (c:T)                 | %c = $a + $b } // a,b,c must have same integer type
+
+// In the talk: consent (Rust, Swift, Haskell) vs constrain (C++, D)
+
+// Some Pyrope consent/constrain
+Pyrope:      add = {|($a:int(0,100),$b:int) -> (_:int(-30,100)) where ($a>$b)| $a + $b }
+
+
+//---------------------------------------------
+
+mut foo.a:int = 1
+
+// foo.inc_a can be changed and it can change the contents outside itself
+mut foo.inc_a = {|mut| self.a += 1 }
+// foo.inc_a can not be changed, but it can change the contents outside itself
+let foo.inc_a = {|mut ()->()| self.a += 1 }
+
+let foo.inc_a = {|mut| self.a += 1 } // optional argument constraints
+
+//------------------------------
+
+mut add_def   =                   {|                                              $0 + $1 }
+mut add_const = extends add_def   {|(a,b) where ($b.__comptime)|                  $a + $b }
+let add_small = extends add_small {|(a,b) where ($a.__sbits<10 && $b.__sbits<10)| $a + $b }
+// since let, any "= extends add_small" will trigger compile error
+
+add_small(1,                 3) // will pick add_small
+add_small(1231231,           3) // will pick add_const
+add_small($rand,   $large_rand) // will pick add_def
+
+//-----------------------------------
+
+rust class:
+
+struct Circle { r: i32 }
+struct Rectangle { w: i32, h:i32 }
+
+trait Shape {
+  fn name(&self) -> String;
+  fn area(&self) -> i32;
+}
+
+impl Shape for Circle {
+  fn name(&self) -> String { "Circle".to_string() }
+  fn area(&self) -> i32    { PI * self.r * self.r }
+}
+
+impl Shape for Rectangle {
+  fn name(&self) -> String { "Rectangle".to_string() }
+  fn area(&self) -> i32    { self.w * self.h         }
+}
+
+
+Pyrope class:
+
+type Shape = (
+  ,name = {|() -> (_:string)|}
+  ,area = {|() -> (_:i32)|}
+  ,increase_size = {|mut (_:i12) -> ()|}
+)
+
+type Circle:Shape ++= (
+  ,r:i32
+  ,name={|() -> (_:string)| return "Circle"               }
+  ,area={|() -> (_:i32)   | % = math.pi * self.r * self.r }
+  ,update={|mut (v:i32)   | self.r = v                    } // OK to have extra methods
+  // COMPILE ERROR: missing increase_size
+)
+
+type Circle:Shape ++= (
+  ,r:i32
+  ,name={|() -> (_:string)| return "Circle"               }
+  ,area={|() -> (_:i32)   | % = math.pi * self.r * self.r }
+  ,update={|mut (v:i32)   | self.r = v                    }
+  ,increase_size = {|mut (_:i12) -> ()| self.update(v=r*$0) } // OK self.r *= $0 OR update(v=r*$)
+)
+
+type Rectangle ++= ( // No need to say :Shape, but then not checked that it is fine
+  ,w:i32, h:i32
+  ,name = {|() -> (_:string)| % = "Rectangle" }
+  ,area = {|() -> (_:i32)   | % = self.h * self.w }
+)
+
+// "type" checks that only methods without statements can be override. Compile error otherwise
+
+var Patched_rect = Rectangle
+mut Patched_rect.name = {|| your_code_here() } // override a defined method
+type Rect2 = Patched_rect
+
+assert Rectangle implements :Shape
+assert Patched_rect implements :Shape  // all the methods and signature still match
+assert Rec2 implements :Shape
+
+check_shape = {|(t)->(_:bool)|
+  return false unless (t has 'name') and (t.name implements :{|() -> (_:string)|})
+  return false unless (t has 'area') and t.area:{|() -> (_:i32)|}
+  return true
+}
+
+assert check_shape(Rectangle)
+assert Circle implements :Shape
+assert Rectangle implements :Shape
+
+print_share_info = {||
+  puts "shape:{} area:{}\n", $0.name(), $0.area()
+}
+
+print_share_info = {|(s:Shape)->()|
+  puts "shape:{} area:{}\n", $0.name(), $0.area()
+}
+
+print_share_info = {|<T>(s:T) where (T implements :Circle or T implements :Rectangle)|
+  puts "shape:{} area:{}\n", $0.name(), $0.area()
+}
+
+print_share_info = {|<T>(s:T) where (check_shape(T))|
+  puts "shape:{} area:{}\n", $0.name(), $0.area()
+}
+
+print_share_info = {|<T>(s:T) where (T.name implements :{|() -> (_:string)|} and T.area:{|() -> (_:i32)|})|
+
+  puts "shape:{} area:{}\n", $0.name(), $0.area()
+}

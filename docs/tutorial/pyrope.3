@@ -246,6 +246,27 @@ the assertions/assume
  foo = 4
 
 
+13.Trait/objects
+
+
+-Abstract class or trait
+
+  type Shape = (
+    ,name = {|() -> (_:string)|}
+    ,area = {|() -> (_:i32)|}
+    ,increase_size = {|mut (_:i12) -> ()|}
+  )
+
+  type Circle:Shape = (
+    ,rad:i32
+    ,name = {|() -> (_:string)| return "circle" }
+    ,area = {|() -> (_:i32)|
+       let pi = import("math.pi")
+       return pi * self.rad * self.rad
+    }
+    ,increase_size = {|mut (_:i12) -> ()| self.rad *= $ }
+  )
+
 ============================================
 
 Why not generics?
@@ -255,36 +276,59 @@ Why not generics?
 
 14.Future types
 
- let type txxx :int(0:)
- let type txx  :int(-10:50)
+ type Int = (
+   ,__initial = {|mut (a:range)|
+     self.__max = a.max when a.max_set
+     self.__min = a.min when a.min_set
+     assert a.step==1, "Integer type only deals with ranges without steps"
+   }
+ )
 
- var x:txxx
+ type txxx =int(-10..<_)
+ type txx  =int(-10..=50)
+
+ var x:txxx = 0
  let x:txx = 33
  mut x = 3 // preserve type
 
  x = (a:txx=3,b:foo=5)
 
- I(x is :(a:txx,b:foo))
- I(x is :(a:_,b:foo))
- I(x isnot (a:foo))
+ I(x equals :(a:txx,b:foo))
+ I(x equals :(a:_,b:foo))
+ I(x not equals (a:foo))
 
- int(0:22) // min:0 max:22
- int(:22)  // min:-inf, max:22
- int(3:)   // min:3 max:inf
+ int(0..=22) // min:0 max:22
+ int(_..=22)  // min:-inf, max:22
+ int(3..<_)   // min:3 max:inf
  string
  bool
 
- xx = {|(a:int(0:44)|
+ xx = {|(a:int(0..=44)|
  }
 
  xx(a=3) // OK
  xx(a=50) // compile error
 
- var x:int(0:30)=0
- I(x isnot :int(0:50))
- I(!(x is  :int(0:5))) // FALSE: subset
- I(!(x subset 0:5))   // FALSE: superset
- I( (x superset 0:5)) // TRUE:  superset
+ var x:int(0..=30)=0
+ assert x not equals :int(0..=50)
+ assert x not implements :int(0..=50)
+ assert x not equals :int(0..=5)
+ assert x implements :int(0..=5)  // subset
+
+The "A equals B" type check:
+
+1st-Exactly the same fields in A and B
+2nd-Each field has the same basic type (int/bool/string/range)
+3rd-Attributes should match too (A.__max == B.__max, __reset ...)
+4th-__where statement should LEC to be A.__where == B.__where
+
+The "A implements B" type check:
+
+1st-Any field in B is present in A (matching fields)
+2nd-Each matching field has the same basic type (int/bool/string/range)
+3rd-For matching attributes too (A.__max <= B.__max, A.__reset == B.__reset ...)
+4th-__where statement should LEC to be A.__where implies B.__where
+
 
 15.Memory API
 
@@ -535,7 +579,7 @@ xxx = (1,2) |> pick(add)
 
 A.foo  = {| }
 a.foo ++= {|(a:,b:)|...
-A.foo ++= {|((a:,b:)->(c:) when a<b|...
+A.foo ++= {|((a:,b:)->(c:) where a<b|...
 
 When a matching method is found, that method is called.
 
@@ -782,17 +826,12 @@ AND ALSO:
 -------------------
 Some object ideas:
 
-let type Canine  = (
+type canine  = (
    ,bark:def
-   ,field:(.__bits =3, .__initial=0) where {| $ < 4 }
+   ,field:{(__bits =3, __initial=0) where  $ < 4 }
 )
 
-let type Canine  = (
-   ,bark:def
-   ,field:(__bits=3, __initial=0) where {| $<4 }  // OPT 1
-)
-
-var type Dog:Canine
+type Dog:Canine
 Dog.bark = {|
 }
 

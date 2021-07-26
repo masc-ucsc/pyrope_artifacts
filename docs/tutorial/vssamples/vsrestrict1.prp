@@ -1,0 +1,82 @@
+
+// rescript
+let message = {
+  let part1 = "hello"
+  let part2 = "world"
+  part1 ++ " " ++ part2
+}
+
+// Pyrope 0.2
+message as ::{
+  part1 as "hello"
+  part2 as "world"
+  part1 ++ " " ++ part2
+}
+
+// Pyrope 0.3
+let message = ||{
+  part1 = "hello" // immutable by default
+  part2 = "world"
+  % = part1 ++ " " ++ part2
+}
+-----------------------------
+
+import string.fmt
+
+a = "foo"
+b = fmt('foo string {}', 33)
+
+-----------------------------
+
+#f1.__clk_pin = clock1
+#f2.__clk_pin = clock2
+
+#f1 = $a + $b
+#f2 = #f1 + $c               // compile error: likely problem, no cross clock sync
+#f2 = #f1.__cross_clock + $c // crazy but OK
+
+------------------------------
+
+// rescript
+let message = if isMorning {
+  "Good morning!"
+} else {
+  "Hello!"
+}
+
+// Pyrope 2.0
+
+message = ""
+if isMorning {
+  message = "Good morning!"
+}else{
+  message = "Hello!"
+}
+
+// Pyrope 3.0
+
+mut isMorning = true  // mutable variable
+message = if isMorning { "Good morning!" }else{ "Hello" }
+
+message2 = :{
+  if isMorning { // variable at the time lambda is defined
+    "Good morning!"
+  }else{
+    "Hello"
+  }
+}
+
+isMorning = false
+puts(message2) // Good morning!
+
+------------------------------
+
+// rescript
+
+one->a(two, three) // same as 'a(one, two, three)'
+
+// Pyrope
+
+three |> a(one, two)
+
+
