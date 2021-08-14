@@ -1,5 +1,5 @@
 
-These are some potential ideas for Pyrope v3 based on RUST/V ideas
+These are some potential ideas for Pyrope v3 based on RUST/V/Zig ideas
 
  //NOTE: default value must be given to xx "var xx" not OK
 
@@ -32,7 +32,7 @@ These are some potential ideas for Pyrope v3 based on RUST/V ideas
 
  // Default value must be given to the type "var type xt" not OK
 
- type xt:xxx  // xt is type and immutable
+ type xt=xxx  // xt is type and immutable
 
  var xx:xt = ... // xx is type xt with contructor values of ...
  let xx:xt = ... // immutable version
@@ -105,7 +105,7 @@ BRAIN DUMP:
 
 iris2 f* use some
 
-type m:my_mem(size=1K, initial="foo.json", xxxx=3);
+type m=my_mem(size=1K, initial="foo.json", xxxx=3);
 
 m.read(port=0,300) {||
   puts "One cycle later, the read is {}", $
@@ -113,7 +113,7 @@ m.read(port=0,300) {||
 
 m.write(port=2,addr=301+x, data=33+a)
 
-type counter:{signed where signed implements :int and signed__bits<4 and signed__min>2 }
+type counter = :{signed where signed implements :int and signed__bits<4 and signed__min>2 }
 
 let xxx_type:{signed where signed in 7..<23 } = 20
 
@@ -129,12 +129,12 @@ Base types: int, string
 Method IOs
 
 foo = {||
-  type T:$a  // T is the Type of $a
-  type $:(a:T,b:T)
-  type %:(sum:T)
+  type T=$a  // T is the Type of $a
+  type $=(a:T,b:T)
+  type %=(sum:T)
 }
 
-type $:(a:,b:) // $ is a bundle with a and b fields that have any type "foo:" is a type def without type
+type $=(a:,b:) // $ is a bundle with a and b fields that have any type "foo:" is a type def without type
 ---
 
 Argument name match
@@ -179,10 +179,14 @@ xx = fun4(a=(complex=zz)) // OK
 -Maybe make punch/import consistent. The diff is that import gets only methods and compile error if multiple match
 
  x = import([top], "foo.potato.(bar|mod3)") // match with regex like punch
- y = punch("any_wire_named_foo")
+ let y = punch("any_wire_named_foo") // read
  for i in y {
    puts("wire:{} has value:{}\n", i.__key, i);
  }
+
+ let x = punch(ID_UPPERCASE) // read access
+ var y = punch(ID_UPPER) // write access
+
 
 7.If allowed to have a return
 
@@ -225,13 +229,26 @@ assert res1 == 12
 
 11.Enums
 
- Current:
+ type color = RED or BLUE or GREEN // enum just a unique ID
 
- color.__allow = ('red', 'green', 'blue')
- assert color is :(red=0, green=1, blue=2)
+ type Rgb = (
+    ,color:u24
+    ,initial = {|x| color = x }
+ }
 
- Some syntax sugar a bit Elixir style?
- Allow :foo the same as 'foo'
+ type Red   = :Rgb(0x0xff0000)
+ type Green = :Rgb(0x0x00ff00)
+ type Blue  = :Rgb(0x0x0000ff)
+ type color2 = Red or :Green or :Blue // enum of types with meta data each (: is optional)
+
+ var x:color = RED // only in local module
+
+ if x does RED { .. }
+ puts "color:{}\n", :x // prints "color:RED"
+
+ var y:color2 = Red
+ if y does Red { .. }
+ puts "color:{} c1:{} c2:{}\n", :y, y, y.color // prints "color:Red c1:Red(color=0xff0000) c2:0xff0000"
 
 12.Autodoc
 
@@ -257,7 +274,7 @@ the assertions/assume
     ,increase_size = {|mut (_:i12) -> ()|}
   )
 
-  type Circle:Shape = (
+  type Circle implements Shape = (
     ,rad:i32
     ,name = {|() -> (_:string)| return "circle" }
     ,area = {|() -> (_:i32)|
@@ -765,7 +782,7 @@ test "ba ba" {
   $enable = 0
   tmp = @counter
 
-  expect { // statements added at the end (same cycle)
+  defer { // statements added at the end (same cycle)
     assert tmp == @counter
 
     yield // wait 1 cycle
@@ -789,19 +806,19 @@ This generates a module_list this:
   assert tmp == @counter
 
 test "ba ba2" {
-  expect {
+  defer {
     assert @counter == 4
   }
 
   $enable = 1
 
-  expect {
+  defer {
     puts "done"
   }
   @counter = 3
 }
 
-Generates 2 tests (2 expects):
+Generates 2 tests (2 defers):
  
   $enable = 1
   @counter = 3
@@ -827,11 +844,11 @@ AND ALSO:
 Some object ideas:
 
 type canine  = (
-   ,bark:def
-   ,field:{(__bits =3, __initial=0) where  $ < 4 }
+   ,bark:{||}
+   ,field:{(__bits=3, __initial=0) where  $ < 4 }
 )
 
-type Dog:Canine
+type Dog implements Canine
 Dog.bark = {|
 }
 
@@ -1015,11 +1032,9 @@ fun(1,2,3)   // calls fun3
 
 All caps is a unique ID
 
-let type states:{x where x in (ONE, TWO, THREE)} = ONE
+type states:{x where x in (ONE, TWO, THREE)} = ONE
 
-
-
-if a = ONE
+if a == ONE {... }
 
 
 //--------------------------------------------

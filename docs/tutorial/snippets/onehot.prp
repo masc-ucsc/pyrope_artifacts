@@ -6,8 +6,8 @@ a = 1<<val
 
 // decoder
 
-decoder = ||{
-  let clog2 = import math.clog2
+decoder = {||
+  let clog2 = import('math.clog2')
 
   assert $.__size == 1
   // For a 8 bit one hot encoding, we could
@@ -18,23 +18,23 @@ decoder = ||{
   let num = $0
   out = 0
   // This is the configurable size decoder
-  for i in 0:(clog2(num.__ubits)) {
+  for i in 0..<clog2(num.__ubits) {
      delta=i+1
      pos = 0
-     set = ()
+     xset = 0sb?
      while pos<num.__ubits {
         pos += delta
-        for j in pos:(pos+i) {
-          set ++= j
+        for j in pos..<(pos+i) {
+          xset ++= j
         }
      }
-     out@(i) = num@|(set)
+     out@[i] = num@|[set]
   }
   % = out
 }
 
-test {
-  for i in 0:33 {
+test "trivial" {
+  for i in 0..=33 {
     assert decoder(1<<i) == i
   }
 }
