@@ -24,18 +24,16 @@ module.exports = grammar({
   ]
 
   ,inline: $ => [
-    // $.comma_tok
-    // ,$.dot_tok
-    // ,$.ok_tok
-    // ,$.ck_tok
-    // ,$.ob_tok
-    // ,$.cb_tok
-    // ,$.op_tok
-    // ,$.cp_tok
-    // ,$.lt_tok
-    // ,$.gt_tok
-    // ,$.colonp_tok
-    // ,$.colon_tok
+    $.comma_tok
+    ,$.dot_tok
+    ,$.ok_tok
+    ,$.ck_tok
+    ,$.ob_tok
+    ,$.cb_tok
+    ,$.op_tok
+    ,$.cp_tok
+    ,$.colonp_tok
+    ,$.colon_tok
     // ,$.stmt
     // ,$.stmt_seq
     // ,$.if_elif
@@ -72,7 +70,7 @@ module.exports = grammar({
     ,stmt: $ =>
       seq(
         $.stmt_base
-        ,optional('defer')
+        //,optional('defer')
         //,optional($.gate_stmt)
       )
 
@@ -83,7 +81,7 @@ module.exports = grammar({
         ,$.assign_stmt
         ,$.multiple_stmt
         ,$.ctrl_stmt
-        ,$.scope_stmt
+        //,$.scope_stmt
         ,$.try_stmt
         ,$.constrained_scope_stmt
       )
@@ -139,21 +137,20 @@ module.exports = grammar({
 
     ,match_stmt_else: $ =>
       seq(
-        optional($._newline)
-        ,'else'
+        $.else_tok
         ,field("else_code",$.scope_stmt)
       )
 
     ,if_elif: $ =>
       seq(
-        'elif'
+        $.elif_tok
         ,field("cond",$.expr_entry)
         ,field("code",$.scope_stmt)
       )
 
     ,else_line: $ =>
       seq(
-        'else'
+        $.else_tok
         ,field("else_code",$.scope_stmt)
       )
 
@@ -173,6 +170,12 @@ module.exports = grammar({
           seq(
             repeat1($.comma_tok)
             ,field("id2",$.trivial_identifier)
+            ,optional(
+              seq(
+                repeat1($.comma_tok)
+                ,field("id3",$.trivial_identifier)
+              )
+            )
           )
         )
         ,field("in",$.in_expr_seq1)
@@ -196,6 +199,7 @@ module.exports = grammar({
       seq(
         'type'
         ,$.variable_base_field
+        ,optional($.typecase)
         ,optional(
           seq(
             'implements'
@@ -224,7 +228,10 @@ module.exports = grammar({
         )
         ,choice(
           repeat($.fcall_pipe)
-          ,$.gate_stmt
+          ,seq(
+            optional('defer')
+            ,$.gate_stmt
+          )
         )
       )
 
@@ -239,7 +246,10 @@ module.exports = grammar({
         )
         ,choice(
           repeat($.fcall_pipe)
-          ,$.gate_stmt
+          ,seq(
+            optional('defer')
+            ,optional($.gate_stmt)
+          )
         )
       )
 
@@ -316,6 +326,14 @@ module.exports = grammar({
         ,$.ck_tok
       )
 
+    ,scope_expr: $ =>
+      seq(
+        $.ok_tok
+        ,optional($._newline)
+        ,optional($.stmt_seq)
+        ,$.ck_tok
+      )
+
     ,lambda_def: $ =>
       seq(
         $.ok_tok
@@ -337,17 +355,15 @@ module.exports = grammar({
           'restrict'
           ,'fail'
           ,'test'
-          //,$.expr_attr
         ))
         ,choice($.string_literal,$.simple_string_literal)  // ID or explanation
-        ,$.gate_stmt
-        // ,optional($.expr_attr) OK but weird. Do we?
+        ,optional($.gate_stmt)
         ,field("code",$.scope_stmt)
       )
 
     ,expr_entry: $ =>
       seq(
-         field("attr",optional($.expr_attr))
+        field("attr",optional($.expr_attr))
         ,field("f1",$.factor_first)
         ,optional($.expr_cont)
         ,field("in",optional($.in_range))
@@ -440,6 +456,7 @@ module.exports = grammar({
       choice(
         $.factor_second
         ,$.lambda_def
+        ,$.scope_expr
         ,$.if_stmt
         ,$.repipe_stmt
         ,$.match_stmt
@@ -464,6 +481,7 @@ module.exports = grammar({
           $.inplace_concat_tok
           ,choice(
             $.variable_base_field
+            ,$.literal_select_field
             ,$.bundle
           )
         )
@@ -479,13 +497,7 @@ module.exports = grammar({
           )
           ,seq(
             optional($.unary_op_tok)
-            ,choice(
-              $.fcall_or_variable
-              ,$.bool_literal
-              ,$.natural_literal
-              ,$.string_literal
-              ,$.simple_string_literal
-            )
+            ,$.fcall_or_variable
             ,optional($.typecase)
           )
         )
@@ -493,7 +505,10 @@ module.exports = grammar({
 
     ,fcall_or_variable: $ =>
       seq(
-        $.variable_base_field
+        choice(
+          $.variable_base_field
+          ,$.literal_select_field
+        )
         ,seq(
           optional($.variable_prev_field)
           ,optional($.variable_base_last)
@@ -502,8 +517,8 @@ module.exports = grammar({
 
     ,expr_attr: $ =>
       choice(
-         seq('comptime', optional('debug'))
-        ,'debug'
+         seq($.comptime_tok, optional($.debug_tok))
+        ,$.debug_tok
       )
 
     ,lambda_def_constrains: $ =>
@@ -514,10 +529,7 @@ module.exports = grammar({
         ,choice(
           $.trivial_or_caps_identifier_seq1 // just trivial sequence IDs no types no nothing or complex pattern
           ,seq(
-            field("meta"
-              ,optional($.meta_list)
-            )
-            ,field("capture"
+            field("capture"
               ,optional($.capture_list)
             )
             ,field("input"
@@ -544,13 +556,6 @@ module.exports = grammar({
         )
         ,$.bar_tok
         ,optional($._newline)
-      )
-
-    ,meta_list: $ =>
-      seq(
-        $.lt_tok
-        ,$.trivial_or_caps_identifier_seq1
-        ,$.gt_tok
       )
 
     ,capture_list: $ =>
@@ -589,6 +594,17 @@ module.exports = grammar({
     ,variable_base_field: $ =>
       seq(
         choice($.complex_identifier, $.trivial_identifier, $.all_cap_identifier)
+        ,repeat($.select_sequence)
+      )
+
+    ,literal_select_field: $ =>
+      seq(
+        choice(
+          $.bool_literal
+          ,$.natural_literal
+          ,$.string_literal
+          ,$.simple_string_literal
+        )
         ,repeat($.select_sequence)
       )
 
@@ -724,14 +740,6 @@ module.exports = grammar({
         )
       )
 
-    ,let_tok: () =>
-      token(
-        seq(
-          /\s*/
-          ,'let'
-        )
-      )
-
     ,_arrow_tok: () =>
       token(
         seq(
@@ -748,11 +756,25 @@ module.exports = grammar({
         )
       )
 
-    ,var_tok: () =>
+    ,else_tok: () =>
       token(
         seq(
           /\s*/
-          ,'var'
+          ,'else'
+        )
+      )
+
+    // No spaces before, or alias for new line statement
+    ,debug_tok: () => token('debug')
+    ,comptime_tok: () => token('comptime')
+    ,var_tok: () => token('var')
+    ,let_tok: () => token('let')
+
+    ,elif_tok: () =>
+      token(
+        seq(
+          /\s*/
+          ,'elif'
         )
       )
 
@@ -803,9 +825,6 @@ module.exports = grammar({
 
     ,ob_tok: () => seq(/\[/) // No newline because the following line may be a expr (not a self-contained statement)
     ,cb_tok: () => seq(/\s*\]/)
-
-    ,lt_tok: () => seq(/</)
-    ,gt_tok: () => seq(/\s*>/)
 
     ,op_tok: () => seq(/\(/)
     ,cp_tok: () => seq(/\s*\)/)
