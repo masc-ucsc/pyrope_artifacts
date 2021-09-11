@@ -8,15 +8,11 @@
         "named": true
       },
       {
+        "type": "constrained_scope_stmt",
+        "named": true
+      },
+      {
         "type": "ctrl_stmt",
-        "named": true
-      },
-      {
-        "type": "debug_comptime_stmt",
-        "named": true
-      },
-      {
-        "type": "fail_stmt",
         "named": true
       },
       {
@@ -25,10 +21,6 @@
       },
       {
         "type": "scope_stmt",
-        "named": true
-      },
-      {
-        "type": "test_stmt",
         "named": true
       },
       {
@@ -74,6 +66,10 @@
         },
         {
           "type": "fcall_pipe",
+          "named": true
+        },
+        {
+          "type": "gate_stmt",
           "named": true
         },
         {
@@ -306,6 +302,58 @@
     "fields": {}
   },
   {
+    "type": "constrained_scope_stmt",
+    "named": true,
+    "fields": {
+      "attr": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "fail",
+            "named": false
+          },
+          {
+            "type": "restrict",
+            "named": false
+          },
+          {
+            "type": "test",
+            "named": false
+          }
+        ]
+      },
+      "code": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "scope_stmt",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "gate_stmt",
+          "named": true
+        },
+        {
+          "type": "simple_string_literal",
+          "named": true
+        },
+        {
+          "type": "string_literal",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "cp_tok",
     "named": true,
     "fields": {}
@@ -325,34 +373,12 @@
         {
           "type": "expr_entry",
           "named": true
+        },
+        {
+          "type": "gate_stmt",
+          "named": true
         }
       ]
-    }
-  },
-  {
-    "type": "debug_comptime_stmt",
-    "named": true,
-    "fields": {
-      "attr": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "expr_attr",
-            "named": true
-          }
-        ]
-      },
-      "code": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "scope_stmt",
-            "named": true
-          }
-        ]
-      }
     }
   },
   {
@@ -739,36 +765,6 @@
         },
         {
           "type": "unary_op_tok",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "fail_stmt",
-    "named": true,
-    "fields": {
-      "code": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "scope_stmt",
-            "named": true
-          }
-        ]
-      }
-    },
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "simple_string_literal",
-          "named": true
-        },
-        {
-          "type": "string_literal",
           "named": true
         }
       ]
@@ -1316,6 +1312,10 @@
         {
           "type": "fcall_pipe",
           "named": true
+        },
+        {
+          "type": "gate_stmt",
+          "named": true
         }
       ]
     }
@@ -1364,6 +1364,10 @@
       "types": [
         {
           "type": "ck_tok",
+          "named": true
+        },
+        {
+          "type": "expr_attr",
           "named": true
         },
         {
@@ -1478,13 +1482,9 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
-        {
-          "type": "gate_stmt",
-          "named": true
-        },
         {
           "type": "stmt_base",
           "named": true
@@ -1511,36 +1511,6 @@
     "type": "string_literal",
     "named": true,
     "fields": {}
-  },
-  {
-    "type": "test_stmt",
-    "named": true,
-    "fields": {
-      "code": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "scope_stmt",
-            "named": true
-          }
-        ]
-      }
-    },
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "simple_string_literal",
-          "named": true
-        },
-        {
-          "type": "string_literal",
-          "named": true
-        }
-      ]
-    }
   },
   {
     "type": "trivial_or_caps_identifier_seq1",
@@ -1601,6 +1571,10 @@
       "types": [
         {
           "type": "assignment_cont",
+          "named": true
+        },
+        {
+          "type": "gate_stmt",
           "named": true
         },
         {
@@ -1936,6 +1910,10 @@
   },
   {
     "type": "repipe",
+    "named": false
+  },
+  {
+    "type": "restrict",
     "named": false
   },
   {

@@ -1,0 +1,24 @@
+type Delegate = (
+  ,var thing = {|| 'delegate implement' }
+)
+
+type Delegator = (
+  ,var delegate
+  ,let operation = {||
+    if comptime delegate has 'thing' {
+      delegate.thing()
+    }else{
+      'default implementation'
+    }
+  }
+)
+
+var a:Delegator
+puts a.operation() // prints "default implementation"
+
+mut a.delegate = 'A delegate may be any object'
+puts a.operation() // prints "default implementation"
+
+set a.delegate = :Delegate
+puts a.operation() // prints "delegate implementation"
+

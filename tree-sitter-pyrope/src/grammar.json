@@ -98,18 +98,6 @@
               "type": "BLANK"
             }
           ]
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "gate_stmt"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
         }
       ]
     },
@@ -146,15 +134,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "debug_comptime_stmt"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "fail_stmt"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "test_stmt"
+          "name": "constrained_scope_stmt"
         }
       ]
     },
@@ -534,26 +514,43 @@
       ]
     },
     "ctrl_stmt": {
-      "type": "CHOICE",
+      "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
-          "value": "continue"
-        },
-        {
-          "type": "STRING",
-          "value": "break"
-        },
-        {
-          "type": "SEQ",
+          "type": "CHOICE",
           "members": [
             {
               "type": "STRING",
-              "value": "return"
+              "value": "continue"
             },
             {
+              "type": "STRING",
+              "value": "break"
+            },
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "return"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "_expr_seq1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
               "type": "SYMBOL",
-              "name": "_expr_seq1"
+              "name": "gate_stmt"
+            },
+            {
+              "type": "BLANK"
             }
           ]
         }
@@ -603,6 +600,18 @@
         {
           "type": "SYMBOL",
           "name": "assignment_cont"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "gate_stmt"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
         }
       ]
     },
@@ -651,11 +660,20 @@
           ]
         },
         {
-          "type": "REPEAT",
-          "content": {
-            "type": "SYMBOL",
-            "name": "fcall_pipe"
-          }
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "REPEAT",
+              "content": {
+                "type": "SYMBOL",
+                "name": "fcall_pipe"
+              }
+            },
+            {
+              "type": "SYMBOL",
+              "name": "gate_stmt"
+            }
+          ]
         }
       ]
     },
@@ -692,11 +710,20 @@
           ]
         },
         {
-          "type": "REPEAT",
-          "content": {
-            "type": "SYMBOL",
-            "name": "fcall_pipe"
-          }
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "REPEAT",
+              "content": {
+                "type": "SYMBOL",
+                "name": "fcall_pipe"
+              }
+            },
+            {
+              "type": "SYMBOL",
+              "name": "gate_stmt"
+            }
+          ]
         }
       ]
     },
@@ -954,6 +981,18 @@
       "type": "SEQ",
       "members": [
         {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "expr_attr"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
           "type": "SYMBOL",
           "name": "ok_tok"
         },
@@ -1045,33 +1084,29 @@
         }
       ]
     },
-    "debug_comptime_stmt": {
+    "constrained_scope_stmt": {
       "type": "SEQ",
       "members": [
         {
           "type": "FIELD",
           "name": "attr",
           "content": {
-            "type": "SYMBOL",
-            "name": "expr_attr"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "STRING",
+                "value": "restrict"
+              },
+              {
+                "type": "STRING",
+                "value": "fail"
+              },
+              {
+                "type": "STRING",
+                "value": "test"
+              }
+            ]
           }
-        },
-        {
-          "type": "FIELD",
-          "name": "code",
-          "content": {
-            "type": "SYMBOL",
-            "name": "scope_stmt"
-          }
-        }
-      ]
-    },
-    "fail_stmt": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "STRING",
-          "value": "fail"
         },
         {
           "type": "CHOICE",
@@ -1087,34 +1122,8 @@
           ]
         },
         {
-          "type": "FIELD",
-          "name": "code",
-          "content": {
-            "type": "SYMBOL",
-            "name": "scope_stmt"
-          }
-        }
-      ]
-    },
-    "test_stmt": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "STRING",
-          "value": "test"
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "string_literal"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "simple_string_literal"
-            }
-          ]
+          "type": "SYMBOL",
+          "name": "gate_stmt"
         },
         {
           "type": "FIELD",

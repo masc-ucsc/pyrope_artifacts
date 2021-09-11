@@ -73,7 +73,7 @@ module.exports = grammar({
       seq(
         $.stmt_base
         ,optional('defer')
-        ,optional($.gate_stmt)
+        //,optional($.gate_stmt)
       )
 
     ,stmt_base: $ =>
@@ -85,9 +85,7 @@ module.exports = grammar({
         ,$.ctrl_stmt
         ,$.scope_stmt
         ,$.try_stmt
-        ,$.debug_comptime_stmt
-        ,$.fail_stmt
-        ,$.test_stmt
+        ,$.constrained_scope_stmt
       )
 
     ,gate_stmt: $ =>
@@ -182,13 +180,16 @@ module.exports = grammar({
       )
 
     ,ctrl_stmt: $ =>
-      choice(
-        'continue'
-        ,'break'
-        ,seq(
-          'return'
-          ,$._expr_seq1
+      seq(
+        choice(
+          'continue'
+          ,'break'
+          ,seq(
+            'return'
+            ,$._expr_seq1
+          )
         )
+        ,optional($.gate_stmt)
       )
 
     ,type_stmt: $ =>
@@ -205,6 +206,7 @@ module.exports = grammar({
           )
         )
         ,$.assignment_cont
+        ,optional($.gate_stmt)
       )
 
     // Very close to multiple_stmt but not fcall_args allowed
@@ -220,7 +222,10 @@ module.exports = grammar({
         ,optional(
           $.assignment_cont2
         )
-        ,repeat($.fcall_pipe)
+        ,choice(
+          repeat($.fcall_pipe)
+          ,$.gate_stmt
+        )
       )
 
     ,multiple_stmt: $ =>
@@ -232,7 +237,10 @@ module.exports = grammar({
             ,$.fcall_args
           )
         )
-        ,repeat($.fcall_pipe)
+        ,choice(
+          repeat($.fcall_pipe)
+          ,$.gate_stmt
+        )
       )
 
     ,fcall_args: $ =>
@@ -301,7 +309,8 @@ module.exports = grammar({
 
     ,scope_stmt: $ =>
       seq(
-        $.ok_tok
+        optional($.expr_attr)
+        ,$.ok_tok
         ,optional($._newline)
         ,optional($.stmt_seq)
         ,$.ck_tok
@@ -322,23 +331,17 @@ module.exports = grammar({
         ,optional($.else_line)
       )
 
-    ,debug_comptime_stmt: $ =>
+    ,constrained_scope_stmt: $ =>
       seq(
-         field("attr",$.expr_attr)
-        ,field("code",$.scope_stmt)
-      )
-
-    ,fail_stmt: $ =>
-      seq(
-         'fail'
-        ,choice($.string_literal,$.simple_string_literal)
-        ,field("code",$.scope_stmt)
-      )
-
-    ,test_stmt: $ =>
-      seq(
-         'test'
-        ,choice($.string_literal,$.simple_string_literal)
+        field("attr",choice(
+          'restrict'
+          ,'fail'
+          ,'test'
+          //,$.expr_attr
+        ))
+        ,choice($.string_literal,$.simple_string_literal)  // ID or explanation
+        ,$.gate_stmt
+        // ,optional($.expr_attr) OK but weird. Do we?
         ,field("code",$.scope_stmt)
       )
 

@@ -1,0 +1,36 @@
+
+type colour = (
+  ,init = {mut |(r:u8,g:u8,b:u8)|
+    self.r = r
+    self.g = g
+    self.b = b
+  }
+)
+
+let red:Colour   = (255,  0,  0)
+let green:Colour = (  0,255,  0)
+let blue:Colour  = (  0,  0,255)
+let black:Colour = (  0,  0,  0)
+let white:Colour = (255,255,255)
+
+type Pixmap = (
+  ,init = {mut |(width, height)|
+    let tmp:[width][height] = c:Colour
+    self.data = tmp
+  }
+
+  ,fill = {mut |(c:Colour)|
+    for mut i in self.data {
+      i = c
+    }
+  }
+
+  ,get_pixel = {|(x,y)|
+    return self.data[x][y]
+  }
+
+  ,set_pixel = {mut |(x,y,c:Colour)|
+    self.data[x][y] = c
+  }
+)
+
