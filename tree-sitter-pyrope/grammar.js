@@ -24,31 +24,28 @@ module.exports = grammar({
   ]
 
   ,inline: $ => [
-    $.comma_tok
-    ,$.dot_tok
-    ,$.ok_tok
-    ,$.ck_tok
-    ,$.ob_tok
-    ,$.cb_tok
-    ,$.op_tok
-    ,$.cp_tok
-    ,$.lt_tok
-    ,$.gt_tok
-    ,$.colonp_tok
-    ,$.colon_tok
-    // ,$.assignment_cont
-    // ,$.assignment_cont2
-    ,$.stmt
-    ,$.stmt_seq
-    ,$.if_elif
-    ,$.else_line
-    ,$.expr_binary_cont
-    //,$.expr_range_cont
-    ,$.factor_first
-    ,$.factor_second
-    ,$.factor_simple
-    ,$.factor_simple_fcall
-    ,$.select_sequence
+    // $.comma_tok
+    // ,$.dot_tok
+    // ,$.ok_tok
+    // ,$.ck_tok
+    // ,$.ob_tok
+    // ,$.cb_tok
+    // ,$.op_tok
+    // ,$.cp_tok
+    // ,$.lt_tok
+    // ,$.gt_tok
+    // ,$.colonp_tok
+    // ,$.colon_tok
+    // ,$.stmt
+    // ,$.stmt_seq
+    // ,$.if_elif
+    // ,$.else_line
+    // ,$.expr_binary_cont
+    // ,$.factor_first
+    // ,$.factor_second
+    // ,$.factor_simple
+    // ,$.factor_simple_fcall
+    // ,$.select_sequence
   ]
 
   ,rules: {
@@ -240,8 +237,8 @@ module.exports = grammar({
 
     ,fcall_args: $ =>
       seq(
-        field("attr",optional($.expr_attr))
-        ,field("f1",$.factor_simple_fcall)
+        optional($.expr_attr)
+        ,$.factor_simple_fcall
         ,optional($.expr_cont)
         ,repeat(
           seq(
@@ -371,6 +368,20 @@ module.exports = grammar({
         )
       )
 
+    ,does_typecase: $ =>
+      seq(
+        choice(
+          'does' // honors, meets, honors, does, implements, provides
+          ,'doesnt' // honors, meets, honors, does, implements, provides
+          ,seq('not', 'equals')
+          ,'equals' // is, means
+        )
+        ,choice(
+          $.variable_base_field
+          ,$.typecase
+        )
+      )
+
     ,expr_binary_cont: $ =>
       choice(
         seq(
@@ -403,19 +414,6 @@ module.exports = grammar({
         )
       )
 
-    ,does_typecase: $ =>
-      seq(
-        optional('not')
-        ,choice(
-          'does' // honors, meets, honors, does, implements, provides
-         ,'equals' // is, means
-        )
-        ,choice(
-          $.variable_base_field
-          ,$.typecase
-        )
-      )
-
     ,in_range: $ =>
       seq(
         optional('not')
@@ -443,12 +441,14 @@ module.exports = grammar({
         ,$.repipe_stmt
         ,$.match_stmt
         ,$.for_stmt
+        ,$.expr_range_cont   // open range
       )
 
     ,factor_second: $ =>
       choice(
         $.factor_simple
         ,seq(
+          //optional($.unary_op_tok)
           $.bundle
           ,repeat($.select_sequence)
         )
@@ -458,7 +458,7 @@ module.exports = grammar({
       choice(
         $.factor_simple_fcall
         ,seq(
-          '...'
+          $.inplace_concat_tok
           ,choice(
             $.variable_base_field
             ,$.bundle
@@ -469,15 +469,23 @@ module.exports = grammar({
 
     ,factor_simple_fcall: $ =>
       seq(
-        optional($.unary_op_tok)
-        ,choice(
-          $.fcall_or_variable
-          ,$.bool_literal
-          ,$.natural_literal
-          ,$.string_literal
-          ,$.simple_string_literal
+        choice(
+          seq(
+            $.unary_op_tok
+            ,$.bundle
+          )
+          ,seq(
+            optional($.unary_op_tok)
+            ,choice(
+              $.fcall_or_variable
+              ,$.bool_literal
+              ,$.natural_literal
+              ,$.string_literal
+              ,$.simple_string_literal
+            )
+            ,optional($.typecase)
+          )
         )
-        ,optional($.typecase)
       )
 
     ,fcall_or_variable: $ =>
@@ -568,9 +576,10 @@ module.exports = grammar({
       seq(
         $.colon_tok
         ,choice(
-          $.variable_base_field
-          ,$.bundle
-          ,$.lambda_def
+          $.variable_base_field   // var or fcall
+          ,$.bundle               // bundle
+          ,$.lambda_def           // function
+          ,repeat1($.selector0)   // Array
         )
       )
 
@@ -583,7 +592,7 @@ module.exports = grammar({
     ,variable_base_last: $ =>
        choice(
          $.qmark_tok
-         ,$.bang_tok
+         //,$.bang_tok  // CONFLICT
          ,repeat1($.variable_bit_sel)
        )
 
@@ -744,16 +753,20 @@ module.exports = grammar({
         )
       )
 
-    ,unary_op_tok: () =>
-      token(
-        seq(
-          /\s*/
-          ,choice('!', '-', '~')
+    ,unary_op_tok: $ =>
+      choice(
+        token(
+          seq(
+            /\s*/
+            ,choice('not', '-', '~')
+          )
         )
+        ,$.bang_tok
       )
 
-    ,range_open_tok: () => token('..')
+    ,inplace_concat_tok: () => token('...')
 
+    ,range_open_tok: () => token('..')
     ,range_op_tok: () =>
       token(
         seq(

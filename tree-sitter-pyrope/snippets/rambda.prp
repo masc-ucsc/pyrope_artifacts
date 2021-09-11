@@ -1,0 +1,11 @@
+
+divide = {|a,b| a/b }
+half   = {|a| divide(a/2) }
+
+r_where = {|| {|[cond=$](x)| x == cond } }
+
+r_filter = {|filter_fun, array|
+  for i in array { i when filter_fun(i) }
+}
+
+

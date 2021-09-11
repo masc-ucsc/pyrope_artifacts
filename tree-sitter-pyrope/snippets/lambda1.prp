@@ -1,0 +1,52 @@
+
+dispatch = {||
+  comptime assert $0 equals string
+  return match $0 {
+           == 'add' { $1 + $2 }
+           == 'sub' { $1 - $2 }
+           == 'mul' { $1 * $2 }
+           == 'div' { $1 / $2 }
+  }
+}
+
+dispatch2 = {||
+  comptime assert $0 equals :string
+  s = (
+    ,add = {|| $1 + $2 }
+    ,sub = {|| $1 - $2 }
+    ,mul = {|| $1 * $2 }
+    ,div = {|| $1 / $2 }
+  )
+  return s[$0]($1,$2)
+}
+
+test "Check both methods" {
+
+  for i in 0..<100 {
+    a = s5.rand()
+    b = s44.rand()
+
+    {
+      x = dispatch('add',a,b)
+      y = dispatch2('add',a,b)
+      assert x == y == (a+b)
+    }
+
+    {
+      x = dispatch('sub',a,b)
+      y = dispatch2('sub',a,b)
+      assert x == y == (a-b)
+    }
+
+    {
+      x = dispatch('mul',a,b)
+      y = dispatch2('mul',a,b)
+      assert x == y == (a*b)
+    }
+
+    {
+      x = dispatch('div',a,b)
+      y = dispatch2('div',a,b)
+      assert x == y == (a/b)
+    }
+  }

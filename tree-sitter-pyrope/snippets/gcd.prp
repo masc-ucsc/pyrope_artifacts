@@ -1,0 +1,31 @@
+
+    if $load_values {
+      #x = $value1
+      #y = $value2
+    }else{
+      #x = if #x > #y { #x - #y } else { #y - #x }
+      %z = #x
+      %v = #y == 0
+    }
+
+    test "16bits gcd" {
+      for i in 1..=100 {
+        for j in 1..=100 {
+          $value1      = i
+          $value2      = j
+          $load_values = true
+
+          puts "trying gcd({},{})", $value1, $value2
+
+          step 1 // advance 1 clock
+
+          $load_values = false // deactivate load
+
+          waitfor %z == true
+
+          puts "result is {}", %v
+          assert %v == __my_cpp_gcd(v1=$value1, v2=$value2)
+        }
+      }
+    }
+

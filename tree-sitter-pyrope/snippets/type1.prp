@@ -1,0 +1,78 @@
+
+ type color = RED or BLUE or GREEN // enum just a unique ID
+
+ type Rgb = (
+    ,color:u24
+    ,initial = {|x| color = x }
+ )
+
+ type Red   = Rgb(0xff0000)
+ type Green = Rgb(0x00ff00)
+ type Blue  = Rgb(0x0000ff)
+ type color2 = Red or Green or Blue
+
+ var x:color = RED // only in local module
+
+ if x does RED { assert(true) }
+
+ puts "color:{} {}\n", :x, x // prints "color:RED RED"
+
+ var y:color2 = Red
+ if y does Red { ; assert(true) }
+
+ puts "color:{} c1:{} c2:{}\n", :y, y, y.color // prints "color:Red c1:Red(color=0xff0000) c2:0xff0000"
+
+type Shape = (
+  ,name = {|() -> :string|}
+  ,area = {|() -> :i32|}
+  ,increase_size = {mut |(_:i12) -> ()|}
+)
+
+type Circle implements Shape = (
+  ,rad:i32
+  ,name = {|() -> :string| "circle" }
+  ,area = {|() -> :i32|
+     let pi = import("math.pi")
+     return pi * self.rad * self.rad
+  }
+  ,increase_size = {mut |(_:i12) -> ()|  self.rad *= $1 }
+)
+
+add1 = {|a,b| // 1 cycle add
+  #reg = a+b
+  return #reg
+}
+mul3 = {|a,b| // 3 cycle multiply
+  #reg1 = $a * $b
+  #reg2 = #reg1
+  #reg3 = #reg2
+  return #reg3
+}
+
+x    = mul3(in1, in2)
+%out = add1(x,in3)
+
+// Design one
+let x = mul3(in1, in2)      // compile error: 'mul3' is pipelined
+let x =# mul3(in1, in2)     // OK
+%out  =# add1(x,in3)        // OK (in3 has 0 cycles, x has 3 cycles)
+%out  =#[1] add1(x,in3)     // compile error: 'x' is pipelined with '3' cycles
+%out  =#[3] add1(x,in3)     // compile error: 'in3' is pipelined with '1' cycle
+%out  =#[1..<4] add1(x,in3) // OK
+
+
+var a:u32=100
+var b:u10
+var c:u5
+var d:u5
+
+b = a     // OK done automatically. No precision lost
+c = a     // compile error, '100' overflows the maximum allowed value of 'c'
+c:= a     // OK, same as c = a@[0..<5] (Since 100 is 0b1100100, c==4)
+c = u5(a) // OK, c == 31
+c = 31
+d = c + 1 // compile error, '32' overflows the maximum allowed value  of 'd'
+d:= c + 1   // OK d == 0
+d:=# c + 1   // OK d == 0
+d = u5(c+1) // OK, d==31
+d = :d(c+1) // OK, d==31

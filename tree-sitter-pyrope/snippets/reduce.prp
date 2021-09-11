@@ -1,0 +1,45 @@
+
+reduce = {|bundle, x1, x2|
+  var op
+  var base
+  if x1 equals :{||} {
+     op   = x1
+     base = x2
+  }elif x2 equals :{||} {
+     op   = x2
+     base = x1
+  }else{
+     comptime assert false, "unclear method to apply a reduction"
+  }
+
+  var x = base
+  for i in bundle {
+    mut x = op(x, i)
+  }
+  return x
+}
+
+reduce = {|bundle, x1|
+
+  return reduce(bundle,0,x1) when x1 equals :{||}
+
+  comptime assert false, "unclear method to apply a reduction"
+}
+
+/// xargs converts from UFCS to append first tuple to end
+/// Orig:
+///  (3,4) |> xargs(1,2) |> foo 
+/// Becomes:
+///  foo(1,2,3,4)
+///
+///  (3,4) |> foo(1,2) is the same as foo((3,4),1,2)
+///
+
+xars = {|| $[1..] ++ $0 }
+
+a = (1,2,3).reduce(0, '+')
+b = __sum(A=(1,2,3))
+c = (1,2) |> xargs(3)
+assert c == (3,1,2)
+
+assert b == a == (1+2+3)

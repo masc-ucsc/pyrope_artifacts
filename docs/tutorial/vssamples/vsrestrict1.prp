@@ -19,6 +19,14 @@ let message = ||{
   part2 = "world"
   % = part1 ++ " " ++ part2
 }
+
+// Pyrope 0.9
+let message = {||
+  part1 = "hello"
+  part2 = "world"
+  return part1 ++ " " ++ part2
+}
+
 -----------------------------
 
 import string.fmt
@@ -44,30 +52,12 @@ let message = if isMorning {
   "Hello!"
 }
 
-// Pyrope 2.0
-
-message = ""
-if isMorning {
-  message = "Good morning!"
-}else{
-  message = "Hello!"
+// Pyrope 0.9
+let message = if isMorning {
+  "Good morning!"
+} else {
+  "Hello!"
 }
-
-// Pyrope 3.0
-
-mut isMorning = true  // mutable variable
-message = if isMorning { "Good morning!" }else{ "Hello" }
-
-message2 = :{
-  if isMorning { // variable at the time lambda is defined
-    "Good morning!"
-  }else{
-    "Hello"
-  }
-}
-
-isMorning = false
-puts(message2) // Good morning!
 
 ------------------------------
 
@@ -77,6 +67,7 @@ one->a(two, three) // same as 'a(one, two, three)'
 
 // Pyrope
 
+one.a(two, three)
 three |> a(one, two)
 
 

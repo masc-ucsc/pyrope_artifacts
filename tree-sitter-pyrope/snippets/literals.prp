@@ -1,0 +1,12 @@
+
+a = 0xF_a_0
+assert a == 0xFA0
+assert 1024 == 1K
+
+a = 0
+if cond {
+  a = 3
+}
+assert cond implies a == 3, "the branch was taken, so it must be 3??"
+assert a == 3, "the same error" when   cond
+verify a == 0, "the same error" unless cond

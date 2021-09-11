@@ -1,0 +1,25 @@
+|(in1,in2) -> (out)|
+
+add1 = {|a,b| // 1 cycle add
+  #reg = a+b
+  return #reg
+}
+mul3 = {|a,b| // 3 cycle multiply
+  #reg1 = $a * $b
+  #reg2 = #reg1
+  #reg3 = #reg2
+  return #reg3
+}
+
+x    = mul3(in1, in2)
+%out = add1(x,in3)
+
+// Design one
+let x = mul3(in1, in2)      // compile error: 'mul3' is pipelined
+let x =# mul3(in1, in2)     // OK
+%out  =# add1(x,in3)        // OK (in3 has 0 cycles, x has 3 cycles)
+%out  =#[1] add1(x,in3)     // compile error: 'x' is pipelined with '3' cycles
+%out  =#[3] add1(x,in3)     // compile error: 'in3' is pipelined with '1' cycle
+%out  =#[1..<4] add1(x,in3) // OK
+
+
